@@ -51,15 +51,28 @@ function lockTab(tabId) {
 
 function unlockTab(tabId) {
   const userPassword = prompt("Enter password to unlock the tab:");
-  chrome.storage.local.get("lockPassword", (data) => {
+  chrome.storage.local.get(["lockPassword", "userEmail"], (data) => {
     if (data.lockPassword === userPassword) {
-      lockedTabs.delete(tabId);
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Unlocked",
-        message: "Tab unlocked successfully!",
-        priority: 2,
+      // Check if the current user is the same as the one who set the password
+      chrome.identity.getProfileUserInfo((userInfo) => {
+        if (userInfo.email === data.userEmail) {
+          lockedTabs.delete(tabId);
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Unlocked",
+            message: "Tab unlocked successfully!",
+            priority: 2,
+          });
+        } else {
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Authentication Failed",
+            message: "You are not authorized to unlock this tab.",
+            priority: 2,
+          });
+        }
       });
     } else {
       chrome.notifications.create({
@@ -72,6 +85,7 @@ function unlockTab(tabId) {
     }
   });
 }
+
 
 // Automatically lock the active tab if it’s in the locked tabs set
 function checkLockConditions() {

@@ -3,7 +3,11 @@
   "name": "Tab Lock Extension",
   "version": "1.0",
   "description": "Lock selected tabs on switch or minimize.",
-  "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "notifications"],
+  "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "notifications", "identity"],
+  "oauth2": {
+    "client_id": "590193531184-abfrknjc7k1kvhj8ke6r4qqf7mq0klrn.apps.googleusercontent.com",
+    "scopes": ["email"]
+  },
   "background": {
     "service_worker": "background.js"
   },
