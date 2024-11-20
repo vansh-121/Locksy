@@ -1,5 +1,4 @@
 let lockedTabs = new Set(); // Track locked tabs by tab ID
-let lockTimeout = 60000;
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get("lockPassword", (data) => {
@@ -19,7 +18,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.action === "lock") {
     chrome.storage.local.get("lockPassword", (data) => {
       if (data.lockPassword) {
-        lockedTabs.add(message.tabId); // Lock this specific tab by ID
+        lockedTabs.add(message.tabId);
         lockTab(message.tabId);
       } else {
         chrome.notifications.create({
@@ -32,7 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       }
     });
   } else if (message.action === "unlock") {
-    unlockTab(message.tabId);
+    authenticateAndUnlockTab(message.tabId);
   }
 });
 
@@ -41,7 +40,7 @@ function lockTab(tabId) {
     if (tab && tab.url && !tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
       chrome.scripting.executeScript({
         target: { tabId },
-        files: ["content.js"]
+        files: ["content.js"],
       }).catch((error) => {
         console.error("Failed to execute content script:", error);
       });
@@ -49,12 +48,21 @@ function lockTab(tabId) {
   });
 }
 
-function unlockTab(tabId) {
-  const userPassword = prompt("Enter password to unlock the tab:");
-  chrome.storage.local.get(["lockPassword", "userEmail"], (data) => {
-    if (data.lockPassword === userPassword) {
-      // Check if the current user is the same as the one who set the password
-      chrome.identity.getProfileUserInfo((userInfo) => {
+function authenticateAndUnlockTab(tabId) {
+  chrome.identity.getAuthToken({ interactive: true }, (token) => {
+    if (chrome.runtime.lastError || !token) {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Authentication Failed",
+        message: "Unable to authenticate. Please try again.",
+        priority: 2,
+      });
+      return;
+    }
+
+    chrome.identity.getProfileUserInfo((userInfo) => {
+      chrome.storage.local.get(["lockPassword", "userEmail"], (data) => {
         if (userInfo.email === data.userEmail) {
           lockedTabs.delete(tabId);
           chrome.notifications.create({
@@ -68,44 +76,16 @@ function unlockTab(tabId) {
           chrome.notifications.create({
             type: "basic",
             iconUrl: "icon.png",
-            title: "Authentication Failed",
+            title: "Unauthorized User",
             message: "You are not authorized to unlock this tab.",
             priority: 2,
           });
         }
       });
-    } else {
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Incorrect Password",
-        message: "Unable to unlock the tab.",
-        priority: 2,
-      });
-    }
+    });
   });
 }
 
-
-// Automatically lock the active tab if it’s in the locked tabs set
-function checkLockConditions() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const activeTab = tabs[0];
-    if (activeTab && lockedTabs.has(activeTab.id)) {
-      lockTab(activeTab.id);
-    }
-  });
-}
-
-// Clear locked tab from the set if the tab is closed
 chrome.tabs.onRemoved.addListener((tabId) => {
   lockedTabs.delete(tabId);
-});
-
-chrome.tabs.onActivated.addListener(checkLockConditions);
-chrome.windows.onFocusChanged.addListener(checkLockConditions);
-
-chrome.alarms.create("lockTimer", { periodInMinutes: lockTimeout / 60000 });
-chrome.alarms.onAlarm.addListener(() => {
-  lockedTabs.forEach((tabId) => lockTab(tabId));
 });
