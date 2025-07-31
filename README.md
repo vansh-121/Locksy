@@ -1,8 +1,25 @@
-# � Secure Tab Extension
+# 🔒 Secure Tab Extension
+
+A modern Chrome extension that provides military-grade tab protection with advanced security features.
+
+## 🆕 Recent Improvements
+
+### Version 4.0 - ULTIMATE SECURITY IMPLEMENTATION
+- 🔐 **Extension Access Authentication**: Extension popup now requires master password entry
+- ⏰ **Session Management**: 10-minute timeout for authenticated sessions  
+- 🚫 **Brute Force Protection**: 3-attempt limit with 5-minute lockout
+- 🛡️ **Enhanced Password Security**: Current password required for all changes
+- 📊 **Visual Security Indicators**: Clear feedback on security status
+- 🚨 **Attack Prevention**: Eliminated all known bypass methods
+- 🧹 **Clean Architecture**: Single popup file, no more redundant code
+
+## 🔒 Security Notes
+
+### 🛡️ Password Securityre Tab Extension
 
 A modern Chrome extension that provid## 🆕 Recent Improvements
 
-### Version 3.0 - CRITICAL SECURITY UPDATE
+### Version 4.0 - ULTIMATE SECURITY IMPLEMENTATION
 -## � Security Notes
 
 ### �🛡️ Password Security
