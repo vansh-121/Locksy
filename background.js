@@ -2,10 +2,15 @@ let lockedTabs = new Set(); // Track locked tabs by tab ID
 
 chrome.runtime.onInstalled.addListener(() => {
   // Initialize extension state
-  chrome.storage.local.get(["extensionActive", "lockPassword"], (data) => {
+  chrome.storage.local.get(["extensionActive", "lockPassword", "lockedTabIds"], (data) => {
     // Set default active state if not set
     if (data.extensionActive === undefined) {
       chrome.storage.local.set({ extensionActive: true });
+    }
+
+    // Restore locked tabs from storage (in case of extension restart)
+    if (data.lockedTabIds) {
+      lockedTabs = new Set(data.lockedTabIds);
     }
 
     if (!data.lockPassword) {
@@ -38,6 +43,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       chrome.storage.local.get("lockPassword", (data) => {
         if (data.lockPassword) {
           lockedTabs.add(message.tabId);
+          // Persist locked tabs to storage
+          chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
           lockTab(message.tabId);
         } else {
           chrome.notifications.create({
@@ -48,6 +55,19 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             priority: 2,
           });
         }
+      });
+    } else if (message.action === "unlock") {
+      // Unlock tab after successful password verification
+      const tabId = sender.tab.id;
+      lockedTabs.delete(tabId);
+      // Update storage
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Tab Unlocked",
+        message: "Tab has been unlocked successfully.",
+        priority: 1,
       });
     }
     // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
@@ -92,4 +112,27 @@ function lockTab(tabId) {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   lockedTabs.delete(tabId);
+  // Update storage
+  chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+});
+
+// Handle tab updates (including refreshes)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  // If this tab is locked and the page is loading/complete, re-inject the lock
+  if (lockedTabs.has(tabId) && (changeInfo.status === 'loading' || changeInfo.status === 'complete')) {
+    // Small delay to ensure page is ready
+    setTimeout(() => {
+      lockTab(tabId);
+    }, 100);
+  }
+});
+
+// Handle navigation events to maintain locks
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
+    // Tab is locked and user is trying to navigate - re-lock after navigation
+    setTimeout(() => {
+      lockTab(details.tabId);
+    }, 200);
+  }
 });
