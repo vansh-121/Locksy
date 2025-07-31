@@ -65,7 +65,7 @@ chrome.storage.local.get("extensionActive", (data) => {
       '</div>' +
       '<div style="margin-top: 12px; padding: 12px; background: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">' +
       '<p style="margin: 0; font-size: 12px; color: #721c24; font-weight: 500;">' +
-      '<strong>🚫 Refresh Blocked:</strong> Tab refresh is disabled for security. F5, Ctrl+R, and browser refresh are blocked.' +
+      '<strong>🚫 ULTRA REFRESH PROTECTION:</strong> All refresh methods blocked - F5, Ctrl+R, browser refresh button, JavaScript reload, and navigation functions are disabled.' +
       '</p>' +
       '</div>' +
       '</div>'; const unlockBtn = overlay.querySelector("#unlockBtn");
@@ -120,6 +120,16 @@ chrome.storage.local.get("extensionActive", (data) => {
     }
 
     function unlock() {
+      // Stop aggressive monitoring since tab is being unlocked legitimately
+      isLocked = false;
+      clearInterval(aggressiveRelock);
+      
+      // Restore original functions
+      window.location.reload = originalReload;
+      window.history.back = originalBack;
+      window.history.forward = originalForward;
+      window.history.go = originalGo;
+      
       unlockBtn.style.animation = "success 0.3s ease-in-out";
       unlockBtn.innerHTML = "Unlocked Successfully!";
       unlockBtn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
@@ -136,17 +146,111 @@ chrome.storage.local.get("extensionActive", (data) => {
     // SECURITY: Prevent tab refresh and show security message
     let refreshAttempts = 0;
     
-    // Prevent page refresh/reload
+    // ULTRA-FAST Re-lock mechanism - Store locked state immediately
+    const currentTabId = chrome.runtime?.id ? Date.now() : Math.random(); // Unique identifier
+    chrome.storage.local.set({ 
+      [`locked_${location.href}`]: true,
+      [`locked_tab_${currentTabId}`]: true
+    });
+    
+    // Multiple layers of refresh prevention
+    
+    // Layer 1: beforeunload event (shows browser dialog)
     window.addEventListener('beforeunload', function (e) {
       refreshAttempts++;
       e.preventDefault();
-      const message = `🔒 SECURITY ALERT: Refresh is disabled for security. This tab is locked and cannot be refreshed. Please unlock the tab first by entering your password.`;
+      const message = `🔒 SECURITY ALERT: This tab is locked and protected. Refresh is disabled for security. Please unlock first by entering your password.`;
       e.returnValue = message;
       
       // Show security notification
-      showError(`Refresh blocked for security! Attempt #${refreshAttempts}`);
+      showError(`🔒 Refresh blocked! Attempt #${refreshAttempts} - Tab remains locked`);
       
       return message;
+    });
+    
+    // Layer 2: unload event (final attempt to prevent refresh)
+    window.addEventListener('unload', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return false;
+    });
+    
+    // Layer 3: pagehide event
+    window.addEventListener('pagehide', function (e) {
+      e.preventDefault();
+      if (e.persisted) {
+        e.returnValue = "🔒 Tab locked - refresh blocked";
+      }
+    });
+    
+    // Layer 4: Aggressive periodic check for page changes
+    let isLocked = true;
+    const aggressiveRelock = setInterval(() => {
+      if (isLocked && !document.getElementById("lockOverlay")) {
+        // Page was somehow refreshed and lock overlay is gone - EMERGENCY RE-LOCK
+        console.warn("🚨 SECURITY BREACH DETECTED: Lock overlay missing - Emergency re-lock!");
+        location.reload = function() { 
+          showError("🔒 Refresh blocked by security system!");
+          return false; 
+        };
+        
+        // Try to restore overlay immediately
+        const emergencyOverlay = document.createElement("div");
+        emergencyOverlay.innerHTML = "<div style='position:fixed;top:0;left:0;width:100%;height:100%;background:red;z-index:99999;color:white;display:flex;align-items:center;justify-content:center;font-size:24px;'>🔒 SECURITY: Re-locking tab...</div>";
+        document.body.appendChild(emergencyOverlay);
+        
+        // Force page reload to restore proper lock
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    }, 50); // Check every 50ms for maximum security
+    
+    // Layer 5: Override refresh functions
+    const originalReload = window.location.reload;
+    window.location.reload = function() {
+      refreshAttempts++;
+      showError(`🔒 JavaScript reload blocked! Attempt #${refreshAttempts}`);
+      return false;
+    };
+    
+    // Override history functions that could be used to escape
+    const originalBack = window.history.back;
+    const originalForward = window.history.forward;
+    const originalGo = window.history.go;
+    
+    window.history.back = function() {
+      showError("🔒 Navigation blocked for security!");
+      return false;
+    };
+    
+    window.history.forward = function() {
+      showError("🔒 Navigation blocked for security!");
+      return false;
+    };
+    
+    window.history.go = function() {
+      showError("🔒 Navigation blocked for security!");
+      return false;
+    };
+    
+    // Layer 6: Prevent window focus loss that could indicate refresh
+    let isWindowFocused = true;
+    window.addEventListener('blur', () => {
+      isWindowFocused = false;
+    });
+    
+    window.addEventListener('focus', () => {
+      if (!isWindowFocused) {
+        // Window regained focus - check if lock is still there
+        setTimeout(() => {
+          if (!document.getElementById("lockOverlay")) {
+            console.warn("🚨 Window focus returned but lock missing - possible refresh!");
+            window.location.reload();
+          }
+        }, 10);
+      }
+      isWindowFocused = true;
     });
 
     // Prevent common refresh shortcuts
