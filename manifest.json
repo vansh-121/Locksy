@@ -1,14 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "Tab Lock Extension",
-  "version": "1.0",
-  "description": "Lock and unlock tabs with a password for secure browsing.",
-  "permissions": ["storage", "tabs", "scripting", "identity", "activeTab", "notifications"],
-  "oauth2": {
-  "client_id": "590193531184-abfrknjc7k1kvhj8ke6r4qqf7mq0klrn.apps.googleusercontent.com",
-  "scopes": ["email", "profile"]
-},
-  "host_permissions": ["<all_urls>"],
+  "name": "Secure Tab Extension",
+  "version": "3.0",
+  "description": "Ultra-secure tab protection with password verification, current password requirements, and advanced security measures for bulletproof browsing security.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab",
+    "notifications"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
   },
