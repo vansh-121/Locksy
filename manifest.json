@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Secure Tab Extension",
-  "version": "4.0",
-  "description": "Ultra-secure tab protection with password verification, current password requirements, and advanced security measures for bulletproof browsing security.",
+  "version": "5.0",
+  "description": "Ultra-secure tab protection with statistics dashboard, multiple tab locking, locked tabs management, and advanced security features.",
   "permissions": [
     "storage",
     "tabs",

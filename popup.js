@@ -334,15 +334,22 @@ function initializeMainUI() {
   const passwordLabel = document.getElementById("passwordLabel");
   const setPasswordBtn = document.getElementById("setPassword");
   const lockTabBtn = document.getElementById("lockTab");
+  const lockMultipleTabsBtn = document.getElementById("lockMultipleTabs");
   const strengthIndicator = document.getElementById("passwordStrengthIndicator");
   const strengthText = document.getElementById("strengthText");
   const strengthBar = document.getElementById("strengthBar");
+  const lockedTabsCount = document.getElementById("lockedTabsCount");
+  const totalLocksCount = document.getElementById("totalLocksCount");
+  const lockedTabsSection = document.getElementById("lockedTabsSection");
+  const lockedTabsList = document.getElementById("lockedTabsList");
+  const unlockAllBtn = document.getElementById("unlockAllBtn");
 
   // Enhanced element validation
   const requiredElements = {
     toggleSwitch, statusIndicator, statusText, statusDot, controlsSection,
     passwordInput, currentPasswordInput, currentPasswordGroup, passwordLabel,
-    setPasswordBtn, lockTabBtn, strengthIndicator, strengthText, strengthBar
+    setPasswordBtn, lockTabBtn, lockMultipleTabsBtn, strengthIndicator, strengthText, strengthBar,
+    lockedTabsCount, totalLocksCount, lockedTabsSection, lockedTabsList, unlockAllBtn
   };
 
   // Check for missing elements
@@ -373,6 +380,8 @@ function initializeMainUI() {
         console.log("Security Status:", { isActive: isExtensionActive, hasPassword: hasExistingPassword });
       }
       updateSecureUI();
+      loadStatistics();
+      loadLockedTabs();
     });
   } else {
     console.error("Chrome storage not available");
@@ -641,6 +650,178 @@ function initializeMainUI() {
       console.log(`SECURITY: Password ${action} successfully`);
     });
   }
+
+  // Load and display statistics
+  function loadStatistics() {
+    chrome.runtime.sendMessage({ action: "getStatistics" }, (response) => {
+      if (response && response.statistics) {
+        totalLocksCount.textContent = response.statistics.totalLocks || 0;
+      }
+    });
+  }
+
+  // Load and display locked tabs
+  function loadLockedTabs() {
+    chrome.runtime.sendMessage({ action: "getLockedTabs" }, (response) => {
+      if (response && response.lockedTabs) {
+        const tabs = response.lockedTabs;
+        lockedTabsCount.textContent = tabs.length;
+
+        if (tabs.length === 0) {
+          lockedTabsSection.style.display = "none";
+        } else {
+          lockedTabsSection.style.display = "block";
+          renderLockedTabs(tabs);
+        }
+      }
+    });
+  }
+
+  // Render locked tabs list
+  function renderLockedTabs(tabs) {
+    lockedTabsList.innerHTML = "";
+
+    tabs.forEach(tab => {
+      const tabItem = document.createElement("div");
+      tabItem.style.cssText = `
+        background: white;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      `;
+
+      const tabInfo = document.createElement("div");
+      tabInfo.style.cssText = "flex: 1; overflow: hidden; margin-right: 8px;";
+
+      const tabTitle = document.createElement("div");
+      tabTitle.textContent = tab.title || "Untitled Tab";
+      tabTitle.style.cssText = `
+        font-size: 13px;
+        font-weight: 600;
+        color: #2c3e50;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+      `;
+
+      const tabUrl = document.createElement("div");
+      tabUrl.textContent = tab.url || "";
+      tabUrl.style.cssText = `
+        font-size: 11px;
+        color: #6c757d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      `;
+
+      tabInfo.appendChild(tabTitle);
+      tabInfo.appendChild(tabUrl);
+
+      const unlockBtn = document.createElement("button");
+      unlockBtn.textContent = "Unlock";
+      unlockBtn.style.cssText = `
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      `;
+
+      unlockBtn.addEventListener("click", () => {
+        chrome.runtime.sendMessage({
+          action: "unlock",
+          tabId: tab.id
+        }, () => {
+          showNotification("Tab unlocked successfully!", "success");
+          loadLockedTabs();
+          loadStatistics();
+        });
+      });
+
+      tabItem.appendChild(tabInfo);
+      tabItem.appendChild(unlockBtn);
+      lockedTabsList.appendChild(tabItem);
+    });
+  }
+
+  // Lock multiple tabs button
+  if (lockMultipleTabsBtn) {
+    lockMultipleTabsBtn.addEventListener("click", () => {
+      try {
+        if (!isExtensionActive) {
+          showNotification("Please activate the extension first!", "warning");
+          return;
+        }
+
+        chrome.storage.local.get("lockPassword", (data) => {
+          if (!data.lockPassword) {
+            showNotification("Please set a master password first!", "warning");
+            return;
+          }
+
+          // Get all tabs in current window
+          chrome.tabs.query({ currentWindow: true }, (tabs) => {
+            // Filter out system pages
+            const lockableTabs = tabs.filter(tab =>
+              !tab.url.startsWith("chrome://") &&
+              !tab.url.startsWith("chrome-extension://")
+            );
+
+            if (lockableTabs.length === 0) {
+              showNotification("No lockable tabs found!", "warning");
+              return;
+            }
+
+            // Show confirmation dialog
+            const count = lockableTabs.length;
+            if (confirm(`Lock ${count} tab${count !== 1 ? 's' : ''}?`)) {
+              const tabIds = lockableTabs.map(tab => tab.id);
+              chrome.runtime.sendMessage({
+                action: "lockMultiple",
+                tabIds: tabIds
+              });
+              showNotification(`Locking ${count} tab${count !== 1 ? 's' : ''}...`, "info");
+              setTimeout(() => {
+                loadLockedTabs();
+                loadStatistics();
+              }, 1000);
+            }
+          });
+        });
+      } catch (error) {
+        console.error("Error locking multiple tabs:", error);
+        showNotification("Error locking tabs", "error");
+      }
+    });
+  }
+
+  // Unlock all tabs button
+  if (unlockAllBtn) {
+    unlockAllBtn.addEventListener("click", () => {
+      if (confirm("Unlock all locked tabs?")) {
+        chrome.runtime.sendMessage({ action: "unlockAll" }, () => {
+          showNotification("All tabs unlocked!", "success");
+          loadLockedTabs();
+          loadStatistics();
+        });
+      }
+    });
+  }
+
+  // Refresh locked tabs list periodically
+  setInterval(() => {
+    loadLockedTabs();
+    loadStatistics();
+  }, 2000);
 
   console.log("SECURE extension initialization completed!");
 }

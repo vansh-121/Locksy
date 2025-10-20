@@ -119,6 +119,22 @@ chrome.storage.local.get("extensionActive", (data) => {
       unlockBtn.innerHTML = "Unlocked Successfully!";
       unlockBtn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
 
+      // Notify background script that tab is unlocked
+      chrome.runtime.sendMessage({
+        action: "unlock",
+        tabId: chrome.runtime.id
+      });
+
+      // Get current tab ID
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          chrome.runtime.sendMessage({
+            action: "unlock",
+            tabId: tabs[0].id
+          });
+        }
+      });
+
       setTimeout(() => {
         overlay.style.opacity = "0";
         overlay.style.transform = "scale(0.9)";

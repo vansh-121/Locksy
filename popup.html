@@ -362,6 +362,39 @@
 
       <div class="button-group">
         <button id="lockTab" class="btn-warning">🔒 Lock Current Tab</button>
+        <button id="lockMultipleTabs" class="btn-warning">🔒 Lock Multiple Tabs</button>
+      </div>
+
+      <!-- Statistics Dashboard -->
+      <div id="statisticsSection" style="margin-top: 24px;">
+        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 16px; border-radius: 12px; border: 1px solid #90caf9;">
+          <h3 style="font-size: 16px; font-weight: 700; color: #1976d2; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            📊 Statistics Dashboard
+          </h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <div style="font-size: 24px; font-weight: 700; color: #1976d2;" id="lockedTabsCount">0</div>
+              <div style="font-size: 11px; color: #6c757d; font-weight: 600; margin-top: 4px;">Locked Tabs</div>
+            </div>
+            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <div style="font-size: 24px; font-weight: 700; color: #28a745;" id="totalLocksCount">0</div>
+              <div style="font-size: 11px; color: #6c757d; font-weight: 600; margin-top: 4px;">Total Locks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currently Locked Tabs List -->
+      <div id="lockedTabsSection" style="margin-top: 16px; display: none;">
+        <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%); padding: 16px; border-radius: 12px; border: 1px solid #ffc107;">
+          <h3 style="font-size: 14px; font-weight: 700; color: #856404; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <span>🔒 Currently Locked Tabs</span>
+            <button id="unlockAllBtn" style="background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">Unlock All</button>
+          </h3>
+          <div id="lockedTabsList" style="max-height: 200px; overflow-y: auto;">
+            <!-- Locked tabs will be inserted here -->
+          </div>
+        </div>
       </div>
 
       <div
