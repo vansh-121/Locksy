@@ -1,5 +1,4 @@
 // SECURE Popup Script - VERSION 4.0 - ULTIMATE SECURITY WITH EXTENSION ACCESS CONTROL
-console.log("Popup script loaded - VERSION 4.0 - ULTIMATE SECURITY IMPLEMENTATION");
 
 // State management
 let isExtensionActive = false;
@@ -18,7 +17,6 @@ const SESSION_TIMEOUT = 600000; // 10 minutes
 // Wait for DOM to be ready - use only one event listener to avoid duplicate initialization
 if (document.readyState === 'loading') {
   document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM content loaded, starting initialization...");
     if (!initialized) {
       initialized = true;
       setTimeout(initializeExtension, 50);
@@ -26,7 +24,6 @@ if (document.readyState === 'loading') {
   });
 } else {
   // DOM is already loaded
-  console.log("DOM already loaded, starting initialization...");
   if (!initialized) {
     initialized = true;
     setTimeout(initializeExtension, 50);
@@ -35,11 +32,8 @@ if (document.readyState === 'loading') {
 
 function initializeExtension() {
   try {
-    console.log("Starting ULTIMATE SECURE extension initialization...");
-
     // Check if document is ready
     if (!document || !document.getElementById) {
-      console.error("Document not ready");
       setTimeout(initializeExtension, 100);
       return;
     }
@@ -70,7 +64,7 @@ function initializeExtension() {
     });
 
   } catch (error) {
-    console.error("Critical error during secure initialization:", error);
+    // Critical error during initialization
   }
 }
 
@@ -173,9 +167,10 @@ function showAuthenticationScreen() {
     authButton.textContent = 'Verifying...';
     authButton.disabled = true;
 
-    chrome.storage.local.get(['lockPassword'], (data) => {
-      setTimeout(() => { // Add delay for better UX
-        if (data.lockPassword === password) {
+    chrome.storage.local.get(['lockPassword'], async (data) => {
+      setTimeout(async () => {
+        const isMatch = await verifyPassword(password, data.lockPassword);
+        if (isMatch) {
           // Authentication successful
           isAuthenticated = true;
           resetFailedAttempts();
@@ -354,28 +349,20 @@ function initializeMainUI() {
   }
 
   if (missingElements.length > 0) {
-    console.error("Missing required elements:", missingElements);
     return;
-  }
-
-  console.log("All security elements found successfully!");
-
-  // Load extension state and check for existing password
+  }  // Load extension state and check for existing password
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.local.get(["extensionActive", "lockPassword"], (data) => {
       if (chrome.runtime.lastError) {
-        console.error("Storage error:", chrome.runtime.lastError);
         isExtensionActive = true;
         hasExistingPassword = false;
       } else {
         isExtensionActive = data.extensionActive !== false;
         hasExistingPassword = !!data.lockPassword;
-        console.log("Security Status:", { isActive: isExtensionActive, hasPassword: hasExistingPassword });
       }
       updateSecureUI();
     });
   } else {
-    console.error("Chrome storage not available");
     isExtensionActive = true;
     hasExistingPassword = false;
     updateSecureUI();
@@ -412,7 +399,7 @@ function initializeMainUI() {
         chrome.storage.local.set({ extensionActive: isExtensionActive });
       }
     } catch (error) {
-      console.error("Error updating secure UI:", error);
+      // Error updating UI
     }
   }
 
@@ -425,8 +412,6 @@ function initializeMainUI() {
       passwordInput.placeholder = "Enter new master password";
       setPasswordBtn.textContent = "Change Password";
       setPasswordBtn.className = "btn-warning";
-
-      console.log("SECURITY: Existing password detected - requiring current password verification");
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";
@@ -434,8 +419,6 @@ function initializeMainUI() {
       passwordInput.placeholder = "Set Your Master Password";
       setPasswordBtn.textContent = "Set Password";
       setPasswordBtn.className = "btn-primary";
-
-      console.log("SECURITY: No existing password - first time setup mode");
     }
   }
 
@@ -489,9 +472,7 @@ function initializeMainUI() {
 
         const status = isExtensionActive ? "activated" : "deactivated";
         showNotification(`Extension ${status} successfully!`, "success");
-        console.log(`SECURITY: Extension ${status}`);
       } catch (error) {
-        console.error("Error toggling extension:", error);
         showNotification("Error toggling extension", "error");
       }
     });
@@ -551,7 +532,6 @@ function initializeMainUI() {
           });
         });
       } catch (error) {
-        console.error("Error locking tab:", error);
         showNotification("Error locking tab", "error");
       }
     });
@@ -589,14 +569,12 @@ function initializeMainUI() {
         }
 
         // Verify current password
-        chrome.storage.local.get("lockPassword", (data) => {
-          if (data.lockPassword !== currentPassword) {
+        chrome.storage.local.get("lockPassword", async (data) => {
+          const isMatch = await verifyPassword(currentPassword, data.lockPassword);
+          if (!isMatch) {
             showNotification("Current password is incorrect!", "error");
             currentPasswordInput.value = "";
             currentPasswordInput.focus();
-
-            // Security log
-            console.warn("SECURITY: Failed password change attempt - incorrect current password");
             return;
           }
 
@@ -609,14 +587,14 @@ function initializeMainUI() {
       }
 
     } catch (error) {
-      console.error("Error in secure password change:", error);
       showNotification("Error changing password", "error");
     }
   }
 
   // SECURE PASSWORD SAVE FUNCTION
-  function saveNewPassword(password, isChange) {
-    chrome.storage.local.set({ lockPassword: password }, () => {
+  async function saveNewPassword(password, isChange) {
+    const hashedPassword = await hashPassword(password);
+    chrome.storage.local.set({ lockPassword: hashedPassword }, () => {
       if (chrome.runtime.lastError) {
         showNotification("Error saving password!", "error");
         return;
@@ -636,13 +614,8 @@ function initializeMainUI() {
 
       // Hide strength indicator
       strengthIndicator.style.display = "none";
-
-      // Security log
-      console.log(`SECURITY: Password ${action} successfully`);
     });
   }
-
-  console.log("SECURE extension initialization completed!");
 }
 
 function showNotification(message, type = "info") {
@@ -694,7 +667,6 @@ function showNotification(message, type = "info") {
       }, 300);
     }, 3000);
   } catch (error) {
-    console.error("Error showing notification:", error);
     alert(message); // Fallback to alert
   }
 }

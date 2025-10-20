@@ -89,7 +89,6 @@ function lockTab(tabId) {
           priority: 1,
         });
       }).catch((error) => {
-        console.error("Failed to execute content script:", error);
         chrome.notifications.create({
           type: "basic",
           iconUrl: "icon.png",
@@ -131,7 +130,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         lockTab(tabId);
       }, 5);
     }
-    
+
     // Additional check for any URL changes
     if (changeInfo.url) {
       setTimeout(() => {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Secure Tab Extension",
-  "version": "6.1",
+  "version": "6.1.0",
   "description": "Optimized secure tab protection with unbypassable lock overlay, page blur, and efficient multi-layer defense against inspect element bypass. Zero lag performance.",
   "permissions": [
     "storage",
@@ -29,5 +29,16 @@
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "crypto-utils.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
 }
