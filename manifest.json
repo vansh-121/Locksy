@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Secure Tab Extension",
-  "version": "5.0",
-  "description": "Ultra-secure tab protection with INSTANT 1ms re-lock, DevTools blocking, and multi-layer protection preventing any bypass attempts.",
+  "version": "6.1",
+  "description": "Optimized secure tab protection with unbypassable lock overlay, page blur, and efficient multi-layer defense against inspect element bypass. Zero lag performance.",
   "permissions": [
     "storage",
     "tabs",

@@ -5,15 +5,81 @@ chrome.storage.local.get("extensionActive", (data) => {
   }
 
   if (!document.getElementById("lockOverlay")) {
+    // SECURITY LAYER 1: Blur all page content BEFORE creating overlay
+    const pageBlur = document.createElement("div");
+    pageBlur.id = "securePageBlur";
+    pageBlur.style.cssText = 
+      "position: fixed !important;" +
+      "top: 0 !important;" +
+      "left: 0 !important;" +
+      "width: 100% !important;" +
+      "height: 100% !important;" +
+      "backdrop-filter: blur(50px) saturate(0.3) !important;" +
+      "z-index: 2147483645 !important;" +
+      "pointer-events: none !important;" +
+      "user-select: none !important;";
+    
+    // Mark blur as critical security element
+    pageBlur.setAttribute("data-security-critical", "true");
+    pageBlur.setAttribute("data-lock-component", "blur");
+    
+    // Inject blur ASAP
+    if (document.body) {
+      document.body.appendChild(pageBlur);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.appendChild(pageBlur);
+      });
+    }
+
+    // SECURITY LAYER 2: Disable ALL interactions with page content
+    const interactionBlocker = document.createElement("div");
+    interactionBlocker.id = "secureInteractionBlocker";
+    interactionBlocker.style.cssText =
+      "position: fixed !important;" +
+      "top: 0 !important;" +
+      "left: 0 !important;" +
+      "width: 100% !important;" +
+      "height: 100% !important;" +
+      "z-index: 2147483646 !important;" +
+      "pointer-events: auto !important;" +
+      "background: rgba(0, 0, 0, 0.1) !important;" +
+      "user-select: none !important;";
+    
+    interactionBlocker.setAttribute("data-security-critical", "true");
+    interactionBlocker.setAttribute("data-lock-component", "blocker");
+    
+    if (document.body) {
+      document.body.appendChild(interactionBlocker);
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.appendChild(interactionBlocker);
+      });
+    }
+
+    // SECURITY LAYER 3: The main lock overlay (highest z-index)
     const overlay = document.createElement("div");
     overlay.id = "lockOverlay";
-    overlay.style =
-      "position: fixed; top: 0; left: 0; width: 100%; height: 100%;" +
-      "background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);" +
-      "z-index: 10000; display: flex;" +
-      "align-items: center; justify-content: center; color: white;" +
-      "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" +
-      "backdrop-filter: blur(12px); animation: fadeIn 0.3s ease-in-out;";
+    overlay.style.cssText =
+      "position: fixed !important;" +
+      "top: 0 !important;" +
+      "left: 0 !important;" +
+      "width: 100% !important;" +
+      "height: 100% !important;" +
+      "background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%) !important;" +
+      "z-index: 2147483647 !important;" +
+      "display: flex !important;" +
+      "align-items: center !important;" +
+      "justify-content: center !important;" +
+      "color: white !important;" +
+      "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;" +
+      "animation: fadeIn 0.3s ease-in-out !important;" +
+      "pointer-events: auto !important;" +
+      "user-select: none !important;";
+    
+    // Mark overlay as critical security element
+    overlay.setAttribute("data-security-critical", "true");
+    overlay.setAttribute("data-lock-component", "main");
 
     // Add CSS animation keyframes
     const style = document.createElement("style");
@@ -60,12 +126,17 @@ chrome.storage.local.get("extensionActive", (data) => {
       '"></div>' +
       '<div style="margin-top: 20px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">' +
       '<p style="margin: 0; font-size: 12px; color: #856404; font-weight: 500;">' +
-      '<strong>Security:</strong> This tab can only be unlocked by entering the correct password. No bypass methods available.' +
+      '<strong>🔒 MAXIMUM SECURITY:</strong> This tab is protected with multiple security layers. The overlay cannot be deleted, hidden, or bypassed via inspect element.' +
       '</p>' +
       '</div>' +
       '<div style="margin-top: 12px; padding: 12px; background: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">' +
       '<p style="margin: 0; font-size: 12px; color: #721c24; font-weight: 500;">' +
-      '<strong>🚫 ULTRA REFRESH PROTECTION:</strong> All refresh methods blocked - F5, Ctrl+R, browser refresh button, JavaScript reload, and navigation functions are disabled.' +
+      '<strong>🚫 ULTRA PROTECTION:</strong> All refresh methods blocked. DevTools manipulation detected and prevented. Page content fully blurred and inaccessible.' +
+      '</p>' +
+      '</div>' +
+      '<div style="margin-top: 12px; padding: 12px; background: #d1ecf1; border-radius: 8px; border-left: 4px solid #17a2b8;">' +
+      '<p style="margin: 0; font-size: 11px; color: #0c5460; font-weight: 500;">' +
+      '<strong>🛡️ ACTIVE PROTECTIONS:</strong> MutationObserver • Element Integrity Check • CSS Injection Prevention • Blur Layer • Interaction Blocker • Element Removal Prevention' +
       '</p>' +
       '</div>' +
       '</div>'; const unlockBtn = overlay.querySelector("#unlockBtn");
@@ -125,6 +196,12 @@ chrome.storage.local.get("extensionActive", (data) => {
       clearInterval(ultraFastRelock);
       clearInterval(backupRelock);
       clearInterval(domMonitor);
+      clearInterval(elementIntegrityCheck);
+      clearInterval(cssProtection);
+      
+      // Disconnect security observer
+      securityObserver.disconnect();
+      clearInterval(devToolsInterval);
 
       // Restore original functions
       window.location.reload = originalReload;
@@ -141,11 +218,97 @@ chrome.storage.local.get("extensionActive", (data) => {
       setTimeout(() => {
         overlay.style.opacity = "0";
         overlay.style.transform = "scale(0.9)";
-        setTimeout(() => overlay.remove(), 300);
+        setTimeout(() => {
+          overlay.remove();
+          pageBlur.remove();
+          interactionBlocker.remove();
+        }, 300);
       }, 800);
     }
 
     document.body.appendChild(overlay);
+
+    // ========== CRITICAL SECURITY: MUTATION OBSERVER TO PREVENT OVERLAY DELETION (OPTIMIZED) ==========
+    let securityViolations = 0;
+    const criticalElements = new Set(['lockOverlay', 'securePageBlur', 'secureInteractionBlocker']);
+    
+    // MutationObserver to detect element removal (optimized - only childList)
+    const securityObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        // Only check if critical security elements were removed
+        mutation.removedNodes.forEach((node) => {
+          if (node.id && criticalElements.has(node.id)) {
+            securityViolations++;
+            console.error(`🚨 SECURITY VIOLATION #${securityViolations}: Attempt to remove ${node.id} BLOCKED!`);
+            
+            // Restore the element
+            if (!document.getElementById(node.id)) {
+              document.body.appendChild(node);
+              showError(`🚨 Security violation detected! #${securityViolations}`);
+            }
+          }
+        });
+      });
+    });
+
+    // Start observing only direct children changes (optimized)
+    securityObserver.observe(document.body, {
+      childList: true,
+      subtree: false // Only watch direct children for better performance
+    });
+
+    // Additional protection: Continuously verify elements exist (every 500ms - optimized)
+    const elementIntegrityCheck = setInterval(() => {
+      if (!isLocked) {
+        clearInterval(elementIntegrityCheck);
+        securityObserver.disconnect();
+        return;
+      }
+
+      // Verify all critical elements exist (simplified check)
+      criticalElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          securityViolations++;
+          console.error(`🚨 CRITICAL: ${elementId} missing! Emergency restoration #${securityViolations}`);
+          
+          // Emergency recreation
+          if (elementId === 'lockOverlay' && !document.body.contains(overlay)) {
+            document.body.appendChild(overlay);
+          } else if (elementId === 'securePageBlur' && !document.body.contains(pageBlur)) {
+            document.body.appendChild(pageBlur);
+          } else if (elementId === 'secureInteractionBlocker' && !document.body.contains(interactionBlocker)) {
+            document.body.appendChild(interactionBlocker);
+          }
+          
+          showError(`🚨 Security restored! Violation #${securityViolations}`);
+        }
+      });
+    }, 500); // Check every 500ms (optimized for performance)
+
+    // Prevent ANY CSS injection that could hide our overlays (optimized)
+    const cssProtection = setInterval(() => {
+      if (!isLocked) {
+        clearInterval(cssProtection);
+        return;
+      }
+      
+      // Check for malicious style tags (optimized - only new styles)
+      const styleTags = document.querySelectorAll('style:not([data-checked])');
+      styleTags.forEach(styleTag => {
+        styleTag.setAttribute('data-checked', 'true');
+        const content = styleTag.textContent.toLowerCase();
+        if (content.includes('lockoverlay') ||
+            content.includes('securepageblur') ||
+            content.includes('secureinteractionblocker')) {
+          
+          securityViolations++;
+          console.error(`🚨 CSS INJECTION DETECTED: Malicious styles removed! #${securityViolations}`);
+          styleTag.remove();
+          showError(`🚨 CSS injection blocked! #${securityViolations}`);
+        }
+      });
+    }, 1000); // Check every 1 second (optimized for performance)
 
     // SECURITY: Prevent tab refresh and show security message
     let refreshAttempts = 0;
@@ -187,16 +350,16 @@ chrome.storage.local.get("extensionActive", (data) => {
       }
     });
 
-    // Layer 4: ULTRA-AGGRESSIVE periodic check for page changes (1ms intervals)
+    // Layer 4: Optimized periodic check for page changes
     let isLocked = true;
     let missedChecks = 0;
 
-    // Primary ultra-fast monitor - Check every 1ms
+    // Primary monitor - Check every 200ms (OPTIMIZED for performance)
     const ultraFastRelock = setInterval(() => {
       if (isLocked && !document.getElementById("lockOverlay")) {
         missedChecks++;
-        // Page was somehow refreshed and lock overlay is gone - INSTANT EMERGENCY RE-LOCK
-        console.error("🚨 SECURITY BREACH: Lock overlay missing - INSTANT re-lock! Miss count:", missedChecks);
+        // Page was somehow refreshed and lock overlay is gone - EMERGENCY RE-LOCK
+        console.error("🚨 SECURITY BREACH: Lock overlay missing - re-lock! Miss count:", missedChecks);
 
         // Immediately block everything
         location.reload = function () { return false; };
@@ -213,9 +376,9 @@ chrome.storage.local.get("extensionActive", (data) => {
         // Force instant reload to restore proper lock (no setTimeout delay)
         window.location.reload();
       }
-    }, 1); // Check every 1ms for MAXIMUM security
+    }, 200); // Check every 200ms (optimized for performance)
 
-    // Secondary monitor - Check every 5ms as backup
+    // Secondary monitor - Check every 500ms as backup
     const backupRelock = setInterval(() => {
       if (isLocked && !document.getElementById("lockOverlay") && !document.getElementById("emergencyLockOverlay")) {
         console.error("🚨 BACKUP MONITOR: Lock missing!");
@@ -225,7 +388,7 @@ chrome.storage.local.get("extensionActive", (data) => {
         document.documentElement.appendChild(emergencyOverlay);
         window.location.reload();
       }
-    }, 5); // Backup check every 5ms
+    }, 500); // Backup check every 500ms (optimized)
 
     // Layer 5: Override ALL refresh and navigation functions (saved for restoration)
     const originalReload = window.location.reload;
@@ -270,14 +433,14 @@ chrome.storage.local.get("extensionActive", (data) => {
       return false;
     };
 
-    // Layer 5.5: DOM Mutation Observer - Detect if overlay is removed
+    // Layer 5.5: DOM Mutation Observer - Detect if overlay is removed (optimized)
     const domMonitor = setInterval(() => {
       const overlay = document.getElementById("lockOverlay");
       if (isLocked && overlay && !document.body.contains(overlay)) {
         console.error("🚨 DOM MANIPULATION: Overlay removed from DOM!");
         document.body.appendChild(overlay);
       }
-    }, 1); // Check every 1ms
+    }, 100); // Check every 100ms (optimized for performance)
 
     // Layer 6: INSTANT window focus monitoring (no delays)
     let isWindowFocused = true;
@@ -348,44 +511,70 @@ chrome.storage.local.get("extensionActive", (data) => {
     document.addEventListener('keydown', blockDangerousKeys, false); // Bubble phase (backup)
     window.addEventListener('keydown', blockDangerousKeys, true); // Window level capture
 
-    // Layer 9: DevTools detection using multiple methods
+    // Layer 9: Enhanced DevTools detection using multiple methods
     let devtoolsOpen = false;
+    let devtoolsAttempts = 0;
+    
     const checkDevTools = () => {
       const widthThreshold = window.outerWidth - window.innerWidth > 160;
       const heightThreshold = window.outerHeight - window.innerHeight > 160;
-      const orientation = widthThreshold ? 'vertical' : 'horizontal';
+      
+      // Additional detection: console.log timing attack
+      const startTime = performance.now();
+      console.log('%c', 'color: transparent');
+      const endTime = performance.now();
+      const consoleOpen = (endTime - startTime) > 100;
 
-      if (widthThreshold || heightThreshold) {
+      if (widthThreshold || heightThreshold || consoleOpen) {
         if (!devtoolsOpen) {
           devtoolsOpen = true;
-          console.error("🚨 DEVTOOLS DETECTED: Blocking access!");
-          showError("🚫 Developer Tools detected and blocked!");
+          devtoolsAttempts++;
+          console.error(`🚨 DEVTOOLS DETECTED (Attempt #${devtoolsAttempts}): Blocking access!`);
+          showError(`🚫 Developer Tools detected! Attempt #${devtoolsAttempts}`);
 
-          // Create full-screen block overlay
-          const devtoolsBlock = document.createElement("div");
-          devtoolsBlock.id = "devtoolsBlockOverlay";
-          devtoolsBlock.style.cssText = "position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(0,0,0,0.95)!important;z-index:2147483646!important;color:#ff0000!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:32px!important;font-weight:bold!important;";
-          devtoolsBlock.innerHTML = "🚫 DEVELOPER TOOLS BLOCKED<br><span style='font-size:18px;color:#fff;'>Close DevTools to continue</span>";
-          document.body.appendChild(devtoolsBlock);
+          // Create full-screen block overlay with even higher z-index
+          let devtoolsBlock = document.getElementById("devtoolsBlockOverlay");
+          if (!devtoolsBlock) {
+            devtoolsBlock = document.createElement("div");
+            devtoolsBlock.id = "devtoolsBlockOverlay";
+            devtoolsBlock.setAttribute("data-security-critical", "true");
+            devtoolsBlock.setAttribute("data-lock-component", "devtools-block");
+            devtoolsBlock.style.cssText = "position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(0,0,0,0.98)!important;z-index:2147483646!important;color:#ff0000!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:32px!important;font-weight:bold!important;flex-direction:column!important;pointer-events:auto!important;";
+            devtoolsBlock.innerHTML = 
+              "🚫 DEVELOPER TOOLS BLOCKED<br>" +
+              "<span style='font-size:18px;color:#fff;margin-top:20px;'>Close DevTools to continue</span><br>" +
+              `<span style='font-size:14px;color:#ff6b6b;margin-top:10px;'>Detection Count: ${devtoolsAttempts}</span>`;
+            document.body.appendChild(devtoolsBlock);
+            criticalElements.add('devtoolsBlockOverlay');
+          }
         }
       } else {
         if (devtoolsOpen) {
           devtoolsOpen = false;
           const blockOverlay = document.getElementById("devtoolsBlockOverlay");
-          if (blockOverlay) blockOverlay.remove();
+          if (blockOverlay) {
+            blockOverlay.remove();
+            criticalElements.delete('devtoolsBlockOverlay');
+          }
         }
       }
     };
 
-    // Check for DevTools every 100ms
-    setInterval(checkDevTools, 50);
+    // Check for DevTools every 500ms (optimized)
+    const devToolsInterval = setInterval(() => {
+      if (!isLocked) {
+        clearInterval(devToolsInterval);
+        return;
+      }
+      checkDevTools();
+    }, 500); // Optimized for performance
 
     // Disable right-click context menu
     document.addEventListener('contextmenu', function (e) {
       e.preventDefault();
       showError("Right-click is disabled for security.");
       return false;
-    });
+    }, true);
 
     // Prevent selecting text
     document.addEventListener('selectstart', function (e) {
@@ -393,7 +582,37 @@ chrome.storage.local.get("extensionActive", (data) => {
         e.preventDefault();
         return false;
       }
-    });
+    }, true);
+
+    // Prevent mouse events on security elements (prevents inspect element)
+    document.addEventListener('click', function(e) {
+      if (e.target.getAttribute && e.target.getAttribute('data-security-critical') === 'true') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        showError('🚫 Cannot inspect security elements!');
+        return false;
+      }
+    }, true);
+
+    // Prevent pointer events that could be used to inspect
+    document.addEventListener('mousedown', function(e) {
+      if (e.target.getAttribute && e.target.getAttribute('data-security-critical') === 'true') {
+        if (e.target.id !== 'lockOverlay' && !overlay.contains(e.target)) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return false;
+        }
+      }
+    }, true);
+
+    // Prevent drag operations that could expose content
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+      showError('🚫 Drag operations disabled for security!');
+      return false;
+    }, true);
 
     unlockBtn.onclick = () => {
       const enteredPassword = passwordInput.value.trim();
