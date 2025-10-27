@@ -1,11 +1,37 @@
-# 🔒 Secure Tab Extension
+<div align="center">
+  <img src="icon.png" alt="Locksy Logo" width="128" height="128">
+  
+  # 🔒 Locksy
+  
+  ### Military-Grade Tab Protection for Chrome
+  
+  [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chrome.google.com/webstore)
+  [![Version](https://img.shields.io/badge/version-1.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+  [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  
+  **A modern Chrome extension that provides military-grade tab protection with advanced security features.**
+  
+  [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
+  
+</div>
 
-A modern Chrome extension that provides military-grade tab protection with advanced security features.
+---
 
 ## 🆕 Recent Improvements
 
-### Version 6.1.0 - PRODUCTION READY (October 20, 2025)
-- 🔐 **SHA-256 Password Hashing**: Passwords now securely hashed (breaking change - see MIGRATION_GUIDE.md)
+### Version 1.0.0 - PRODUCTION READY (October 27, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  
+</div>
+
+- 🔐 **SHA-256 Password Hashing**: Passwords now securely hashed (breaking change)
 - ⚡ **Performance Optimized**: 70-80% reduction in CPU usage
 - 🧹 **Production Ready**: All debug logs removed
 - 📜 **Privacy Policy**: Comprehensive GDPR/CCPA compliant privacy policy
@@ -87,6 +113,17 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 
 ## ✨ Features
 
+<div align="center">
+
+| 🔐 Security | 🎯 Functionality | ⚡ Performance | 🛡️ Privacy |
+|------------|------------------|---------------|-----------|
+| SHA-256 Encryption | One-Click Locking | 70% CPU Reduction | 100% Offline |
+| Brute Force Protection | Password-Only Unlock | Lightweight | No Tracking |
+| No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
+| Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
+
+</div>
+
 ### 🎯 Core Functionality
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
@@ -106,7 +143,39 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - **Tab Validation**: Cannot lock Chrome system pages
 - **Secure Overlay**: Full-screen lock with blur effects
 
-## � How to Use
+---
+
+## 📥 Installation
+
+### 🌐 From Chrome Web Store (Coming Soon)
+```
+🔗 Chrome Web Store listing will be available soon!
+```
+
+### 💻 Manual Installation (Developer Mode)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/vansh-121/Secure-Tab-Extension.git
+   cd Secure-Tab-Extension
+   ```
+
+2. **Open Chrome Extensions**
+   - Navigate to `chrome://extensions/`
+   - Enable **Developer mode** (toggle in top-right)
+
+3. **Load the extension**
+   - Click **"Load unpacked"**
+   - Select the `Secure-Tab-Extension` folder
+   - Locksy icon will appear in your toolbar! 🎉
+
+4. **Pin the extension** (Optional)
+   - Click the puzzle piece icon in Chrome toolbar
+   - Pin Locksy for quick access
+
+---
+
+## 🚀 How to Use
 
 ### 🚀 First Time Setup
 1. **Activate Extension**: Click the toggle switch to activate the extension
@@ -188,13 +257,43 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - System pages (chrome://) cannot be locked for security reasons
 - Your password is stored securely in Chrome's local storage
 
-## � Security Notes
+## 📚 Documentation
 
-- Passwords are stored locally using Chrome's secure storage API
-- No data is transmitted to external servers
-- The extension works entirely offline
-- OAuth authentication has been removed for simplicity and security
+- **[PRIVACY.md](PRIVACY.md)** - Comprehensive privacy policy (GDPR/CCPA compliant)
+- **Security Notes** - See above for detailed security information
+- **Version History** - Check commit history for all changes
 
 ---
 
-**Made with ❤️ for secure browsing**
+<div align="center">
+
+## 🌟 Support Locksy
+
+If you find Locksy useful, please consider:
+
+[![Star on GitHub](https://img.shields.io/github/stars/vansh-121/Secure-Tab-Extension?style=social)](https://github.com/vansh-121/Secure-Tab-Extension)
+[![Follow](https://img.shields.io/github/followers/vansh-121?style=social&label=Follow)](https://github.com/vansh-121)
+[![Issues](https://img.shields.io/github/issues/vansh-121/Secure-Tab-Extension?style=flat-square)](https://github.com/vansh-121/Secure-Tab-Extension/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/vansh-121/Secure-Tab-Extension?style=flat-square)](https://github.com/vansh-121/Secure-Tab-Extension/pulls)
+
+---
+
+### 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+### 🔒 Security is not a feature, it's a necessity.
+
+<img src="icon.png" alt="Locksy Logo" width="80" height="80">
+
+**Locksy** - Your Tabs, Your Password, Your Privacy.
+
+[Report Bug](https://github.com/vansh-121/Secure-Tab-Extension/issues) • [Request Feature](https://github.com/vansh-121/Secure-Tab-Extension/issues) • [Privacy Policy](PRIVACY.md)
+
+---
+
+**Made with ❤️ for Privacy & Security** | © 2025 Locksy
+
+</div>

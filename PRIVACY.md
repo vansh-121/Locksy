@@ -1,4 +1,4 @@
-# Privacy Policy for Secure Tab Extension
+# Privacy Policy for Locksy
 
 **Last Updated:** October 20, 2025  
 **Version:** 6.1.0
@@ -7,7 +7,7 @@
 
 ## Overview
 
-Secure Tab Extension ("the Extension") is committed to protecting your privacy. This privacy policy explains how the Extension handles your data and what information is collected, stored, and processed.
+Locksy ("the Extension") is committed to protecting your privacy. This privacy policy explains how the Extension handles your data and what information is collected, stored, and processed.
 
 ---
 
@@ -15,7 +15,7 @@ Secure Tab Extension ("the Extension") is committed to protecting your privacy. 
 
 ### What Data We Collect
 
-The Secure Tab Extension collects and stores the following data **locally on your device only**:
+Locksy collects and stores the following data **locally on your device only**:
 
 1. **Master Password (Hashed)**
    - Your master password is hashed using SHA-256 cryptographic hashing
@@ -170,7 +170,7 @@ You can delete all data stored by the Extension at any time:
 
 **Option 2: Clear Extension Data**
 1. Go to `chrome://extensions/`
-2. Find "Secure Tab Extension"
+2. Find "Locksy"
 3. Click "Details"
 4. Scroll to "Site settings" or use "Clear storage"
 5. Confirm deletion
@@ -311,7 +311,7 @@ We built this Extension to **protect your privacy**, not invade it.
 
 ---
 
-**By installing and using Secure Tab Extension, you acknowledge that you have read and understood this Privacy Policy.**
+**By installing and using Locksy, you acknowledge that you have read and understood this Privacy Policy.**
 
 ---
 

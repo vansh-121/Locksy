@@ -17,7 +17,7 @@ chrome.runtime.onInstalled.addListener(() => {
       chrome.notifications.create({
         type: "basic",
         iconUrl: "icon.png",
-        title: "Secure Tab Extension",
+        title: "Locksy",
         message: "Welcome! Please set a password to start using the extension.",
         priority: 2,
       });

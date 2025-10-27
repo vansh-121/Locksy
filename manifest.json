@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Secure Tab Extension",
-  "version": "6.1.0",
-  "description": "Optimized secure tab protection with unbypassable lock overlay, page blur, and efficient multi-layer defense against inspect element bypass. Zero lag performance.",
+  "name": "Locksy",
+  "version": "1.0.0",
+  "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 encryption.",
   "permissions": [
     "storage",
     "tabs",

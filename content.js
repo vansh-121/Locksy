@@ -4,6 +4,31 @@ chrome.storage.local.get("extensionActive", (data) => {
     return; // Don't show lock overlay if extension is inactive
   }
 
+  // Password verification function (using Web Crypto API for SHA-256)
+  async function hashPassword(password) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex;
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      throw new Error('Failed to hash password');
+    }
+  }
+
+  async function verifyPassword(password, storedHash) {
+    try {
+      const hash = await hashPassword(password);
+      return hash === storedHash;
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      return false;
+    }
+  }
+
   if (!document.getElementById("lockOverlay")) {
     // SECURITY LAYER 1: Blur all page content BEFORE creating overlay
     const pageBlur = document.createElement("div");
@@ -124,21 +149,6 @@ chrome.storage.local.get("extensionActive", (data) => {
       '<div id="errorMessage" style="' +
       'color: #dc3545; font-size: 14px; margin-top: 15px; opacity: 0; transition: opacity 0.3s ease;' +
       '"></div>' +
-      '<div style="margin-top: 20px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">' +
-      '<p style="margin: 0; font-size: 12px; color: #856404; font-weight: 500;">' +
-      '<strong>🔒 MAXIMUM SECURITY:</strong> This tab is protected with multiple security layers. The overlay cannot be deleted, hidden, or bypassed via inspect element.' +
-      '</p>' +
-      '</div>' +
-      '<div style="margin-top: 12px; padding: 12px; background: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">' +
-      '<p style="margin: 0; font-size: 12px; color: #721c24; font-weight: 500;">' +
-      '<strong>🚫 ULTRA PROTECTION:</strong> All refresh methods blocked. DevTools manipulation detected and prevented. Page content fully blurred and inaccessible.' +
-      '</p>' +
-      '</div>' +
-      '<div style="margin-top: 12px; padding: 12px; background: #d1ecf1; border-radius: 8px; border-left: 4px solid #17a2b8;">' +
-      '<p style="margin: 0; font-size: 11px; color: #0c5460; font-weight: 500;">' +
-      '<strong>🛡️ ACTIVE PROTECTIONS:</strong> MutationObserver • Element Integrity Check • CSS Injection Prevention • Blur Layer • Interaction Blocker • Element Removal Prevention' +
-      '</p>' +
-      '</div>' +
       '</div>'; const unlockBtn = overlay.querySelector("#unlockBtn");
     const passwordInput = overlay.querySelector("#unlockPassword");
     const errorMessage = overlay.querySelector("#errorMessage");

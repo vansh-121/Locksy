@@ -1,4 +1,4 @@
-// Secure Password Hashing Utilities for Secure Tab Extension
+// Secure Password Hashing Utilities for Locksy
 // Uses Web Crypto API for SHA-256 hashing
 
 /**

@@ -75,7 +75,7 @@ function showLockoutScreen(remainingTime) {
 
   container.innerHTML = `
     <div style="text-align: center; padding: 40px 20px;">
-      <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
+      <img src="icon.png" alt="Locksy" style="width: 64px; height: 64px; margin-bottom: 20px; border-radius: 12px;">
       <h2 style="color: #dc3545; margin-bottom: 16px;">Extension Locked</h2>
       <p style="color: #6c757d; margin-bottom: 20px;">
         Too many failed authentication attempts.<br>
@@ -125,14 +125,8 @@ function showAuthenticationScreen() {
       <div id="authError" style="color: #dc3545; font-size: 14px; margin-top: 10px; opacity: 0; 
                                  transition: opacity 0.3s ease;"></div>
       
-      <div style="margin-top: 20px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
-        <p style="margin: 0; font-size: 12px; color: #155724; font-weight: 500;">
-          <strong>🛡️ Security:</strong> Failed attempts: ${failedAttempts}/${MAX_FAILED_ATTEMPTS}
-        </p>
-      </div>
-      
       ${failedAttempts > 0 ? `
-      <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+      <div style="margin-top: 16px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
         <p style="margin: 0; font-size: 12px; color: #856404; font-weight: 500;">
           <strong>⚠️ Warning:</strong> ${MAX_FAILED_ATTEMPTS - failedAttempts} attempt${MAX_FAILED_ATTEMPTS - failedAttempts !== 1 ? 's' : ''} remaining before lockout
         </p>
@@ -243,8 +237,8 @@ function initializeMainUI() {
   container.innerHTML = `
     <div class="header">
       <h2>
-        <span class="header-icon">SECURE</span>
-        Secure Tab Extension
+        <img src="icon.png" alt="Locksy" class="header-icon" style="width: 28px; height: 28px; border-radius: 6px;">
+        Locksy
       </h2>
       <div id="statusIndicator" class="status-indicator status-inactive">
         <span id="statusDot">•</span>
@@ -296,24 +290,11 @@ function initializeMainUI() {
         <button id="lockTab" class="btn-warning">🔒 Lock Current Tab</button>
       </div>
 
-      <div style="margin-top: 16px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
-        <p style="margin: 0; font-size: 12px; color: #856404; font-weight: 500;">
-          <strong>🛡️ Security:</strong> To change password, you must enter your current password first. No bypass methods available.
-        </p>
-      </div>
-
       <div style="margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
         <p style="margin: 0; font-size: 12px; color: #155724; font-weight: 500;">
           <strong>💡 Tip:</strong> Locked tabs can only be unlocked by entering the correct password on the tab itself.
         </p>
       </div>
-
-      ${isAuthenticated ? `
-      <div style="margin-top: 12px; padding: 12px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;">
-        <p style="margin: 0; font-size: 12px; color: #155724; font-weight: 500;">
-          <strong>🔓 Authenticated:</strong> Session expires in ${Math.round(SESSION_TIMEOUT / 60000)} minutes for security.
-        </p>
-      </div>` : ''}
     </div>
   `;
 
