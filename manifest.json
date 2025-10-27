@@ -5,14 +5,9 @@
   "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 encryption.",
   "permissions": [
     "storage",
-    "tabs",
     "scripting",
     "activeTab",
-    "notifications",
-    "webNavigation"
-  ],
-  "host_permissions": [
-    "<all_urls>"
+    "notifications"
   ],
   "background": {
     "service_worker": "background.js"
@@ -29,16 +24,5 @@
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "crypto-utils.js"
-      ],
-      "run_at": "document_start"
-    }
-  ]
+  }
 }
