@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Locksy",
-  "version": "1.0.0",
+  "name": "Locksy - Tab Locker & Password Protection",
+  "version": "1.0.2",
   "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 encryption.",
+  "incognito": "spanning",
   "permissions": [
     "storage",
     "tabs",

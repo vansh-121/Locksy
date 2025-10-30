@@ -340,18 +340,11 @@ chrome.storage.local.get("extensionActive", (data) => {
       return message;
     });
 
-    // Layer 2: unload event (final attempt to prevent refresh)
-    window.addEventListener('unload', function (e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      return false;
-    });
-
-    // Layer 3: pagehide event
+    // Layer 2: pagehide event (for back/forward cache)
     window.addEventListener('pagehide', function (e) {
-      e.preventDefault();
       if (e.persisted) {
-        e.returnValue = "🔒 Tab locked - refresh blocked";
+        // Store lock state in sessionStorage for quick restoration
+        sessionStorage.setItem('tabWasLocked', 'true');
       }
     });
 
