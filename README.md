@@ -5,8 +5,8 @@
   
   ### Military-Grade Tab Protection for Chrome
   
-  [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chrome.google.com/webstore)
-  [![Version](https://img.shields.io/badge/version-1.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
+  [![Version](https://img.shields.io/badge/version-1.0.1-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   
@@ -20,7 +20,7 @@
 
 ## 🆕 Recent Improvements
 
-### Version 1.0.0 - PRODUCTION READY (October 27, 2025)
+### Version 1.0.1 - INCOGNITO MODE SUPPORT (October 31, 2025)
 
 <div align="center">
   
@@ -28,24 +28,26 @@
   ![Security](https://img.shields.io/badge/encryption-SHA--256-critical?style=flat-square)
   ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
   ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![Incognito](https://img.shields.io/badge/incognito-supported-blueviolet?style=flat-square)
   
 </div>
 
-- 🔐 **SHA-256 Password Hashing**: Passwords now securely hashed (breaking change)
-- ⚡ **Performance Optimized**: 70-80% reduction in CPU usage
-- 🧹 **Production Ready**: All debug logs removed
-- 📜 **Privacy Policy**: Comprehensive GDPR/CCPA compliant privacy policy
-- 🔢 **Proper Versioning**: Now follows semantic versioning standards
-- 🚀 **Chrome Web Store Ready**: All requirements met for publication
+- 🕶️ **Incognito Mode Support**: Now works seamlessly in private browsing windows
+- 🔐 **Unified Password Protection**: Same password protects tabs in both normal and incognito modes
+- 🐛 **Bug Fix**: Removed deprecated unload event to eliminate console errors
+- ⚡ **Improved Stability**: Enhanced pagehide event handling for better lock persistence
 
-### Version 4.0 - ULTIMATE SECURITY IMPLEMENTATION
-- 🔐 **Extension Access Authentication**: Extension popup now requires master password entry
-- ⏰ **Session Management**: 10-minute timeout for authenticated sessions  
-- 🚫 **Brute Force Protection**: 3-attempt limit with 5-minute lockout
-- 🛡️ **Enhanced Password Security**: Current password required for all changes
-- 📊 **Visual Security Indicators**: Clear feedback on security status
-- 🚨 **Attack Prevention**: Eliminated all known bypass methods
-- 🧹 **Clean Architecture**: Single popup file, no more redundant code
+### Version 1.0.0 - INITIAL RELEASE (October 27, 2025)
+
+- 🔐 **SHA-256 Password Hashing**: Military-grade encryption for password security
+- 🔒 **Secure Tab Locking**: Lock any tab with password-protected overlay
+- ⚡ **Performance Optimized**: Lightweight and efficient background operation
+- 🎨 **Modern UI**: Clean, gradient-based interface with smooth animations
+- � **Privacy First**: 100% local storage, no external data transmission
+- �️ **Multi-Layer Security**: 8+ security layers to prevent bypass attempts
+- 🚀 **Production Ready**: GDPR/CCPA compliant with comprehensive privacy policy
+
+---
 
 ## 🔒 Security Notes
 
@@ -76,41 +78,6 @@
 
 ---
 
-## ⚠️ Important: Upgrading from Older Versions
-
-If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.md**:
-- Password format has changed (security improvement)
-- You'll need to reset your password after upgrading
-- This is a one-time requirement for better security
-
----
-
-## 📚 Documentation
-
-- **UPDATE_SUMMARY.md** - Complete list of changes in version 6.1.0
-- **PRIVACY.md** - Comprehensive privacy policy (GDPR/CCPA compliant)
-- **MIGRATION_GUIDE.md** - Guide for upgrading from older versions
-
----
-
-### Version 1.2
-- ✅ Fixed authentication system (removed OAuth dependency)
-- ✅ Enhanced UI with modern gradients and animations
-- ✅ Added password strength indicator
-- ✅ Improved toggle switch design
-- ✅ Better error handling and user feedback
-- ✅ Responsive design optimizations
-- ✅ Added helpful tips and instructions
-
-### Critical Security Fixes
-- 🚨 **RESOLVED**: Anyone could change master password without verification
-- 🛡️ **SECURED**: Password changes require current password verification
-- 🔒 **PROTECTED**: No administrative bypass methods available
-- 🐛 Fixed "authentication failed" error
-- 🔧 Improved extension activation logic
-- 🐛 Enhanced password validation
-- 🐛 Better state managementsecurity with password protection, activation toggle, and an elegant UI for secure browsing.
-
 ## ✨ Features
 
 <div align="center">
@@ -129,6 +96,7 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - **Tab Locking**: Secure any tab with a password-protected overlay
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
+- **Incognito Mode**: Works seamlessly in private browsing windows (requires manual activation)
 
 ### 🎨 Enhanced UI
 - **Modern Design**: Clean, gradient-based interface with smooth animations
@@ -147,10 +115,15 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 
 ## 📥 Installation
 
-### 🌐 From Chrome Web Store (Coming Soon)
-```
-🔗 Chrome Web Store listing will be available soon!
-```
+### 🌐 From Chrome Web Store (Recommended)
+
+**[Install Locksy from Chrome Web Store](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)** 🚀
+
+1. Click the link above or visit the Chrome Web Store
+2. Click **"Add to Chrome"**
+3. Confirm by clicking **"Add extension"**
+4. Locksy icon will appear in your toolbar! 🎉
+5. Pin it for quick access (click puzzle icon → pin Locksy)
 
 ### 💻 Manual Installation (Developer Mode)
 
@@ -172,6 +145,13 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 4. **Pin the extension** (Optional)
    - Click the puzzle piece icon in Chrome toolbar
    - Pin Locksy for quick access
+
+5. **Enable Incognito Mode** (Optional)
+   - Go to `chrome://extensions/`
+   - Find Locksy extension
+   - Click **"Details"**
+   - Scroll down and toggle **"Allow in Incognito"**
+   - Now you can lock tabs in private browsing windows too! 🕶️
 
 ---
 
@@ -201,6 +181,13 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - **Current Password Verification**: Password changes require current password
 - **Visual Security Indicators**: Clear UI showing security requirements
 - **Failed Attempt Logging**: Security events tracked in console
+- **Incognito Protection**: Same security level in private browsing mode
+
+### 🕶️ Incognito Mode
+1. **Enable Permission**: Go to `chrome://extensions/` → Locksy → Details → "Allow in Incognito"
+2. **Unified Password**: Same master password works for both normal and incognito tabs
+3. **Seamless Experience**: Lock and unlock tabs in private windows just like regular tabs
+4. **Privacy First**: No separate configuration needed - it just works!
 
 ## 🎮 User Interface
 
@@ -225,6 +212,8 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - `scripting`: For injecting the lock overlay
 - `activeTab`: For current tab access
 - `notifications`: For user feedback
+- `webNavigation`: For monitoring navigation events
+- `incognito` (spanning): For optional incognito mode support
 
 ### Files Structure
 - `manifest.json`: Extension configuration
@@ -233,22 +222,7 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - `background.js`: Service worker for tab management
 - `icon.png`: Extension icon
 
-## 🆕 Recent Improvements
-
-### Version 1.2
-- ✅ Fixed authentication system (removed OAuth dependency)
-- ✅ Enhanced UI with modern gradients and animations
-- ✅ Added password strength indicator
-- ✅ Improved toggle switch design
-- ✅ Better error handling and user feedback
-- ✅ Responsive design optimizations
-- ✅ Added helpful tips and instructions
-
-### Bug Fixes
-- 🐛 Fixed "authentication failed" error
-- � Improved extension activation logic
-- 🐛 Enhanced password validation
-- 🐛 Better state management
+---
 
 ## 💡 Tips
 
@@ -256,6 +230,8 @@ If you're upgrading from a version before 6.1.0, please read **MIGRATION_GUIDE.m
 - The extension only works when activated via the toggle
 - System pages (chrome://) cannot be locked for security reasons
 - Your password is stored securely in Chrome's local storage
+- Enable incognito mode in extension settings to protect private browsing tabs
+- Same password works across both normal and incognito windows for convenience
 
 ## 📚 Documentation
 
