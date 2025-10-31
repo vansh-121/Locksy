@@ -12,6 +12,8 @@ All notable changes to Locksy will be documented in this file.
 - **Clear Error Messages**: Specific explanations for why a tab cannot be locked
 - **Success Confirmations**: Visual confirmation when tabs are locked successfully
 - **Multi-Browser Detection**: Enhanced detection for Chrome, Edge, and other Chromium-based browsers
+- **Service Worker Startup Handler**: Added `chrome.runtime.onStartup` listener to restore locked tabs when service worker wakes up
+- **Auto-Recovery System**: Implemented lazy loading of locked tabs state in all event listeners
 
 #### Improved
 - **popup.js**: Enhanced lock button handler with pre-validation and response handling
@@ -25,14 +27,22 @@ All notable changes to Locksy will be documented in this file.
   - Enhanced error handling with descriptive messages
   - Better communication between background script and popup
   - Added support for async response handling
+  - Implemented `restoreLockedTabs()` function to reload state from storage
+  - Added `chrome.runtime.onStartup` listener for service worker restart handling
+  - Added safety checks in all event listeners to restore state if service worker just woke up
+  - Prevents loss of locked tabs protection due to service worker lifecycle
 
 #### Fixed
 - **Silent Failure Issue**: Previously, clicking "Lock This Tab" on system pages did nothing, making users think the extension was broken. Now, users see clear feedback explaining why the tab cannot be locked.
+- **Service Worker Sleep Bug**: Critical fix for locked tabs losing protection after Chrome's service worker goes to sleep (~30 seconds of inactivity). The extension now properly restores locked tabs from storage when the service worker wakes up, ensuring continuous protection even after periods of inactivity.
 
 #### Technical Details
 - **Restricted Tab Types**: System pages (`chrome://`, `edge://`, `about:`), extension pages, Chrome Web Store, and empty tabs cannot be locked due to browser security restrictions
 - **User Feedback**: All lock attempts now provide immediate visual feedback via the notification system
 - **Error Handling**: Comprehensive error messages guide users when tabs cannot be locked
+- **Service Worker Lifecycle**: Chrome MV3 service workers sleep after ~30 seconds of inactivity. The extension now handles this by persisting locked tabs to `chrome.storage.local` and restoring them on service worker wake-up
+- **State Persistence**: `lockedTabs` Set is now automatically restored from storage when service worker starts or when any event listener fires after sleep
+- **Console Logging**: Added debug logs to track service worker restarts and locked tabs restoration
 
 ---
 
@@ -87,9 +97,13 @@ All notable changes to Locksy will be documented in this file.
 ## Release Notes
 
 ### Version 1.0.3 Highlights
-This version significantly improves user experience by providing clear feedback when attempting to lock tabs. Previously, users were confused when nothing happened on system pages. Now, they receive immediate, actionable feedback explaining exactly what's happening and why certain tabs cannot be locked.
+This version significantly improves user experience and fixes a critical service worker bug:
 
-**User Impact**: Eliminates confusion and improves trust in the extension's functionality.
+**UX Improvements**: Users now receive clear, immediate feedback when attempting to lock tabs. Previously, when users tried to lock system pages, nothing would happen, causing confusion. Now they get specific error messages explaining why certain tabs cannot be locked.
+
+**Critical Bug Fix**: Fixed a major issue where locked tabs would lose protection after Chrome's service worker went to sleep (~30 seconds of inactivity). The extension now properly restores and maintains lock protection even after service worker restarts, ensuring continuous security for locked tabs.
+
+**User Impact**: Eliminates confusion, improves trust in the extension's functionality, and ensures locked tabs remain protected at all times.
 
 ### Version 1.0.2 Highlights
 Added full support for incognito mode, allowing users to protect their private browsing sessions with the same level of security as regular tabs.

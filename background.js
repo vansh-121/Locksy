@@ -1,6 +1,27 @@
 let lockedTabs = new Set(); // Track locked tabs by tab ID
 
-chrome.runtime.onInstalled.addListener(() => {
+// CRITICAL: Restore locked tabs from storage when service worker wakes up
+async function restoreLockedTabs() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["lockedTabIds"], (data) => {
+      if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
+        lockedTabs = new Set(data.lockedTabIds);
+        console.log(`[Locksy] Service worker restored ${lockedTabs.size} locked tabs`);
+      }
+      resolve();
+    });
+  });
+}
+
+// CRITICAL: Initialize on service worker startup (including after it goes to sleep)
+chrome.runtime.onStartup.addListener(async () => {
+  console.log("[Locksy] Service worker started, restoring locked tabs...");
+  await restoreLockedTabs();
+});
+
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log("[Locksy] Extension installed/updated, initializing...");
+  
   // Initialize extension state
   chrome.storage.local.get(["extensionActive", "lockPassword", "lockedTabIds"], (data) => {
     // Set default active state if not set
@@ -11,6 +32,7 @@ chrome.runtime.onInstalled.addListener(() => {
     // Restore locked tabs from storage (in case of extension restart)
     if (data.lockedTabIds) {
       lockedTabs = new Set(data.lockedTabIds);
+      console.log(`[Locksy] Restored ${lockedTabs.size} locked tabs on install`);
     }
 
     if (!data.lockPassword) {
@@ -140,7 +162,12 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 // Handle tab updates (including refreshes) - ULTRA-FAST re-lock
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  // Ensure lockedTabs is loaded (in case service worker just woke up)
+  if (lockedTabs.size === 0) {
+    await restoreLockedTabs();
+  }
+  
   // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
   if (lockedTabs.has(tabId)) {
     if (changeInfo.status === 'loading') {
@@ -165,7 +192,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 // Handle navigation events to maintain locks - INSTANT re-lock
-chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  // Ensure lockedTabs is loaded (in case service worker just woke up)
+  if (lockedTabs.size === 0) {
+    await restoreLockedTabs();
+  }
+  
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Tab is locked and user is trying to navigate - re-lock INSTANTLY
     setTimeout(() => {
@@ -175,7 +207,12 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
 });
 
 // Additional security: Monitor for any committed navigation
-chrome.webNavigation.onCommitted.addListener((details) => {
+chrome.webNavigation.onCommitted.addListener(async (details) => {
+  // Ensure lockedTabs is loaded (in case service worker just woke up)
+  if (lockedTabs.size === 0) {
+    await restoreLockedTabs();
+  }
+  
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Re-lock immediately on committed navigation
     setTimeout(() => {
@@ -185,7 +222,12 @@ chrome.webNavigation.onCommitted.addListener((details) => {
 });
 
 // Additional security: Monitor for DOM content loaded
-chrome.webNavigation.onDOMContentLoaded.addListener((details) => {
+chrome.webNavigation.onDOMContentLoaded.addListener(async (details) => {
+  // Ensure lockedTabs is loaded (in case service worker just woke up)
+  if (lockedTabs.size === 0) {
+    await restoreLockedTabs();
+  }
+  
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Re-lock when DOM is ready
     setTimeout(() => {
@@ -195,7 +237,12 @@ chrome.webNavigation.onDOMContentLoaded.addListener((details) => {
 });
 
 // Additional security: Monitor for completed navigation
-chrome.webNavigation.onCompleted.addListener((details) => {
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  // Ensure lockedTabs is loaded (in case service worker just woke up)
+  if (lockedTabs.size === 0) {
+    await restoreLockedTabs();
+  }
+  
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Final re-lock when page is fully loaded
     setTimeout(() => {

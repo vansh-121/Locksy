@@ -38,8 +38,10 @@
 - ✅ **Success Confirmation**: Clear success messages when tabs are locked successfully
 - 🔧 **Improved Communication**: Better response handling between popup and background scripts
 - 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, and other Chromium browsers
+- 🔄 **Service Worker Persistence**: Fixed critical issue where locked tabs would lose protection after service worker goes to sleep
+- 🛡️ **Auto-Recovery**: Service worker now automatically restores locked tabs state when it wakes up
 
-**What Changed:** Previously, when users tried to lock system pages (chrome://, edge://, about:, etc.), nothing would happen, making them think the extension was broken. Now, users get clear, immediate feedback explaining exactly why a tab cannot be locked.
+**What Changed:** Previously, when users tried to lock system pages (chrome://, edge://, about:, etc.), nothing would happen, making them think the extension was broken. Now, users get clear, immediate feedback explaining exactly why a tab cannot be locked. Additionally, fixed a critical bug where locked tabs would lose protection after Chrome's service worker went to sleep (~30 seconds of inactivity). The extension now properly restores and maintains lock protection even after service worker restarts.
 
 ### Version 1.0.2 - INCOGNITO MODE SUPPORT (October 31, 2025)
 
