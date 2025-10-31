@@ -6,7 +6,7 @@
   ### Military-Grade Tab Protection for Chrome
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
-  [![Version](https://img.shields.io/badge/version-1.0.1-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.3-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   
@@ -20,7 +20,7 @@
 
 ## 🆕 Recent Improvements
 
-### Version 1.0.1 - INCOGNITO MODE SUPPORT (October 31, 2025)
+### Version 1.0.3 - IMPROVED USER FEEDBACK (October 31, 2025)
 
 <div align="center">
   
@@ -28,6 +28,23 @@
   ![Security](https://img.shields.io/badge/encryption-SHA--256-critical?style=flat-square)
   ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
   ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![UX Enhanced](https://img.shields.io/badge/UX-enhanced-brightgreen?style=flat-square)
+  
+</div>
+
+- 🎯 **Enhanced User Feedback**: Instant visual feedback when attempting to lock restricted tabs
+- ⚠️ **Clear Error Messages**: Users now see specific reasons why a tab cannot be locked
+- 🚫 **Pre-validation**: Tab URLs are checked before lock attempts to prevent confusion
+- ✅ **Success Confirmation**: Clear success messages when tabs are locked successfully
+- 🔧 **Improved Communication**: Better response handling between popup and background scripts
+- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, and other Chromium browsers
+
+**What Changed:** Previously, when users tried to lock system pages (chrome://, edge://, about:, etc.), nothing would happen, making them think the extension was broken. Now, users get clear, immediate feedback explaining exactly why a tab cannot be locked.
+
+### Version 1.0.2 - INCOGNITO MODE SUPPORT (October 31, 2025)
+
+<div align="center">
+  
   ![Incognito](https://img.shields.io/badge/incognito-supported-blueviolet?style=flat-square)
   
 </div>
@@ -176,6 +193,17 @@
 3. **Secure Overlay**: Tab will be covered with password-protected overlay
 4. **Unlock Only**: Enter correct password on the locked tab to unlock
 
+#### ⚠️ Tabs That Cannot Be Locked
+For security and technical reasons, the following types of tabs **cannot be locked**:
+- 🚫 **Browser Settings Pages**: `chrome://`, `edge://`, `about:` pages
+- 🚫 **Extension Pages**: Chrome Web Store, extension management pages
+- 🚫 **New Tab Pages**: Empty tabs or browser new tab pages
+- 🚫 **System Pages**: Browser internal pages and configurations
+
+**Why?** Browsers restrict extensions from modifying these pages for security. When you try to lock these tabs, you'll now see a clear message explaining why it cannot be locked.
+
+✅ **Lockable Tabs**: All regular websites (http://, https://) including news sites, social media, banking, email, etc.
+
 ### 🛡️ Security Features
 - **No Bypass Methods**: Only correct password unlocks tabs
 - **Current Password Verification**: Password changes require current password
@@ -226,12 +254,15 @@
 
 ## 💡 Tips
 
-- Use a strong password with letters, numbers, and symbols
-- The extension only works when activated via the toggle
-- System pages (chrome://) cannot be locked for security reasons
-- Your password is stored securely in Chrome's local storage
-- Enable incognito mode in extension settings to protect private browsing tabs
-- Same password works across both normal and incognito windows for convenience
+- ✅ Use a strong password with letters, numbers, and symbols
+- ✅ The extension only works when activated via the toggle
+- ⚠️ System pages (`chrome://`, `edge://`, `about:`) cannot be locked for security reasons
+- ⚠️ Extension pages and new tab pages cannot be locked due to browser restrictions
+- 💡 If you see an error when locking, check if the tab is a system or extension page
+- 🔒 Your password is stored securely in Chrome's local storage
+- 🕶️ Enable incognito mode in extension settings to protect private browsing tabs
+- 🔑 Same password works across both normal and incognito windows for convenience
+- ✅ All regular websites (http://, https://) can be locked successfully
 
 ## 📚 Documentation
 

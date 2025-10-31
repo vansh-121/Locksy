@@ -504,11 +504,34 @@ function initializeMainUI() {
           // Get current tab and lock it
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs[0]) {
+              const currentTab = tabs[0];
+              
+              // Check if the tab can be locked BEFORE sending message
+              if (currentTab.url && 
+                  (currentTab.url.startsWith("chrome://") || 
+                   currentTab.url.startsWith("edge://") ||
+                   currentTab.url.startsWith("about:") ||
+                   currentTab.url.startsWith("chrome-extension://") ||
+                   currentTab.url.startsWith("extension://") ||
+                   currentTab.url === "")) {
+                showNotification("⚠️ Cannot lock this tab! System pages, browser settings, and extension pages cannot be locked for security reasons.", "error");
+                return;
+              }
+
+              // Tab can be locked - send message
               chrome.runtime.sendMessage({
                 action: "lock",
-                tabId: tabs[0].id
+                tabId: currentTab.id
+              }, (response) => {
+                // Handle response from background script
+                if (chrome.runtime.lastError) {
+                  showNotification("❌ Failed to lock tab: " + chrome.runtime.lastError.message, "error");
+                } else if (response && response.success) {
+                  showNotification("✅ Tab locked successfully!", "success");
+                } else if (response && response.error) {
+                  showNotification("❌ " + response.error, "error");
+                }
               });
-              showNotification("Locking current tab...", "info");
             }
           });
         });

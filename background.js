@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Check if extension is active before processing any actions
   chrome.storage.local.get("extensionActive", (data) => {
     if (!data.extensionActive) {
@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         message: "Please activate the extension first to use this feature.",
         priority: 2,
       });
+      sendResponse({ success: false, error: "Extension is not active" });
       return;
     }
 
@@ -45,7 +46,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
           lockedTabs.add(message.tabId);
           // Persist locked tabs to storage
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
-          lockTab(message.tabId);
+          lockTab(message.tabId, sendResponse);
         } else {
           chrome.notifications.create({
             type: "basic",
@@ -54,8 +55,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             message: "Please set a password first in the extension popup.",
             priority: 2,
           });
+          sendResponse({ success: false, error: "Password not set" });
         }
       });
+      return true; // Keep the message channel open for async response
     } else if (message.action === "unlock") {
       // Unlock tab after successful password verification
       const tabId = sender.tab.id;
@@ -69,14 +72,24 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         message: "Tab has been unlocked successfully.",
         priority: 1,
       });
+      sendResponse({ success: true });
     }
     // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
   });
+  
+  return true; // Keep the message channel open for async response
 });
 
-function lockTab(tabId) {
+function lockTab(tabId, sendResponse) {
   chrome.tabs.get(tabId, (tab) => {
-    if (tab && tab.url && !tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://")) {
+    if (chrome.runtime.lastError) {
+      if (sendResponse) {
+        sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
+      }
+      return;
+    }
+
+    if (tab && tab.url && !tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://") && !tab.url.startsWith("edge://") && !tab.url.startsWith("about:")) {
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["content.js"],
@@ -88,23 +101,34 @@ function lockTab(tabId) {
           message: `Tab "${tab.title}" has been locked successfully.`,
           priority: 1,
         });
+        if (sendResponse) {
+          sendResponse({ success: true, message: "Tab locked successfully" });
+        }
       }).catch((error) => {
+        const errorMsg = "Unable to lock this tab. It may be a restricted page or system page.";
         chrome.notifications.create({
           type: "basic",
           iconUrl: "icon.png",
           title: "Lock Failed",
-          message: "Unable to lock this tab. It may be a system page.",
+          message: errorMsg,
           priority: 2,
         });
+        if (sendResponse) {
+          sendResponse({ success: false, error: errorMsg });
+        }
       });
     } else {
+      const errorMsg = "Cannot lock this tab. System pages, browser settings, and extension pages cannot be locked for security reasons.";
       chrome.notifications.create({
         type: "basic",
         iconUrl: "icon.png",
         title: "Cannot Lock Tab",
-        message: "System pages and extension pages cannot be locked.",
+        message: errorMsg,
         priority: 2,
       });
+      if (sendResponse) {
+        sendResponse({ success: false, error: errorMsg });
+      }
     }
   });
 }
