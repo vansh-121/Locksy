@@ -19,9 +19,18 @@ chrome.runtime.onStartup.addListener(async () => {
   await restoreLockedTabs();
 });
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   console.log("[Locksy] Extension installed/updated, initializing...");
-  
+
+  // Open welcome page on first install
+  if (details.reason === 'install') {
+    chrome.tabs.create({
+      url: 'https://locksy.dev',
+      active: true
+    });
+    console.log("[Locksy] First install - opened welcome page");
+  }
+
   // Initialize extension state
   chrome.storage.local.get(["extensionActive", "lockPassword", "lockedTabIds"], (data) => {
     // Set default active state if not set
@@ -98,7 +107,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
   });
-  
+
   return true; // Keep the message channel open for async response
 });
 
@@ -167,7 +176,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (lockedTabs.size === 0) {
     await restoreLockedTabs();
   }
-  
+
   // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
   if (lockedTabs.has(tabId)) {
     if (changeInfo.status === 'loading') {
@@ -197,7 +206,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (lockedTabs.size === 0) {
     await restoreLockedTabs();
   }
-  
+
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Tab is locked and user is trying to navigate - re-lock INSTANTLY
     setTimeout(() => {
@@ -212,7 +221,7 @@ chrome.webNavigation.onCommitted.addListener(async (details) => {
   if (lockedTabs.size === 0) {
     await restoreLockedTabs();
   }
-  
+
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Re-lock immediately on committed navigation
     setTimeout(() => {
@@ -227,7 +236,7 @@ chrome.webNavigation.onDOMContentLoaded.addListener(async (details) => {
   if (lockedTabs.size === 0) {
     await restoreLockedTabs();
   }
-  
+
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Re-lock when DOM is ready
     setTimeout(() => {
@@ -242,7 +251,7 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
   if (lockedTabs.size === 0) {
     await restoreLockedTabs();
   }
-  
+
   if (details.frameId === 0 && lockedTabs.has(details.tabId)) {
     // Final re-lock when page is fully loaded
     setTimeout(() => {
