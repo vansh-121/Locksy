@@ -505,15 +505,15 @@ function initializeMainUI() {
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs[0]) {
               const currentTab = tabs[0];
-              
+
               // Check if the tab can be locked BEFORE sending message
-              if (currentTab.url && 
-                  (currentTab.url.startsWith("chrome://") || 
-                   currentTab.url.startsWith("edge://") ||
-                   currentTab.url.startsWith("about:") ||
-                   currentTab.url.startsWith("chrome-extension://") ||
-                   currentTab.url.startsWith("extension://") ||
-                   currentTab.url === "")) {
+              if (currentTab.url &&
+                (currentTab.url.startsWith("chrome://") ||
+                  currentTab.url.startsWith("edge://") ||
+                  currentTab.url.startsWith("about:") ||
+                  currentTab.url.startsWith("chrome-extension://") ||
+                  currentTab.url.startsWith("extension://") ||
+                  currentTab.url === "")) {
                 showNotification("⚠️ Cannot lock this tab! System pages, browser settings, and extension pages cannot be locked for security reasons.", "error");
                 return;
               }

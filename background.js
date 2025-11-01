@@ -114,13 +114,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function lockTab(tabId, sendResponse) {
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
+      console.error('[Locksy] Error getting tab:', chrome.runtime.lastError);
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
       return;
     }
 
-    if (tab && tab.url && !tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://") && !tab.url.startsWith("edge://") && !tab.url.startsWith("about:")) {
+    if (tab && tab.url &&
+      !tab.url.startsWith("chrome://") &&
+      !tab.url.startsWith("chrome-extension://") &&
+      !tab.url.startsWith("edge://") &&
+      !tab.url.startsWith("about:") &&
+      !tab.url.startsWith("file://")) {
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["content.js"],
@@ -136,7 +142,8 @@ function lockTab(tabId, sendResponse) {
           sendResponse({ success: true, message: "Tab locked successfully" });
         }
       }).catch((error) => {
-        const errorMsg = "Unable to lock this tab. It may be a restricted page or system page.";
+        console.error('[Locksy] Script injection error:', error);
+        const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
         chrome.notifications.create({
           type: "basic",
           iconUrl: "icon.png",
@@ -149,7 +156,7 @@ function lockTab(tabId, sendResponse) {
         }
       });
     } else {
-      const errorMsg = "Cannot lock this tab. System pages, browser settings, and extension pages cannot be locked for security reasons.";
+      const errorMsg = "Cannot lock this tab. System pages, browser settings, local files, and extension pages cannot be locked for security reasons.";
       chrome.notifications.create({
         type: "basic",
         iconUrl: "icon.png",
