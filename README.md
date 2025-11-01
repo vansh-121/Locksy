@@ -6,9 +6,9 @@
   ### Military-Grade Tab Protection for Chrome
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
-  [![Version](https://img.shields.io/badge/version-1.0.3-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.4-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
-  [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Security](https://img.shields.io/badge/security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   
   **A modern Chrome extension that provides military-grade tab protection with advanced security features.**
   
@@ -19,6 +19,39 @@
 ---
 
 ## 🆕 Recent Improvements
+
+### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 1, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![Security Enhanced](https://img.shields.io/badge/security-enhanced-brightgreen?style=flat-square)
+  
+</div>
+
+#### 🔒 **Security Enhancements**
+- 🧂 **Salted Password Hashing**: Implemented cryptographically secure salted hashing for maximum password protection
+  - Each password now uses a unique 128-bit random salt generated via `crypto.getRandomValues()`
+  - Salt stored with hash in format `salt:hash` to prevent rainbow table and precomputed hash attacks
+  - **Backward Compatible**: Existing passwords automatically migrate to new format on next use
+- 🛡️ **Enhanced Cryptographic Security**: Protects against advanced attack vectors like rainbow tables and dictionary attacks
+
+#### 🐛 **Bug Fixes**
+- 📁 **File URL Protection**: Added blocking for `file://` protocol URLs to prevent errors when locking local file tabs
+- ❌ **Error Handling**: Enhanced error messages to clearly indicate when local files cannot be locked
+- 🔍 **Console Logging**: Added detailed debug logs for troubleshooting tab access and script injection errors
+- 🔄 **Improved Stability**: Better validation for restricted URLs including local file system access
+
+#### 🔧 **Technical Improvements**
+- **crypto-utils.js**: New `generateSalt()` function for secure random salt generation
+- **Backward Compatibility**: Automatic detection and support for both salted and legacy password formats
+- **Enhanced Security**: Each password hash is now unique even for identical passwords
+- **Better Error Messages**: Clear explanations when system pages, local files, or restricted URLs cannot be locked
+
+**What Changed:** Upgraded password security from plain SHA-256 to salted SHA-256 hashing. Now each password gets a unique cryptographic salt, making the extension resistant to rainbow table attacks and ensuring even identical passwords produce different hashes. The implementation is fully backward compatible - existing users' passwords will work seamlessly. Also fixed critical bugs related to file:// URL handling.
 
 ### Version 1.0.3 - IMPROVED USER FEEDBACK (October 31, 2025)
 
@@ -71,13 +104,16 @@
 ## 🔒 Security Notes
 
 ### 🛡️ Password Security
-- **SHA-256 Hashing**: Passwords are hashed before storage using industry-standard cryptography
-- **No Plain Text Storage**: Your actual password is never stored, only the hash
+- **Salted SHA-256 Hashing**: Passwords are hashed with unique cryptographic salts before storage
+- **Rainbow Table Protection**: Each password gets a unique 128-bit random salt, preventing precomputed hash attacks
+- **No Plain Text Storage**: Your actual password is never stored, only the salted hash
+- **Cryptographically Secure**: Uses `crypto.getRandomValues()` for true random salt generation
 - **Current Password Required**: To change password, you must enter your current password first
 - **No Administrative Bypass**: No way to change password without knowing current one
 - **First-Time Setup**: Only when no password exists can you set one without verification
 - **Secure Storage**: Password hashes stored locally using Chrome's secure storage API
 - **No External Transmission**: No data sent to external servers
+- **Backward Compatible**: Automatically upgrades legacy passwords to salted format
 
 ### 🎯 Tab Locking Security
 - **Password-Only Unlock**: Tabs can ONLY be unlocked by entering correct password
@@ -88,12 +124,14 @@
 ### 🚨 What's Protected Against
 - ✅ **Unauthorized Password Changes**: Requires current password verification
 - ✅ **Brute Force Attacks**: Failed attempts logged and blocked
+- ✅ **Rainbow Table Attacks**: Salted hashing prevents precomputed hash attacks
+- ✅ **Dictionary Attacks**: Unique salts make each password hash unpredictable
 - ✅ **Administrative Bypass**: No backdoor or override methods
 - ✅ **Extension Hijacking**: Secure state management prevents tampering
 
 ---
 
-**🔐 SECURITY GUARANTEE: This extension is now truly secure against all known bypass methods and unauthorized access attempts.**
+**🔐 SECURITY GUARANTEE: This extension uses military-grade salted SHA-256 encryption and is secure against all known bypass methods, rainbow table attacks, and unauthorized access attempts.**
 
 ---
 
@@ -103,8 +141,8 @@
 
 | 🔐 Security | 🎯 Functionality | ⚡ Performance | 🛡️ Privacy |
 |------------|------------------|---------------|-----------|
-| SHA-256 Encryption | One-Click Locking | 70% CPU Reduction | 100% Offline |
-| Brute Force Protection | Password-Only Unlock | Lightweight | No Tracking |
+| Salted SHA-256 | One-Click Locking | 70% CPU Reduction | 100% Offline |
+| Rainbow Table Protection | Password-Only Unlock | Lightweight | No Tracking |
 | No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
 | Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
 
@@ -125,10 +163,12 @@
 - **Smooth Animations**: Floating icons, glowing effects, and transitions
 
 ### 🔒 Security Features
+- **Salted SHA-256 Encryption**: Military-grade password hashing with unique cryptographic salts
+- **Rainbow Table Protection**: Each password gets a 128-bit random salt for maximum security
 - **Local Storage**: Password stored locally in Chrome's secure storage
 - **Extension State**: Only works when activated by the user
-- **Tab Validation**: Cannot lock Chrome system pages
-- **Secure Overlay**: Full-screen lock with blur effects
+- **Tab Validation**: Cannot lock Chrome system pages or local files
+- **Secure Overlay**: Full-screen lock with blur effects and multi-layer protection
 
 ---
 
