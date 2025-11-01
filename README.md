@@ -3,14 +3,17 @@
   
   # 🔒 Locksy
   
-  ### Military-Grade Tab Protection for Chrome
+  ### Military-Grade Tab Protection for Chromium Browsers
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
+  [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Version](https://img.shields.io/badge/version-1.0.3-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   
-  **A modern Chrome extension that provides military-grade tab protection with advanced security features.**
+  **A modern browser extension that provides military-grade tab protection with advanced security features.**
+  
+  **Compatible with:** • Chrome • Edge • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
   
   [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
   
@@ -37,7 +40,7 @@
 - 🚫 **Pre-validation**: Tab URLs are checked before lock attempts to prevent confusion
 - ✅ **Success Confirmation**: Clear success messages when tabs are locked successfully
 - 🔧 **Improved Communication**: Better response handling between popup and background scripts
-- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, and other Chromium browsers
+- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, Brave, Opera, Vivaldi, and other Chromium browsers
 - 🔄 **Service Worker Persistence**: Fixed critical issue where locked tabs would lose protection after service worker goes to sleep
 - 🛡️ **Auto-Recovery**: Service worker now automatically restores locked tabs state when it wakes up
 
@@ -134,12 +137,23 @@
 
 ## 📥 Installation
 
-### 🌐 From Chrome Web Store (Recommended)
+### 🌐 From Official Stores (Recommended)
 
-**[Install Locksy from Chrome Web Store](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)** 🚀
+<div align="center">
 
-1. Click the link above or visit the Chrome Web Store
-2. Click **"Add to Chrome"**
+#### Chrome & Chromium Browsers
+**[Install from Chrome Web Store](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)** 🚀
+
+Works on: Chrome • Brave • Opera • Vivaldi • and more
+
+#### Microsoft Edge
+**[Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)** 🌐
+
+</div>
+
+**Installation Steps:**
+1. Click the link above for your browser
+2. Click **"Add to Chrome"** or **"Get"** (for Edge)
 3. Confirm by clicking **"Add extension"**
 4. Locksy icon will appear in your toolbar! 🎉
 5. Pin it for quick access (click puzzle icon → pin Locksy)
@@ -152,8 +166,9 @@
    cd Secure-Tab-Extension
    ```
 
-2. **Open Chrome Extensions**
-   - Navigate to `chrome://extensions/`
+2. **Open Browser Extensions**
+   - **Chrome/Brave/Opera/Vivaldi**: Navigate to `chrome://extensions/`
+   - **Edge**: Navigate to `edge://extensions/`
    - Enable **Developer mode** (toggle in top-right)
 
 3. **Load the extension**
@@ -162,14 +177,14 @@
    - Locksy icon will appear in your toolbar! 🎉
 
 4. **Pin the extension** (Optional)
-   - Click the puzzle piece icon in Chrome toolbar
+   - Click the puzzle piece icon in browser toolbar
    - Pin Locksy for quick access
 
-5. **Enable Incognito Mode** (Optional)
-   - Go to `chrome://extensions/`
+5. **Enable Incognito/Private Mode** (Optional)
+   - Go to your browser's extensions page
    - Find Locksy extension
    - Click **"Details"**
-   - Scroll down and toggle **"Allow in Incognito"**
+   - Scroll down and toggle **"Allow in Incognito"** or **"Allow in InPrivate"**
    - Now you can lock tabs in private browsing windows too! 🕶️
 
 ---
