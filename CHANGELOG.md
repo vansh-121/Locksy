@@ -2,6 +2,22 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.4] - 2025-11-01
+
+### 🐛 Bug Fixes
+
+#### Fixed
+- **File URL Protection**: Added blocking for `file://` protocol URLs to prevent errors when attempting to lock local file tabs
+- **Error Handling**: Enhanced error messages to specifically mention local files cannot be locked
+- **Console Logging**: Added debug console.error logs for better troubleshooting of tab access and script injection errors
+
+#### Technical Details
+- **Background Script**: Updated `lockTab()` function to include `file://` URL validation
+- **Error Messages**: Now clearly indicates when local files, restricted pages, or system pages cannot be locked
+- **Security Compliance**: Prevents extension errors when users attempt to lock file:// URLs, which browsers restrict for security
+
+---
+
 ## [1.0.3] - 2025-10-31
 
 ### 🎯 Enhanced User Feedback
