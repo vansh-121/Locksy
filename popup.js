@@ -86,6 +86,12 @@ function showLockoutScreen(remainingTime) {
           <strong>🛡️ Security Measure:</strong> This extension is temporarily locked to prevent brute force attacks.
         </p>
       </div>
+
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+        <button id="toggleDeveloperInfo" class="btn-developer-toggle" style="width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;">
+          👨‍💻 Developer Info
+        </button>
+      </div>
     </div>
   `;
 
@@ -93,6 +99,9 @@ function showLockoutScreen(remainingTime) {
   setTimeout(() => {
     location.reload();
   }, remainingTime);
+
+  // Initialize developer info after lockout screen is set up
+  initializeDeveloperInfo();
 }
 
 // SECURITY: Show authentication screen for existing password
@@ -295,6 +304,12 @@ function initializeMainUI() {
           <strong>💡 Tip:</strong> Locked tabs can only be unlocked by entering the correct password on the tab itself.
         </p>
       </div>
+    </div>
+
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+      <button id="toggleDeveloperInfo" class="btn-developer-toggle">
+        👨‍💻 Developer Info
+      </button>
     </div>
   `;
 
@@ -620,6 +635,9 @@ function initializeMainUI() {
       strengthIndicator.style.display = "none";
     });
   }
+
+  // Initialize developer info after main UI is set up
+  initializeDeveloperInfo();
 }
 
 function showNotification(message, type = "info") {
@@ -673,4 +691,74 @@ function showNotification(message, type = "info") {
   } catch (error) {
     alert(message); // Fallback to alert
   }
+}
+
+// Developer Information - Configuration
+const DEVELOPER_INFO = {
+  name: "Vansh Sethi",
+  github: "https://github.com/vansh-121",
+  linkedin: "https://linkedin.com/in/vansh-sethi-vs",
+  email: "vansh.sethi98760@gmail.com"
+};
+
+// Initialize developer information links and toggle
+function initializeDeveloperInfo() {
+  try {
+    const developerName = document.getElementById("developerName");
+    const githubLink = document.getElementById("githubLink");
+    const linkedinLink = document.getElementById("linkedinLink");
+    const emailLink = document.getElementById("emailLink");
+    const toggleButton = document.getElementById("toggleDeveloperInfo");
+    const developerInfoSection = document.getElementById("developerInfo");
+
+    if (developerName) {
+      developerName.textContent = DEVELOPER_INFO.name;
+    }
+
+    if (githubLink) {
+      githubLink.href = DEVELOPER_INFO.github;
+      githubLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: DEVELOPER_INFO.github });
+      });
+    }
+
+    if (linkedinLink) {
+      linkedinLink.href = DEVELOPER_INFO.linkedin;
+      linkedinLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: DEVELOPER_INFO.linkedin });
+      });
+    }
+
+    if (emailLink) {
+      emailLink.href = `mailto:${DEVELOPER_INFO.email}`;
+      emailLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: `mailto:${DEVELOPER_INFO.email}` });
+      });
+    }
+
+    // Toggle button functionality
+    if (toggleButton && developerInfoSection) {
+      toggleButton.addEventListener("click", () => {
+        if (developerInfoSection.style.display === "none") {
+          developerInfoSection.style.display = "block";
+          toggleButton.textContent = "👨‍💻 Hide Developer Info";
+        } else {
+          developerInfoSection.style.display = "none";
+          toggleButton.textContent = "👨‍💻 Developer Info";
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error initializing developer info:", error);
+  }
+}
+
+// Call this function after DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeDeveloperInfo);
+} else {
+  initializeDeveloperInfo();
 }
