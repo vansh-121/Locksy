@@ -21,6 +21,20 @@
 
 ---
 
+## 🎥 Video Demo
+
+<div align="center">
+  
+  [![Locksy Extension Demo](https://img.shields.io/badge/▶️-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  
+  **See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
+  
+  [🎬 Watch on YouTube](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  
+</div>
+
+---
+
 ## 🆕 Recent Improvements
 
 ### Version 1.0.3 - IMPROVED USER FEEDBACK (October 31, 2025)
