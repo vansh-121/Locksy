@@ -3,16 +3,34 @@
   
   # 🔒 Locksy
   
-  ### Military-Grade Tab Protection for Chrome
+  ### Military-Grade Tab Protection for Chromium Browsers
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
+  [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Version](https://img.shields.io/badge/version-1.0.4-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
-  [![Security](https://img.shields.io/badge/security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+
   
-  **A modern Chrome extension that provides military-grade tab protection with advanced security features.**
+  **A modern browser extension that provides military-grade tab protection with advanced security features.**
   
-  [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
+  **Compatible with:** • Chrome • Edge • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
+  
+  [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
+  
+</div>
+
+---
+
+## 🎥 Video Demo
+
+<div align="center">
+  
+  **See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
+  
+  [![Locksy Extension Demo](https://img.youtube.com/vi/C99yuKTqEFA/maxresdefault.jpg)](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  
+  [🎬 Watch on YouTube](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
   
 </div>
 
@@ -20,7 +38,7 @@
 
 ## 🆕 Recent Improvements
 
-### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 1, 2025)
+### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 8, 2025)
 
 <div align="center">
   
@@ -53,7 +71,7 @@
 
 **What Changed:** Upgraded password security from plain SHA-256 to salted SHA-256 hashing. Now each password gets a unique cryptographic salt, making the extension resistant to rainbow table attacks and ensuring even identical passwords produce different hashes. The implementation is fully backward compatible - existing users' passwords will work seamlessly. Also fixed critical bugs related to file:// URL handling.
 
-### Version 1.0.3 - IMPROVED USER FEEDBACK (October 31, 2025)
+### Version 1.0.3 - IMPROVED USER FEEDBACK (November 3, 2025)
 
 <div align="center">
   
@@ -70,7 +88,7 @@
 - 🚫 **Pre-validation**: Tab URLs are checked before lock attempts to prevent confusion
 - ✅ **Success Confirmation**: Clear success messages when tabs are locked successfully
 - 🔧 **Improved Communication**: Better response handling between popup and background scripts
-- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, and other Chromium browsers
+- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, Brave, Opera, Vivaldi, and other Chromium browsers
 - 🔄 **Service Worker Persistence**: Fixed critical issue where locked tabs would lose protection after service worker goes to sleep
 - 🛡️ **Auto-Recovery**: Service worker now automatically restores locked tabs state when it wakes up
 
@@ -104,16 +122,13 @@
 ## 🔒 Security Notes
 
 ### 🛡️ Password Security
-- **Salted SHA-256 Hashing**: Passwords are hashed with unique cryptographic salts before storage
-- **Rainbow Table Protection**: Each password gets a unique 128-bit random salt, preventing precomputed hash attacks
-- **No Plain Text Storage**: Your actual password is never stored, only the salted hash
-- **Cryptographically Secure**: Uses `crypto.getRandomValues()` for true random salt generation
+- **SHA-256 Hashing**: Passwords are hashed before storage using industry-standard cryptography
+- **No Plain Text Storage**: Your actual password is never stored, only the hash
 - **Current Password Required**: To change password, you must enter your current password first
 - **No Administrative Bypass**: No way to change password without knowing current one
 - **First-Time Setup**: Only when no password exists can you set one without verification
 - **Secure Storage**: Password hashes stored locally using Chrome's secure storage API
 - **No External Transmission**: No data sent to external servers
-- **Backward Compatible**: Automatically upgrades legacy passwords to salted format
 
 ### 🎯 Tab Locking Security
 - **Password-Only Unlock**: Tabs can ONLY be unlocked by entering correct password
@@ -124,14 +139,12 @@
 ### 🚨 What's Protected Against
 - ✅ **Unauthorized Password Changes**: Requires current password verification
 - ✅ **Brute Force Attacks**: Failed attempts logged and blocked
-- ✅ **Rainbow Table Attacks**: Salted hashing prevents precomputed hash attacks
-- ✅ **Dictionary Attacks**: Unique salts make each password hash unpredictable
 - ✅ **Administrative Bypass**: No backdoor or override methods
 - ✅ **Extension Hijacking**: Secure state management prevents tampering
 
 ---
 
-**🔐 SECURITY GUARANTEE: This extension uses military-grade salted SHA-256 encryption and is secure against all known bypass methods, rainbow table attacks, and unauthorized access attempts.**
+**🔐 SECURITY GUARANTEE: This extension is now truly secure against all known bypass methods and unauthorized access attempts.**
 
 ---
 
@@ -141,8 +154,8 @@
 
 | 🔐 Security | 🎯 Functionality | ⚡ Performance | 🛡️ Privacy |
 |------------|------------------|---------------|-----------|
-| Salted SHA-256 | One-Click Locking | 70% CPU Reduction | 100% Offline |
-| Rainbow Table Protection | Password-Only Unlock | Lightweight | No Tracking |
+| SHA-256 Encryption | One-Click Locking | 70% CPU Reduction | 100% Offline |
+| Brute Force Protection | Password-Only Unlock | Lightweight | No Tracking |
 | No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
 | Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
 
@@ -163,23 +176,32 @@
 - **Smooth Animations**: Floating icons, glowing effects, and transitions
 
 ### 🔒 Security Features
-- **Salted SHA-256 Encryption**: Military-grade password hashing with unique cryptographic salts
-- **Rainbow Table Protection**: Each password gets a 128-bit random salt for maximum security
 - **Local Storage**: Password stored locally in Chrome's secure storage
 - **Extension State**: Only works when activated by the user
-- **Tab Validation**: Cannot lock Chrome system pages or local files
-- **Secure Overlay**: Full-screen lock with blur effects and multi-layer protection
+- **Tab Validation**: Cannot lock Chrome system pages
+- **Secure Overlay**: Full-screen lock with blur effects
 
 ---
 
 ## 📥 Installation
 
-### 🌐 From Chrome Web Store (Recommended)
+### 🌐 From Official Stores (Recommended)
 
-**[Install Locksy from Chrome Web Store](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)** 🚀
+<div align="center">
 
-1. Click the link above or visit the Chrome Web Store
-2. Click **"Add to Chrome"**
+#### Chrome & Chromium Browsers
+**[Install from Chrome Web Store](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)** 🚀
+
+Works on: Chrome • Brave • Opera • Vivaldi • and more
+
+#### Microsoft Edge
+**[Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)** 🌐
+
+</div>
+
+**Installation Steps:**
+1. Click the link above for your browser
+2. Click **"Add to Chrome"** or **"Get"** (for Edge)
 3. Confirm by clicking **"Add extension"**
 4. Locksy icon will appear in your toolbar! 🎉
 5. Pin it for quick access (click puzzle icon → pin Locksy)
@@ -192,8 +214,9 @@
    cd Secure-Tab-Extension
    ```
 
-2. **Open Chrome Extensions**
-   - Navigate to `chrome://extensions/`
+2. **Open Browser Extensions**
+   - **Chrome/Brave/Opera/Vivaldi**: Navigate to `chrome://extensions/`
+   - **Edge**: Navigate to `edge://extensions/`
    - Enable **Developer mode** (toggle in top-right)
 
 3. **Load the extension**
@@ -202,14 +225,14 @@
    - Locksy icon will appear in your toolbar! 🎉
 
 4. **Pin the extension** (Optional)
-   - Click the puzzle piece icon in Chrome toolbar
+   - Click the puzzle piece icon in browser toolbar
    - Pin Locksy for quick access
 
-5. **Enable Incognito Mode** (Optional)
-   - Go to `chrome://extensions/`
+5. **Enable Incognito/Private Mode** (Optional)
+   - Go to your browser's extensions page
    - Find Locksy extension
    - Click **"Details"**
-   - Scroll down and toggle **"Allow in Incognito"**
+   - Scroll down and toggle **"Allow in Incognito"** or **"Allow in InPrivate"**
    - Now you can lock tabs in private browsing windows too! 🕶️
 
 ---
