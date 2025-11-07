@@ -30,16 +30,5 @@
     "16": "assets/images/icon.png",
     "48": "assets/images/icon.png",
     "128": "assets/images/icon.png"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "src/js/crypto-utils.js"
-      ],
-      "run_at": "document_start"
-    }
-  ]
+  }
 }

@@ -4,41 +4,8 @@ chrome.storage.local.get("extensionActive", (data) => {
     return; // Don't show lock overlay if extension is inactive
   }
 
-  // Password verification function (using Web Crypto API for SHA-256 with salt)
-  async function hashPassword(password, salt = null) {
-    try {
-      // If salt is provided, use it; otherwise this is for verification
-      const encoder = new TextEncoder();
-      const saltedPassword = salt ? salt + password : password;
-      const data = encoder.encode(saltedPassword);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    } catch (error) {
-      console.error('Error hashing password:', error);
-      throw new Error('Failed to hash password');
-    }
-  }
-
-  async function verifyPassword(password, storedHash) {
-    try {
-      // Check if stored hash is in new format (salt:hash) or old format (just hash)
-      if (storedHash.includes(':')) {
-        // New format with salt
-        const [salt, hash] = storedHash.split(':');
-        const newHash = await hashPassword(password, salt);
-        return `${salt}:${newHash}` === storedHash;
-      } else {
-        // Legacy format without salt (for backward compatibility)
-        const hash = await hashPassword(password);
-        return hash === storedHash;
-      }
-    } catch (error) {
-      console.error('Error verifying password:', error);
-      return false;
-    }
-  }
+  // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
+  // which is injected programmatically from background.js
 
   if (!document.getElementById("lockOverlay")) {
     // SECURITY LAYER 1: Blur all page content BEFORE creating overlay

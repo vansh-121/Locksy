@@ -127,9 +127,11 @@ function lockTab(tabId, sendResponse) {
       !tab.url.startsWith("edge://") &&
       !tab.url.startsWith("about:") &&
       !tab.url.startsWith("file://")) {
+      // Inject crypto-utils.js first, then content.js
+      // This makes crypto functions available to content.js
       chrome.scripting.executeScript({
         target: { tabId },
-        files: ["src/js/content.js"],
+        files: ["src/js/crypto-utils.js", "src/js/content.js"],
       }).then(() => {
         chrome.notifications.create({
           type: "basic",
