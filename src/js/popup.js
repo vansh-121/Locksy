@@ -75,7 +75,7 @@ function showLockoutScreen(remainingTime) {
 
   container.innerHTML = `
     <div style="text-align: center; padding: 40px 20px;">
-      <img src="icon.png" alt="Locksy" style="width: 64px; height: 64px; margin-bottom: 20px; border-radius: 12px;">
+      <img src="../../assets/images/icon.png" alt="Locksy" style="width: 64px; height: 64px; margin-bottom: 20px; border-radius: 12px;">
       <h2 style="color: #dc3545; margin-bottom: 16px;">Extension Locked</h2>
       <p style="color: #6c757d; margin-bottom: 20px;">
         Too many failed authentication attempts.<br>
@@ -246,7 +246,7 @@ function initializeMainUI() {
   container.innerHTML = `
     <div class="header">
       <h2>
-        <img src="icon.png" alt="Locksy" class="header-icon" style="width: 28px; height: 28px; border-radius: 6px;">
+        <img src="../../assets/images/icon.png" alt="Locksy" class="header-icon" style="width: 28px; height: 28px; border-radius: 6px;">
         Locksy
       </h2>
       <div id="statusIndicator" class="status-indicator status-inactive">
@@ -296,7 +296,7 @@ function initializeMainUI() {
       </div>
 
       <div class="button-group">
-        <button id="lockTab" class="btn-warning">🔒 Lock Current Tab</button>
+        <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
       </div>
 
       <div style="margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
@@ -407,7 +407,7 @@ function initializeMainUI() {
       passwordLabel.textContent = "🔄 New Password";
       passwordInput.placeholder = "Enter new master password";
       setPasswordBtn.textContent = "Change Password";
-      setPasswordBtn.className = "btn-warning";
+      setPasswordBtn.className = "btn-primary";
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";

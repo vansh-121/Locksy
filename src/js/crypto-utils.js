@@ -35,7 +35,7 @@ async function hashPassword(password, salt = null) {
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
+
         // Return salt:hash format for storage
         return `${salt}:${hashHex}`;
     } catch (error) {
@@ -56,8 +56,15 @@ async function verifyPassword(password, storedHash) {
         if (storedHash.includes(':')) {
             // New format with salt
             const [salt, hash] = storedHash.split(':');
-            const newHash = await hashPassword(password, salt);
-            return newHash === storedHash;
+            // Hash the password with the extracted salt
+            const encoder = new TextEncoder();
+            const saltedPassword = salt + password;
+            const data = encoder.encode(saltedPassword);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            // Compare just the hash part
+            return hashHex === hash;
         } else {
             // Legacy format without salt (for backward compatibility)
             const encoder = new TextEncoder();
