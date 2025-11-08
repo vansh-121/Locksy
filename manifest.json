@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Locksy - Tab Locker & Password Protection",
-  "version": "1.0.3",
-  "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 encryption.",
+  "version": "1.0.4",
+  "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 + Salt encryption.",
   "incognito": "spanning",
   "permissions": [
     "storage",
@@ -16,30 +16,19 @@
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/js/background.js"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/html/popup.html",
     "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
+      "16": "assets/images/icon.png",
+      "48": "assets/images/icon.png",
+      "128": "assets/images/icon.png"
     }
   },
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "crypto-utils.js"
-      ],
-      "run_at": "document_start"
-    }
-  ]
+    "16": "assets/images/icon.png",
+    "48": "assets/images/icon.png",
+    "128": "assets/images/icon.png"
+  }
 }

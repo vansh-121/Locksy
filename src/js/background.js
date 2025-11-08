@@ -47,7 +47,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     if (!data.lockPassword) {
       chrome.notifications.create({
         type: "basic",
-        iconUrl: "icon.png",
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Locksy",
         message: "Welcome! Please set a password to start using the extension.",
         priority: 2,
@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!data.extensionActive) {
       chrome.notifications.create({
         type: "basic",
-        iconUrl: "icon.png",
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Extension Inactive",
         message: "Please activate the extension first to use this feature.",
         priority: 2,
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         } else {
           chrome.notifications.create({
             type: "basic",
-            iconUrl: "icon.png",
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: "Password Required",
             message: "Please set a password first in the extension popup.",
             priority: 2,
@@ -98,7 +98,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
       chrome.notifications.create({
         type: "basic",
-        iconUrl: "icon.png",
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Tab Unlocked",
         message: "Tab has been unlocked successfully.",
         priority: 1,
@@ -114,20 +114,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function lockTab(tabId, sendResponse) {
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
+      console.error('[Locksy] Error getting tab:', chrome.runtime.lastError);
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
       return;
     }
 
-    if (tab && tab.url && !tab.url.startsWith("chrome://") && !tab.url.startsWith("chrome-extension://") && !tab.url.startsWith("edge://") && !tab.url.startsWith("about:")) {
+    if (tab && tab.url &&
+      !tab.url.startsWith("chrome://") &&
+      !tab.url.startsWith("chrome-extension://") &&
+      !tab.url.startsWith("edge://") &&
+      !tab.url.startsWith("about:") &&
+      !tab.url.startsWith("file://")) {
+      // Inject crypto-utils.js first, then content.js
+      // This makes crypto functions available to content.js
       chrome.scripting.executeScript({
         target: { tabId },
-        files: ["content.js"],
+        files: ["src/js/crypto-utils.js", "src/js/content.js"],
       }).then(() => {
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "icon.png",
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: "Tab Locked",
           message: `Tab "${tab.title}" has been locked successfully.`,
           priority: 1,
@@ -136,10 +144,11 @@ function lockTab(tabId, sendResponse) {
           sendResponse({ success: true, message: "Tab locked successfully" });
         }
       }).catch((error) => {
-        const errorMsg = "Unable to lock this tab. It may be a restricted page or system page.";
+        console.error('[Locksy] Script injection error:', error);
+        const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "icon.png",
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: "Lock Failed",
           message: errorMsg,
           priority: 2,
@@ -149,10 +158,10 @@ function lockTab(tabId, sendResponse) {
         }
       });
     } else {
-      const errorMsg = "Cannot lock this tab. System pages, browser settings, and extension pages cannot be locked for security reasons.";
+      const errorMsg = "Cannot lock this tab. System pages, browser settings, local files, and extension pages cannot be locked for security reasons.";
       chrome.notifications.create({
         type: "basic",
-        iconUrl: "icon.png",
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Cannot Lock Tab",
         message: errorMsg,
         priority: 2,
