@@ -358,7 +358,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 🔒 Security is not a feature, it's a necessity.
 
-<img src="icon.png" alt="Locksy Logo" width="80" height="80">
+<img src="assets/images/icon.png" alt="Locksy Logo" width="80" height="80">
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 
