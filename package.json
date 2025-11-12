@@ -1,0 +1,20 @@
+{
+  "name": "locksy-extension",
+  "version": "1.0.4",
+  "description": "Tab Locker & Password Protection Extension",
+  "scripts": {
+    "test:performance": "node tests/performance-test.js",
+    "test": "npm run test:performance"
+  },
+  "devDependencies": {
+    "puppeteer": "^21.5.0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "tab-locker",
+    "password-protection",
+    "security"
+  ],
+  "author": "Locksy Team",
+  "license": "MIT"
+}

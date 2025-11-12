@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locksy Performance Test Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .test-instruction {
+            margin-bottom: 15px;
+            color: #495057;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .result-box pre {
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        
+        .metric {
+            display: inline-block;
+            margin: 10px 15px 10px 0;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        
+        .status-good { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-bad { color: #dc3545; }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .summary h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 10px 0;
+            font-size: 16px;
+        }
+        
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Locksy Performance Test Dashboard</h1>
+        <p class="subtitle">Real-time performance testing for Chrome Web Store submission</p>
+        
+        <!-- Test 1: Memory Usage -->
+        <div class="test-section">
+            <h2>📊 Test 1: Memory Usage</h2>
+            <div class="test-instruction">
+                Press Shift+Esc in Chrome to open Task Manager, then click the button below to check extension memory.
+            </div>
+            <button class="btn" onclick="checkMemory()">Check Memory Usage</button>
+            <div id="memoryResult" class="result-box" style="display: none;">
+                <div class="metric-label">Current JS Heap Size</div>
+                <div class="metric-value" id="memoryValue">-- MB</div>
+                <pre id="memoryDetails"></pre>
+            </div>
+        </div>
+        
+        <!-- Test 2: Performance Timing -->
+        <div class="test-section">
+            <h2>⚡ Test 2: Page Load Performance</h2>
+            <div class="test-instruction">
+                This page will measure its own load time to demonstrate extension overhead.
+            </div>
+            <button class="btn" onclick="checkPerformance()">Check Performance</button>
+            <div id="perfResult" class="result-box" style="display: none;">
+                <div class="metric">
+                    <div class="metric-label">DOM Content Loaded</div>
+                    <div class="metric-value" id="domLoaded">--ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Page Load Time</div>
+                    <div class="metric-value" id="pageLoad">--ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Resources</div>
+                    <div class="metric-value" id="resourceCount">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test 3: bfcache -->
+        <div class="test-section">
+            <h2>🔄 Test 3: Back/Forward Cache</h2>
+            <div class="test-instruction">
+                Navigate to another page, then come back to check if bfcache is working.
+            </div>
+            <button class="btn" onclick="checkBfcache()">Check bfcache Status</button>
+            <button class="btn" onclick="window.location.href='https://www.google.com'">Go to Google (Test Navigation)</button>
+            <div id="bfcacheResult" class="result-box" style="display: none;">
+                <div class="metric-label">Navigation Type</div>
+                <div class="metric-value" id="navType">--</div>
+                <pre id="bfcacheDetails"></pre>
+            </div>
+        </div>
+        
+        <!-- Test 4: Extension Impact -->
+        <div class="test-section">
+            <h2>🔬 Test 4: Extension Overhead</h2>
+            <div class="test-instruction">
+                Measure the performance impact of the Locksy extension on this page.
+            </div>
+            <button class="btn" onclick="measureOverhead()">Measure Overhead</button>
+            <div id="overheadResult" class="result-box" style="display: none;">
+                <div class="metric">
+                    <div class="metric-label">DNS Lookup</div>
+                    <div class="metric-value" id="dnsTime">--ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">TCP Connection</div>
+                    <div class="metric-value" id="tcpTime">--ms</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">DOM Processing</div>
+                    <div class="metric-value" id="domTime">--ms</div>
+                </div>
+                <pre id="overheadDetails"></pre>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="summary">
+            <h2>✅ Performance Test Summary</h2>
+            <p style="margin-bottom: 20px;">Check off each test as you complete it:</p>
+            <ul class="checklist">
+                <li><input type="checkbox" id="check1"> Memory usage is acceptable (under 100 MB)</li>
+                <li><input type="checkbox" id="check2"> Page load performance is good (under 5000ms)</li>
+                <li><input type="checkbox" id="check3"> bfcache is working or gracefully degraded</li>
+                <li><input type="checkbox" id="check4"> Extension overhead is minimal</li>
+                <li><input type="checkbox" id="check5"> No console errors detected</li>
+            </ul>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(255,255,255,0.2);">
+                <strong style="font-size: 18px;">Can you check the "Performance" box on Chrome Web Store?</strong>
+                <div style="margin-top: 15px;">
+                    <label style="font-size: 16px; cursor: pointer;">
+                        <input type="checkbox" id="finalCheck" style="width: 24px; height: 24px; margin-right: 10px;">
+                        <strong>YES - Extension meets performance requirements</strong>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function checkMemory() {
+            if (performance.memory) {
+                const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+                const total = (performance.memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
+                const limit = (performance.memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2);
+                
+                document.getElementById('memoryResult').style.display = 'block';
+                document.getElementById('memoryValue').textContent = used + ' MB';
+                document.getElementById('memoryValue').className = 'metric-value ' + 
+                    (used < 50 ? 'status-good' : used < 100 ? 'status-warning' : 'status-bad');
+                
+                document.getElementById('memoryDetails').textContent = 
+                    `Used: ${used} MB\nTotal: ${total} MB\nLimit: ${limit} MB\n\n` +
+                    `Status: ${used < 50 ? '✅ EXCELLENT' : used < 100 ? '⚠️ GOOD' : '❌ NEEDS OPTIMIZATION'}`;
+            } else {
+                document.getElementById('memoryResult').style.display = 'block';
+                document.getElementById('memoryDetails').textContent = 
+                    '⚠️ Performance.memory API not available in this browser.\n' +
+                    'Open Chrome Task Manager (Shift+Esc) to check memory usage manually.';
+            }
+        }
+        
+        function checkPerformance() {
+            const perf = performance.timing;
+            const domLoaded = perf.domContentLoadedEventEnd - perf.navigationStart;
+            const pageLoad = perf.loadEventEnd - perf.navigationStart;
+            const resourceCount = performance.getEntriesByType('resource').length;
+            
+            document.getElementById('perfResult').style.display = 'block';
+            document.getElementById('domLoaded').textContent = domLoaded + 'ms';
+            document.getElementById('pageLoad').textContent = pageLoad + 'ms';
+            document.getElementById('resourceCount').textContent = resourceCount;
+            
+            document.getElementById('pageLoad').className = 'metric-value ' + 
+                (pageLoad < 3000 ? 'status-good' : pageLoad < 5000 ? 'status-warning' : 'status-bad');
+        }
+        
+        function checkBfcache() {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const navType = navEntry ? navEntry.type : 'unknown';
+            
+            document.getElementById('bfcacheResult').style.display = 'block';
+            document.getElementById('navType').textContent = navType.toUpperCase();
+            document.getElementById('navType').className = 'metric-value ' + 
+                (navType === 'back_forward' ? 'status-good' : 'status-warning');
+            
+            document.getElementById('bfcacheDetails').textContent = 
+                `Navigation Type: ${navType}\n` +
+                `Transfer Size: ${navEntry.transferSize} bytes\n` +
+                `Encoded Body Size: ${navEntry.encodedBodySize} bytes\n\n` +
+                `Status: ${navType === 'back_forward' ? '✅ bfcache is working!' : 
+                           navType === 'navigate' ? '⚠️ First load or bfcache not used' : 
+                           '❓ Unknown navigation type'}`;
+        }
+        
+        function measureOverhead() {
+            const perf = performance.timing;
+            const dns = perf.domainLookupEnd - perf.domainLookupStart;
+            const tcp = perf.connectEnd - perf.connectStart;
+            const dom = perf.domComplete - perf.domLoading;
+            
+            document.getElementById('overheadResult').style.display = 'block';
+            document.getElementById('dnsTime').textContent = dns + 'ms';
+            document.getElementById('tcpTime').textContent = tcp + 'ms';
+            document.getElementById('domTime').textContent = dom + 'ms';
+            
+            document.getElementById('overheadDetails').textContent = 
+                `DNS Lookup: ${dns}ms\n` +
+                `TCP Connection: ${tcp}ms\n` +
+                `Request: ${perf.responseStart - perf.requestStart}ms\n` +
+                `Response: ${perf.responseEnd - perf.responseStart}ms\n` +
+                `DOM Processing: ${dom}ms\n` +
+                `Load Event: ${perf.loadEventEnd - perf.loadEventStart}ms\n\n` +
+                `Total Time: ${perf.loadEventEnd - perf.navigationStart}ms`;
+        }
+        
+        // Auto-run some tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkMemory();
+                checkPerformance();
+            }, 1000);
+        });
+        
+        // Listen for checkbox changes
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                const allChecked = Array.from(document.querySelectorAll('.checklist input[type="checkbox"]'))
+                    .every(cb => cb.checked);
+                
+                if (allChecked) {
+                    document.getElementById('finalCheck').checked = true;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
