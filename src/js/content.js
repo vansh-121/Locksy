@@ -4,30 +4,8 @@ chrome.storage.local.get("extensionActive", (data) => {
     return; // Don't show lock overlay if extension is inactive
   }
 
-  // Password verification function (using Web Crypto API for SHA-256)
-  async function hashPassword(password) {
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    } catch (error) {
-      console.error('Error hashing password:', error);
-      throw new Error('Failed to hash password');
-    }
-  }
-
-  async function verifyPassword(password, storedHash) {
-    try {
-      const hash = await hashPassword(password);
-      return hash === storedHash;
-    } catch (error) {
-      console.error('Error verifying password:', error);
-      return false;
-    }
-  }
+  // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
+  // which is injected programmatically from background.js
 
   if (!document.getElementById("lockOverlay")) {
     // SECURITY LAYER 1: Blur all page content BEFORE creating overlay

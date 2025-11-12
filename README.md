@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icon.png" alt="Locksy Logo" width="128" height="128">
+  <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
   
@@ -7,15 +7,16 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.3-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.4-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
-  [![Security](https://img.shields.io/badge/security-SHA--256-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+
   
   **A modern browser extension that provides military-grade tab protection with advanced security features.**
   
   **Compatible with:** • Chrome • Edge • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
   
-  [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
+  [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
   
 </div>
 
@@ -25,7 +26,7 @@
 
 <div align="center">
   
-  **See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
+**See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
   
   [![Locksy Extension Demo](https://img.youtube.com/vi/C99yuKTqEFA/maxresdefault.jpg)](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
   
@@ -37,7 +38,40 @@
 
 ## 🆕 Recent Improvements
 
-### Version 1.0.3 - IMPROVED USER FEEDBACK (October 31, 2025)
+### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 8, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![Security Enhanced](https://img.shields.io/badge/security-enhanced-brightgreen?style=flat-square)
+  
+</div>
+
+#### 🔒 **Security Enhancements**
+- 🧂 **Salted Password Hashing**: Implemented cryptographically secure salted hashing for maximum password protection
+  - Each password now uses a unique 128-bit random salt generated via `crypto.getRandomValues()`
+  - Salt stored with hash in format `salt:hash` to prevent rainbow table and precomputed hash attacks
+  - **Backward Compatible**: Existing passwords automatically migrate to new format on next use
+- 🛡️ **Enhanced Cryptographic Security**: Protects against advanced attack vectors like rainbow tables and dictionary attacks
+
+#### 🐛 **Bug Fixes**
+- 📁 **File URL Protection**: Added blocking for `file://` protocol URLs to prevent errors when locking local file tabs
+- ❌ **Error Handling**: Enhanced error messages to clearly indicate when local files cannot be locked
+- 🔍 **Console Logging**: Added detailed debug logs for troubleshooting tab access and script injection errors
+- 🔄 **Improved Stability**: Better validation for restricted URLs including local file system access
+
+#### 🔧 **Technical Improvements**
+- **crypto-utils.js**: New `generateSalt()` function for secure random salt generation
+- **Backward Compatibility**: Automatic detection and support for both salted and legacy password formats
+- **Enhanced Security**: Each password hash is now unique even for identical passwords
+- **Better Error Messages**: Clear explanations when system pages, local files, or restricted URLs cannot be locked
+
+**What Changed:** Upgraded password security from plain SHA-256 to salted SHA-256 hashing. Now each password gets a unique cryptographic salt, making the extension resistant to rainbow table attacks and ensuring even identical passwords produce different hashes. The implementation is fully backward compatible - existing users' passwords will work seamlessly. Also fixed critical bugs related to file:// URL handling.
+
+### Version 1.0.3 - IMPROVED USER FEEDBACK (November 3, 2025)
 
 <div align="center">
   
@@ -324,7 +358,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 🔒 Security is not a feature, it's a necessity.
 
-<img src="icon.png" alt="Locksy Logo" width="80" height="80">
+<img src="assets/images/icon.png" alt="Locksy Logo" width="80" height="80">
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 

@@ -2,6 +2,36 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.4] - 2025-11-01
+
+### � Security Enhancements
+
+#### Added
+- **Salted Password Hashing**: Implemented cryptographically secure salted hashing for all passwords
+  - Each password now uses a unique 128-bit random salt generated via `crypto.getRandomValues()`
+  - Salt is stored with hash in format `salt:hash` for maximum security
+  - Protects against rainbow table and precomputed hash attacks
+  - Backward compatible with existing passwords (automatic migration on next password verification)
+
+### �🐛 Bug Fixes
+
+#### Fixed
+- **File URL Protection**: Added blocking for `file://` protocol URLs to prevent errors when attempting to lock local file tabs
+- **Error Handling**: Enhanced error messages to specifically mention local files cannot be locked
+- **Console Logging**: Added debug console.error logs for better troubleshooting of tab access and script injection errors
+
+#### Technical Details
+- **crypto-utils.js**: 
+  - Added `generateSalt()` function for secure random salt generation
+  - Updated `hashPassword()` to accept optional salt parameter and return `salt:hash` format
+  - Enhanced `verifyPassword()` to support both new salted format and legacy format for backward compatibility
+- **content.js**: Updated password verification to support new salted hash format
+- **Background Script**: Updated `lockTab()` function to include `file://` URL validation
+- **Error Messages**: Now clearly indicates when local files, restricted pages, or system pages cannot be locked
+- **Security Compliance**: Prevents extension errors when users attempt to lock file:// URLs, which browsers restrict for security
+
+---
+
 ## [1.0.3] - 2025-10-31
 
 ### 🎯 Enhanced User Feedback

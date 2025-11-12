@@ -1,2 +1,27 @@
+# Dependencies
 node_modules/
+
+# Environment variables
 .env
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts (if any)
+dist/
+build/
+
+# Test files
+test-crypto.html
+
+# Temporary files
+*.tmp
+*.log
