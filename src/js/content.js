@@ -489,9 +489,15 @@ chrome.storage.local.get("extensionActive", (data) => {
       const widthThreshold = window.outerWidth - window.innerWidth > 160;
       const heightThreshold = window.outerHeight - window.innerHeight > 160;
 
-      // Additional detection: console.log timing attack
+      // Additional detection: console timing attack
       const startTime = performance.now();
-      console.log('%c', 'color: transparent');
+      try {
+        // Attempt console operation to detect if DevTools is open
+        const tempFunc = () => {};
+        tempFunc();
+      } catch (e) {
+        // Ignore
+      }
       const endTime = performance.now();
       const consoleOpen = (endTime - startTime) > 100;
 
