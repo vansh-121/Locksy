@@ -51,9 +51,6 @@
 
 #### ⚡ **Performance Optimization & Code Enhancement**
 - 🚀 **Improved Speed**: Optimized core JavaScript for faster execution and enhanced responsiveness
-  - Streamlined event handlers for quicker tab locking operations
-  - Reduced execution overhead in background service worker and content scripts
-  - Better resource management and reduced memory footprint
 - 💻 **Code Quality**: Refactored and cleaned up codebase for improved maintainability
 - 🎯 **Enhanced Efficiency**: Overall extension performs faster with better responsiveness
 
