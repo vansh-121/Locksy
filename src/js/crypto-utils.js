@@ -11,7 +11,6 @@ function generateSalt() {
         crypto.getRandomValues(array);
         return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
     } catch (error) {
-        console.error('Error generating salt:', error);
         throw new Error('Failed to generate salt');
     }
 }
@@ -39,7 +38,6 @@ async function hashPassword(password, salt = null) {
         // Return salt:hash format for storage
         return `${salt}:${hashHex}`;
     } catch (error) {
-        console.error('Error hashing password:', error);
         throw new Error('Failed to hash password');
     }
 }
@@ -75,7 +73,6 @@ async function verifyPassword(password, storedHash) {
             return hashHex === storedHash;
         }
     } catch (error) {
-        console.error('Error verifying password:', error);
         return false;
     }
 }
