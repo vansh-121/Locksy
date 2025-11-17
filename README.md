@@ -7,7 +7,7 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.4-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.5-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -37,6 +37,24 @@
 ---
 
 ## 🆕 Recent Improvements
+
+### Version 1.0.5 - Release (November 15, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  
+</div>
+
+#### ⚡ **Performance Optimization & Code Enhancement**
+- 🚀 **Improved Speed**: Optimized core JavaScript for faster execution and enhanced responsiveness
+- 💻 **Code Quality**: Refactored and cleaned up codebase for improved maintainability
+- 🎯 **Enhanced Efficiency**: Overall extension performs faster with better responsiveness
+
+---
 
 ### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 8, 2025)
 

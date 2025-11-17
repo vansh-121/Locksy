@@ -2,6 +2,23 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.5] - 2025-11-15
+
+### ⚡ Performance Optimization & Code Enhancement
+
+#### Improved
+- **Code Performance**: Optimized core JavaScript files for faster execution and improved efficiency
+  - Enhanced script loading and initialization processes
+  - Streamlined event handlers for better responsiveness
+  - Reduced execution overhead in background service worker and content scripts
+  
+#### Enhanced
+- **Overall Speed**: Improved extension responsiveness and tab locking operations
+- **Code Quality**: Refactored and cleaned up codebase for better maintainability
+- **Extension Efficiency**: Better resource management and reduced memory footprint
+
+---
+
 ## [1.0.4] - 2025-11-01
 
 ### � Security Enhancements

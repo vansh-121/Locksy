@@ -6,7 +6,6 @@ async function restoreLockedTabs() {
     chrome.storage.local.get(["lockedTabIds"], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
-        console.log(`[Locksy] Service worker restored ${lockedTabs.size} locked tabs`);
       }
       resolve();
     });
@@ -15,20 +14,16 @@ async function restoreLockedTabs() {
 
 // CRITICAL: Initialize on service worker startup (including after it goes to sleep)
 chrome.runtime.onStartup.addListener(async () => {
-  console.log("[Locksy] Service worker started, restoring locked tabs...");
   await restoreLockedTabs();
 });
 
 chrome.runtime.onInstalled.addListener(async (details) => {
-  console.log("[Locksy] Extension installed/updated, initializing...");
-
   // Open welcome page on first install
   if (details.reason === 'install') {
     chrome.tabs.create({
       url: 'https://locksy.dev',
       active: true
     });
-    console.log("[Locksy] First install - opened welcome page");
   }
 
   // Initialize extension state
@@ -41,7 +36,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     // Restore locked tabs from storage (in case of extension restart)
     if (data.lockedTabIds) {
       lockedTabs = new Set(data.lockedTabIds);
-      console.log(`[Locksy] Restored ${lockedTabs.size} locked tabs on install`);
     }
 
     if (!data.lockPassword) {
@@ -114,7 +108,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function lockTab(tabId, sendResponse) {
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
-      console.error('[Locksy] Error getting tab:', chrome.runtime.lastError);
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
@@ -144,7 +137,6 @@ function lockTab(tabId, sendResponse) {
           sendResponse({ success: true, message: "Tab locked successfully" });
         }
       }).catch((error) => {
-        console.error('[Locksy] Script injection error:', error);
         const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
         chrome.notifications.create({
           type: "basic",

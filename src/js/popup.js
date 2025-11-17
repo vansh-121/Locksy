@@ -752,7 +752,7 @@ function initializeDeveloperInfo() {
       });
     }
   } catch (error) {
-    console.error("Error initializing developer info:", error);
+    // Silently handle initialization errors
   }
 }
 
