@@ -2,6 +2,74 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.6] - 2025-11-22
+
+### 🌐 New Feature: Domain Lock
+
+#### Added
+- **Domain Lock System**: Lock all tabs matching a domain pattern
+  - Support for exact domain matching (e.g., `github.com`)
+  - Support for wildcard subdomain matching (e.g., `*.google.com`)
+  - Persistent domain locks across browser restarts
+  - Auto-lock new tabs that match locked domain patterns
+  - Dedicated Domain Lock Manager interface
+  
+- **Unlock Scope Options**: Flexible unlock behavior for domain-locked tabs
+  - **Unlock This Tab Only**: Keeps domain lock active, temporarily unlocks current tab
+  - **Unlock All Domain Tabs**: Unlocks all currently open tabs for the domain
+  - **Remove Domain Lock**: Completely removes the domain lock
+  
+- **Unlock Preferences**: Customizable per-domain unlock behavior
+  - Remember unlock choice for each domain
+  - Configurable in Domain Lock Manager settings
+  - Prevents repeated unlock prompts for trusted sessions
+  
+- **Temporary Exemptions**: Smart tracking of temporarily unlocked domain tabs
+  - Exemptions cleared when tab is closed
+  - Exemptions cleared when navigating to different domain
+  - Re-lock on browser restart if domain lock still active
+
+#### Enhanced
+- **Service Worker State Management**: 
+  - Automatic restoration of domain locks on service worker wake-up
+  - Improved locked state persistence
+  - Better handling of browser sleep/wake cycles
+  
+- **Pattern Matching Engine**:
+  - Robust URL pattern matching for domain locks
+  - Support for exact hostname matching
+  - Wildcard subdomain support with `*.` prefix
+  - Fallback pattern matching for flexible domain locking
+  
+- **User Interface**:
+  - New "Domain Lock" button in main popup
+  - Domain Lock Manager window with:
+    - Add new domain pattern input
+    - List of all locked domains
+    - Per-domain settings panel
+    - Remove domain lock functionality
+  - Enhanced unlock dialog for domain-locked tabs
+  - Visual indicators for locked domains
+
+#### Technical Details
+- **New Files**:
+  - `src/js/domain-manager.js`: Domain lock management logic
+  - `src/html/domain-manager.html`: Domain manager interface
+  - `src/css/domain-manager.css`: Domain manager styles
+  
+- **Updated Files**:
+  - `src/js/background.js`: Domain lock pattern matching and management
+  - `src/js/content.js`: Unlock scope dialog and preference handling
+  - `src/js/popup.js`: Domain Lock button integration
+  - `manifest.json`: Version updated to 1.0.6
+  
+- **Storage Schema**:
+  - `lockedDomains`: Array of locked domain patterns
+  - `domainUnlockPreferences`: Object mapping domains to unlock preferences
+  - `temporarilyUnlockedTabs`: Set of tab IDs temporarily exempted from domain locks
+
+---
+
 ## [1.0.5] - 2025-11-15
 
 ### ⚡ Performance Optimization & Code Enhancement

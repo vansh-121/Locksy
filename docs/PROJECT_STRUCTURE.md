@@ -18,15 +18,18 @@ Locksy Extension/
 │
 ├── src/                       # Source code
 │   ├── css/                  # Stylesheets
+│   │   ├── domain-manager.css # Domain Lock Manager UI styles
 │   │   └── popup.css         # Popup UI styles
 │   │
 │   ├── html/                 # HTML templates
+│   │   ├── domain-manager.html # Domain Lock Manager interface
 │   │   └── popup.html        # Extension popup interface
 │   │
 │   └── js/                   # JavaScript files
 │       ├── background.js     # Service worker (background script)
 │       ├── content.js        # Content script (injected into locked tabs)
 │       ├── crypto-utils.js   # Cryptographic utilities (SHA-256, salt generation)
+│       ├── domain-manager.js # Domain lock management logic
 │       └── popup.js          # Popup UI logic and event handlers
 │
 ├── .gitignore                # Git ignore rules
@@ -48,15 +51,18 @@ Locksy Extension/
 ### Source Files (`src/`)
 
 #### JavaScript (`src/js/`)
-- **background.js**: Service worker that manages locked tabs, handles messaging, and monitors tab events
+- **background.js**: Service worker that manages locked tabs, domain locks, handles messaging, and monitors tab events
 - **content.js**: Injected into locked tabs to display the password overlay and verify passwords
 - **crypto-utils.js**: Utility functions for secure password hashing with SHA-256 and salt generation
+- **domain-manager.js**: Domain lock management UI logic and domain pattern handling
 - **popup.js**: Logic for the extension popup UI, password management, and tab locking controls
 
 #### HTML (`src/html/`)
+- **domain-manager.html**: User interface for the Domain Lock Manager
 - **popup.html**: User interface for the extension popup
 
 #### CSS (`src/css/`)
+- **domain-manager.css**: Styles for the Domain Lock Manager interface
 - **popup.css**: Styles for the popup interface
 
 ### Assets (`assets/`)
@@ -77,10 +83,13 @@ Locksy Extension/
 
 ### Functionality
 - Lock any browser tab with password protection
+- Lock entire domains with pattern matching (exact and wildcard)
 - Persistent lock state across browser restarts
+- Auto-lock new tabs matching locked domain patterns
 - Instant re-locking on navigation/refresh
 - Extension enable/disable toggle
 - Password strength indicator
+- Domain Lock Manager with unlock preferences
 
 ## Development Notes
 
@@ -100,7 +109,7 @@ This extension does not require a build step. All files are used directly by Chr
 - Root directory contains only essential files (manifest, readme, license)
 
 ## Version
-Current Version: 1.0.4
+Current Version: 1.0.6
 
 ## Technology Stack
 - JavaScript (ES6+)
@@ -110,6 +119,7 @@ Current Version: 1.0.4
 - Chrome Tabs API
 - Chrome Scripting API
 - Chrome Notifications API
+- Chrome Web Navigation API
 
 ## Browser Compatibility
 - Chrome (Manifest V3)

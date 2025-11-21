@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain Lock Manager - Locksy</title>
+  <link rel="stylesheet" href="../css/domain-manager.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <button id="backButton" class="back-button">← Back</button>
+      <h2>
+        <img src="../../assets/images/icon.png" alt="Locksy" class="header-icon">
+        Domain Lock Manager
+      </h2>
+    </div>
+
+    <div class="info-section">
+      <div class="info-box">
+        <h3>🌐 What is Domain Lock?</h3>
+        <p>Lock all tabs matching a domain pattern. Domain locks persist across browser restarts and automatically lock new tabs of the same domain.</p>
+      </div>
+    </div>
+
+    <div class="add-domain-section">
+      <h3>Add New Domain Lock</h3>
+      <div class="input-group">
+        <input type="text" id="domainPattern" placeholder="example.com or *.example.com" />
+        <button id="lockDomain" class="btn-primary">🔒 Lock Domain</button>
+      </div>
+      <div class="examples">
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li><code>github.com</code> - Locks only github.com</li>
+          <li><code>*.google.com</code> - Locks all Google subdomains (mail, drive, etc.)</li>
+          <li><code>facebook.com</code> - Locks Facebook</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="domains-list-section">
+      <h3>Locked Domains (<span id="domainCount">0</span>)</h3>
+      <div id="domainsContainer" class="domains-container">
+        <div id="noDomainsMessage" class="no-domains-message">
+          <div class="empty-state">
+            <span class="empty-icon">🔓</span>
+            <p>No domains locked yet</p>
+            <small>Add a domain pattern above to get started</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/domain-manager.js"></script>
+</body>
+
+</html>
