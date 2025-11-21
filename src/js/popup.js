@@ -295,16 +295,12 @@ function initializeMainUI() {
         <button id="setPassword" class="btn-primary">Set Password</button>
       </div>
 
-      <div class="button-group">
-        <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
-      </div>
-
-      <div class="button-group">
+      <div id="lockControls" class="button-group" style="display: none;">
         <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
       </div>
 
-      <div style="margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
+      <div id="lockTip" style="display: none; margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
         <p style="margin: 0; font-size: 12px; color: #155724; font-weight: 500;">
           <strong>💡 Tip:</strong> Locked tabs can only be unlocked by entering the correct password on the tab itself.
         </p>
@@ -408,6 +404,9 @@ function initializeMainUI() {
 
   // CRITICAL SECURITY FUNCTION: Update Password UI
   function updatePasswordUI() {
+    const lockControls = document.getElementById("lockControls");
+    const lockTip = document.getElementById("lockTip");
+
     if (hasExistingPassword) {
       // Password exists - require current password to change
       currentPasswordGroup.style.display = "block";
@@ -415,6 +414,10 @@ function initializeMainUI() {
       passwordInput.placeholder = "Enter new master password";
       setPasswordBtn.textContent = "Change Password";
       setPasswordBtn.className = "btn-primary";
+      
+      // Show lock controls since password is set
+      if (lockControls) lockControls.style.display = "block";
+      if (lockTip) lockTip.style.display = "block";
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";
@@ -422,6 +425,10 @@ function initializeMainUI() {
       passwordInput.placeholder = "Set Your Master Password";
       setPasswordBtn.textContent = "Set Password";
       setPasswordBtn.className = "btn-primary";
+      
+      // Hide lock controls until password is set
+      if (lockControls) lockControls.style.display = "none";
+      if (lockTip) lockTip.style.display = "none";
     }
   }
 
