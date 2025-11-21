@@ -125,7 +125,7 @@ chrome.storage.local.get("extensionActive", (data) => {
     document.head.appendChild(style);
 
     overlay.innerHTML =
-      '<div style="' +
+      '<div class="lock-container" style="' +
       'background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px;' +
       'box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center;' +
       'max-width: 400px; width: 90%; color: #2c3e50; position: relative;' +
@@ -681,8 +681,8 @@ chrome.storage.local.get("extensionActive", (data) => {
                       border-radius: 50%; display: flex; align-items: center; justify-content: center;">
             <span style="font-size: 48px;">✅</span>
           </div>
-          <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: white;">Password Correct!</h1>
-          <p style="font-size: 16px; margin: 0 0 28px 0; color: rgba(255, 255, 255, 0.9); line-height: 1.5;">
+          <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: #000000;">Password Correct!</h1>
+          <p style="font-size: 16px; margin: 0 0 28px 0; color: #000000; line-height: 1.5;">
             This tab is protected by a domain lock.<br>
             Choose unlock scope:
           </p>
