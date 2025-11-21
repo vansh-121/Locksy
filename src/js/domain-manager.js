@@ -94,29 +94,90 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    domainsContainer.innerHTML = domains.map(pattern => `
-      <div class="domain-item">
-        <div class="domain-info">
-          <div class="domain-pattern">
-            <span class="domain-pattern-icon">🌐</span>${escapeHtml(pattern)}
-          </div>
-          <div class="domain-meta">
-            Locked • All matching tabs protected
-          </div>
-        </div>
-        <div class="domain-actions">
-          <button class="btn-unlock" data-pattern="${escapeHtml(pattern)}">
-            🗑️ Remove
-          </button>
-        </div>
-      </div>
-    `).join('');
+    // Load preferences
+    chrome.storage.local.get("domainUnlockPreferences", (data) => {
+      const preferences = data.domainUnlockPreferences || {};
 
-    // Add event listeners to unlock buttons
-    domainsContainer.querySelectorAll('.btn-unlock').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const pattern = e.target.getAttribute('data-pattern');
-        handleUnlockDomain(pattern);
+      domainsContainer.innerHTML = domains.map(pattern => `
+        <div class="domain-item">
+          <div class="domain-info">
+            <div class="domain-pattern">
+              <span class="domain-pattern-icon">🌐</span>${escapeHtml(pattern)}
+            </div>
+            <div class="domain-meta">
+              Locked • All matching tabs protected
+            </div>
+          </div>
+          <div class="domain-actions">
+            <button class="btn-settings" data-pattern="${escapeHtml(pattern)}" title="Settings">
+              ⚙️ Settings
+            </button>
+            <button class="btn-remove" data-pattern="${escapeHtml(pattern)}">
+              🗑️ Remove
+            </button>
+          </div>
+          <div class="domain-settings" id="settings-${escapeHtml(pattern)}" style="display: none;">
+            <div class="settings-content">
+              <h4>Unlock Preferences</h4>
+              <p class="preference-label">Default unlock behavior when password is entered:</p>
+              <div class="preference-options">
+                <label class="preference-option">
+                  <input type="radio" name="pref-${escapeHtml(pattern)}" value="none" ${!preferences[pattern] ? 'checked' : ''} class="pref-radio">
+                  <span class="pref-text">Ask me every time (default)</span>
+                </label>
+                <label class="preference-option">
+                  <input type="radio" name="pref-${escapeHtml(pattern)}" value="tab-only" ${preferences[pattern] === 'tab-only' ? 'checked' : ''} class="pref-radio">
+                  <span class="pref-text">Always unlock this tab only</span>
+                </label>
+                <label class="preference-option">
+                  <input type="radio" name="pref-${escapeHtml(pattern)}" value="all-domain-tabs" ${preferences[pattern] === 'all-domain-tabs' ? 'checked' : ''} class="pref-radio">
+                  <span class="pref-text">Always unlock all tabs for this domain</span>
+                </label>
+              </div>
+              <button class="btn-save-pref" data-pattern="${escapeHtml(pattern)}">
+                Save Preference
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners
+      domainsContainer.querySelectorAll('.btn-settings').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const pattern = e.target.getAttribute('data-pattern');
+          const settingsDiv = document.getElementById(`settings-${pattern}`);
+          const isVisible = settingsDiv.style.display !== 'none';
+          settingsDiv.style.display = isVisible ? 'none' : 'block';
+        });
+      });
+
+      domainsContainer.querySelectorAll('.btn-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const pattern = e.target.getAttribute('data-pattern');
+          handleUnlockDomain(pattern);
+        });
+      });
+
+      domainsContainer.querySelectorAll('.btn-save-pref').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const pattern = e.target.getAttribute('data-pattern');
+          const selectedRadio = document.querySelector(`input[name="pref-${pattern}"]:checked`);
+          if (selectedRadio) {
+            const value = selectedRadio.value;
+            chrome.storage.local.get("domainUnlockPreferences", (data) => {
+              const prefs = data.domainUnlockPreferences || {};
+              if (value === 'none') {
+                delete prefs[pattern];
+              } else {
+                prefs[pattern] = value;
+              }
+              chrome.storage.local.set({ domainUnlockPreferences: prefs }, () => {
+                showNotification(`Preference saved for "${pattern}"!`, 'success');
+              });
+            });
+          }
+        });
       });
     });
   }

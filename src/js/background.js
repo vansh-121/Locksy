@@ -56,6 +56,16 @@ function removeLockedDomain(pattern) {
   if (index > -1) {
     lockedDomains.splice(index, 1);
     chrome.storage.local.set({ lockedDomains: lockedDomains });
+    
+    // Clear preferences for this domain when it's removed
+    chrome.storage.local.get("domainUnlockPreferences", (data) => {
+      const prefs = data.domainUnlockPreferences || {};
+      if (prefs[pattern]) {
+        delete prefs[pattern];
+        chrome.storage.local.set({ domainUnlockPreferences: prefs });
+      }
+    });
+    
     return true;
   }
   return false;

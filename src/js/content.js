@@ -627,28 +627,48 @@ chrome.storage.local.get("extensionActive", (data) => {
           const isMatch = await verifyPassword(enteredPassword, data.lockPassword);
           if (data && isMatch) {
             // Check if this tab is domain-locked to offer unlock scope options
-            chrome.storage.local.get("lockedDomains", (domainData) => {
-              const lockedDomains = domainData.lockedDomains || [];
+            chrome.storage.local.get(["lockedDomains", "domainUnlockPreferences"], (storageData) => {
+              const lockedDomains = storageData.lockedDomains || [];
+              const domainPreferences = storageData.domainUnlockPreferences || {};
               const currentUrl = window.location.href;
+              let matchedPattern = null;
 
               // Check if current URL matches any locked domain
               const isDomainLocked = lockedDomains.some(pattern => {
                 try {
                   const hostname = new URL(currentUrl).hostname;
-                  if (pattern === hostname) return true;
+                  if (pattern === hostname) {
+                    matchedPattern = pattern;
+                    return true;
+                  }
                   if (pattern.startsWith('*.')) {
                     const domain = pattern.slice(2);
-                    return hostname.endsWith(domain) || hostname === domain.replace('*.', '');
+                    if (hostname.endsWith(domain) || hostname === domain.replace('*.', '')) {
+                      matchedPattern = pattern;
+                      return true;
+                    }
                   }
-                  return hostname.includes(pattern) || pattern.includes(hostname);
-                } catch (e) {
-                  return false;
-                }
+                  if (hostname.includes(pattern) || pattern.includes(hostname)) {
+                    matchedPattern = pattern;
+                    return true;
+                  }
+                } catch (e) { }
+                return false;
               });
 
-              if (isDomainLocked) {
-                // Show unlock scope options
-                showUnlockScopeOptions();
+              if (isDomainLocked && matchedPattern) {
+                // Check if user has a saved preference for this domain
+                if (domainPreferences[matchedPattern]) {
+                  // Use saved preference
+                  chrome.runtime.sendMessage({
+                    action: "unlock",
+                    scope: domainPreferences[matchedPattern]
+                  });
+                  unlock();
+                } else {
+                  // First time - show dialog with checkbox
+                  showUnlockScopeOptions(matchedPattern);
+                }
               } else {
                 // Regular tab lock - just unlock
                 chrome.runtime.sendMessage({
@@ -670,7 +690,13 @@ chrome.storage.local.get("extensionActive", (data) => {
       });
     };
 
-    function showUnlockScopeOptions() {
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showUnlockScopeOptions(domainPattern) {
       // Replace unlock button with scope options
       const lockContainer = overlay.querySelector('.lock-container');
       const hostname = new URL(window.location.href).hostname;
@@ -703,15 +729,17 @@ chrome.storage.local.get("extensionActive", (data) => {
             🌐 Unlock All ${hostname} Tabs
           </button>
           
-          <button id="removeDomainLock" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
-                                               border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
-                                               background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
-                                               color: white; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); 
-                                               transition: all 0.3s ease;">
-            🗑️ Remove Domain Lock Entirely
-          </button>
+          <div style="margin: 20px 0; padding: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #000000; font-size: 14px;">
+              <input type="checkbox" id="rememberChoice" style="width: 18px; height: 18px; cursor: pointer;">
+              <span>Remember this choice for <strong>${escapeHtml(domainPattern)}</strong></span>
+            </label>
+            <small style="display: block; margin-top: 8px; color: rgba(0, 0, 0, 0.7);">
+              You can change this anytime in Domain Lock Manager settings
+            </small>
+          </div>
           
-          <p style="font-size: 12px; margin: 20px 0 0 0; color: rgba(255, 255, 255, 0.7); line-height: 1.4;">
+          <p style="font-size: 12px; margin: 20px 0 0 0; color: rgba(0, 0, 0, 0.7); line-height: 1.4;">
             <strong>Note:</strong> "This Tab Only" keeps the domain lock active but temporarily unlocks this tab.
           </p>
         </div>
@@ -720,34 +748,36 @@ chrome.storage.local.get("extensionActive", (data) => {
       // Add event listeners for scope buttons
       const unlockThisTab = overlay.querySelector('#unlockThisTab');
       const unlockAllDomainTabs = overlay.querySelector('#unlockAllDomainTabs');
-      const removeDomainLock = overlay.querySelector('#removeDomainLock');
+      const rememberCheckbox = overlay.querySelector('#rememberChoice');
 
-      unlockThisTab.onclick = () => {
+      const handleUnlock = (scope) => {
+        // Check if user wants to remember this choice
+        if (rememberCheckbox.checked) {
+          chrome.storage.local.get("domainUnlockPreferences", (data) => {
+            const preferences = data.domainUnlockPreferences || {};
+            preferences[domainPattern] = scope;
+            chrome.storage.local.set({ domainUnlockPreferences: preferences });
+          });
+        }
+
+        // Send unlock message
         chrome.runtime.sendMessage({
           action: "unlock",
-          scope: "tab-only"
+          scope: scope
         });
         unlock();
+      };
+
+      unlockThisTab.onclick = () => {
+        handleUnlock("tab-only");
       };
 
       unlockAllDomainTabs.onclick = () => {
-        chrome.runtime.sendMessage({
-          action: "unlock",
-          scope: "all-domain-tabs"
-        });
-        unlock();
-      };
-
-      removeDomainLock.onclick = () => {
-        chrome.runtime.sendMessage({
-          action: "unlock",
-          scope: "remove-domain-lock"
-        });
-        unlock();
+        handleUnlock("all-domain-tabs");
       };
 
       // Add hover effects
-      [unlockThisTab, unlockAllDomainTabs, removeDomainLock].forEach(btn => {
+      [unlockThisTab, unlockAllDomainTabs].forEach(btn => {
         btn.addEventListener('mouseenter', () => {
           btn.style.transform = 'translateY(-2px)';
           btn.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
