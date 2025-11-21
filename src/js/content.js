@@ -104,7 +104,7 @@ chrome.storage.local.get("extensionActive", (data) => {
     overlay.setAttribute("data-security-critical", "true");
     overlay.setAttribute("data-lock-component", "main");
 
-    // Add CSS animation keyframes
+    // Add CSS animation keyframes and unlock scope styles
     const style = document.createElement("style");
     style.textContent = `
     @keyframes fadeIn {
@@ -120,6 +120,103 @@ chrome.storage.local.get("extensionActive", (data) => {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
+    }
+
+    /* Unlock Scope Options */
+    .unlock-scope-container {
+      text-align: center;
+    }
+
+    .unlock-scope-success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .unlock-scope-success-icon span {
+      font-size: 48px;
+    }
+
+    .unlock-scope-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #000000;
+    }
+
+    .unlock-scope-description {
+      font-size: 16px;
+      margin: 0 0 28px 0;
+      color: #000000;
+      line-height: 1.5;
+    }
+
+    .unlock-scope-btn {
+      width: 100%;
+      padding: 14px 18px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .unlock-scope-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .unlock-scope-btn-tab {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .unlock-scope-btn-domain {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .unlock-scope-preference-box {
+      margin: 20px 0;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .unlock-scope-preference-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: #000000;
+      font-size: 14px;
+    }
+
+    .unlock-scope-preference-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .unlock-scope-preference-hint {
+      display: block;
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .unlock-scope-note {
+      font-size: 12px;
+      margin: 20px 0 0 0;
+      color: rgba(0, 0, 0, 0.7);
+      line-height: 1.4;
     }
   `;
     document.head.appendChild(style);
@@ -628,55 +725,32 @@ chrome.storage.local.get("extensionActive", (data) => {
           if (data && isMatch) {
             // Check if this tab is domain-locked to offer unlock scope options
             chrome.storage.local.get(["lockedDomains", "domainUnlockPreferences"], (storageData) => {
-              const lockedDomains = storageData.lockedDomains || [];
               const domainPreferences = storageData.domainUnlockPreferences || {};
               const currentUrl = window.location.href;
-              let matchedPattern = null;
-
-              // Check if current URL matches any locked domain
-              const isDomainLocked = lockedDomains.some(pattern => {
-                try {
-                  const hostname = new URL(currentUrl).hostname;
-                  if (pattern === hostname) {
-                    matchedPattern = pattern;
-                    return true;
+              chrome.runtime.sendMessage({ action: "isDomainLocked", url: currentUrl }, (response) => {
+                if (response && response.isDomainLocked && response.matchedPattern) {
+                  const matchedPattern = response.matchedPattern;
+                  // Check if user has a saved preference for this domain
+                  if (domainPreferences[matchedPattern]) {
+                    // Use saved preference
+                    chrome.runtime.sendMessage({
+                      action: "unlock",
+                      scope: domainPreferences[matchedPattern]
+                    });
+                    unlock();
+                  } else {
+                    // First time - show dialog with checkbox
+                    showUnlockScopeOptions(matchedPattern);
                   }
-                  if (pattern.startsWith('*.')) {
-                    const domain = pattern.slice(2);
-                    if (hostname.endsWith(domain) || hostname === domain.replace('*.', '')) {
-                      matchedPattern = pattern;
-                      return true;
-                    }
-                  }
-                  if (hostname.includes(pattern) || pattern.includes(hostname)) {
-                    matchedPattern = pattern;
-                    return true;
-                  }
-                } catch (e) { }
-                return false;
-              });
-
-              if (isDomainLocked && matchedPattern) {
-                // Check if user has a saved preference for this domain
-                if (domainPreferences[matchedPattern]) {
-                  // Use saved preference
+                } else {
+                  // Regular tab lock - just unlock
                   chrome.runtime.sendMessage({
                     action: "unlock",
-                    scope: domainPreferences[matchedPattern]
+                    scope: "tab-only"
                   });
                   unlock();
-                } else {
-                  // First time - show dialog with checkbox
-                  showUnlockScopeOptions(matchedPattern);
                 }
-              } else {
-                // Regular tab lock - just unlock
-                chrome.runtime.sendMessage({
-                  action: "unlock",
-                  scope: "tab-only"
-                });
-                unlock();
-              }
+              });
             });
           } else {
             showError("Incorrect password! Please try again.");
@@ -702,44 +776,35 @@ chrome.storage.local.get("extensionActive", (data) => {
       const hostname = new URL(window.location.href).hostname;
 
       lockContainer.innerHTML = `
-        <div style="text-align: center;">
-          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(255, 255, 255, 0.2); 
-                      border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <span style="font-size: 48px;">✅</span>
+        <div class="unlock-scope-container">
+          <div class="unlock-scope-success-icon">
+            <span>✅</span>
           </div>
-          <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: #000000;">Password Correct!</h1>
-          <p style="font-size: 16px; margin: 0 0 28px 0; color: #000000; line-height: 1.5;">
+          <h1 class="unlock-scope-title">Password Correct!</h1>
+          <p class="unlock-scope-description">
             This tab is protected by a domain lock.<br>
             Choose unlock scope:
           </p>
           
-          <button id="unlockThisTab" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
-                                            border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
-                                            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); 
-                                            color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); 
-                                            transition: all 0.3s ease;">
+          <button id="unlockThisTab" class="unlock-scope-btn unlock-scope-btn-tab">
             🔓 Unlock This Tab Only
           </button>
           
-          <button id="unlockAllDomainTabs" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
-                                                   border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
-                                                   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
-                                                   color: white; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
-                                                   transition: all 0.3s ease;">
+          <button id="unlockAllDomainTabs" class="unlock-scope-btn unlock-scope-btn-domain">
             🌐 Unlock All ${hostname} Tabs
           </button>
           
-          <div style="margin: 20px 0; padding: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #000000; font-size: 14px;">
-              <input type="checkbox" id="rememberChoice" style="width: 18px; height: 18px; cursor: pointer;">
+          <div class="unlock-scope-preference-box">
+            <label class="unlock-scope-preference-label">
+              <input type="checkbox" id="rememberChoice" class="unlock-scope-preference-checkbox">
               <span>Remember this choice for <strong>${escapeHtml(domainPattern)}</strong></span>
             </label>
-            <small style="display: block; margin-top: 8px; color: rgba(0, 0, 0, 0.7);">
+            <small class="unlock-scope-preference-hint">
               You can change this anytime in Domain Lock Manager settings
             </small>
           </div>
           
-          <p style="font-size: 12px; margin: 20px 0 0 0; color: rgba(0, 0, 0, 0.7); line-height: 1.4;">
+          <p class="unlock-scope-note">
             <strong>Note:</strong> "This Tab Only" keeps the domain lock active but temporarily unlocks this tab.
           </p>
         </div>
@@ -775,17 +840,6 @@ chrome.storage.local.get("extensionActive", (data) => {
       unlockAllDomainTabs.onclick = () => {
         handleUnlock("all-domain-tabs");
       };
-
-      // Add hover effects
-      [unlockThisTab, unlockAllDomainTabs].forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-          btn.style.transform = 'translateY(-2px)';
-          btn.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
-        });
-        btn.addEventListener('mouseleave', () => {
-          btn.style.transform = 'translateY(0)';
-        });
-      });
     }
 
     // Auto-focus password input

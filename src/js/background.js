@@ -14,11 +14,11 @@ function matchesPattern(url, pattern) {
     // Wildcard subdomain: *.example.com
     if (pattern.startsWith('*.')) {
       const domain = pattern.slice(2);
-      return hostname.endsWith(domain) || hostname === domain.replace('*.', '');
+      return hostname === domain || hostname.endsWith('.' + domain);
     }
 
-    // Check if pattern is contained in hostname or vice versa
-    return hostname.includes(pattern) || pattern.includes(hostname);
+    // No match found
+    return false;
   } catch (e) {
     return false;
   }
@@ -146,6 +146,20 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "isDomainLocked") {
+    const url = message.url;
+    let matchedPattern = null;
+    const isLocked = lockedDomains.some(pattern => {
+      if (matchesPattern(url, pattern)) {
+        matchedPattern = pattern;
+        return true;
+      }
+      return false;
+    });
+    sendResponse({ isDomainLocked: isLocked, matchedPattern });
+    return true;
+  }
+  
   // Check if extension is active before processing any actions
   chrome.storage.local.get("extensionActive", (data) => {
     if (!data.extensionActive) {
@@ -227,10 +241,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               removeLockedDomain(pattern);
             });
 
-            // Unlock all tabs matching this domain
+            // Unlock all tabs matching the removed domain patterns
             chrome.tabs.query({}, (tabs) => {
               tabs.forEach(tab => {
-                if (tab.url && matchesPattern(tab.url, urlToCheck)) {
+                if (tab.url && matchingPatterns.some(pattern => matchesPattern(tab.url, pattern))) {
                   lockedTabs.delete(tab.id);
                   temporarilyUnlockedTabs.delete(tab.id);
                   // Send message to content script to remove overlay
@@ -285,10 +299,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             // Lock all existing tabs matching this domain
             chrome.tabs.query({}, (tabs) => {
               tabs.forEach(tab => {
-                if (tab.url && isDomainLocked(tab.url)) {
+                if (tab.url && isDomainLocked(tab.url) && !temporarilyUnlockedTabs.has(tab.id)) {
+                  lockedTabs.add(tab.id);
                   lockTab(tab.id);
                 }
               });
+              // Persist locked tabs to storage
+              chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
             });
 
             chrome.notifications.create({
@@ -348,7 +365,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
   });
-
+  
   return true; // Keep the message channel open for async response
 });
 
@@ -429,6 +446,8 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   // Wait for URL to be available and check if it matches a locked domain
   const checkAndLock = (tabId, changeInfo) => {
     if (changeInfo.url && isDomainLocked(changeInfo.url) && !temporarilyUnlockedTabs.has(tabId)) {
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
       setTimeout(() => lockTab(tabId), 10);
     }
   };
@@ -457,6 +476,12 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
   // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
   if (isTabLocked || isTabDomainLocked) {
+    // Add to lockedTabs if domain-locked but not already in the set
+    if (isTabDomainLocked && !isTabLocked) {
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    }
+    
     if (changeInfo.status === 'loading') {
       // IMMEDIATE re-lock on loading - 10ms delay only
       setTimeout(() => {
@@ -497,6 +522,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
     const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
     if (isTabLocked || isUrlDomainLocked) {
+      // Add to lockedTabs if domain-locked but not already in the set
+      if (isUrlDomainLocked && !isTabLocked) {
+        lockedTabs.add(details.tabId);
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      }
+      
       // Tab is locked and user is trying to navigate - re-lock INSTANTLY
       setTimeout(() => {
         lockTab(details.tabId);
@@ -517,6 +548,12 @@ chrome.webNavigation.onCommitted.addListener(async (details) => {
     const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
     if (isTabLocked || isUrlDomainLocked) {
+      // Add to lockedTabs if domain-locked but not already in the set
+      if (isUrlDomainLocked && !isTabLocked) {
+        lockedTabs.add(details.tabId);
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      }
+      
       // Re-lock immediately on committed navigation
       setTimeout(() => {
         lockTab(details.tabId);
@@ -537,6 +574,11 @@ chrome.webNavigation.onDOMContentLoaded.addListener(async (details) => {
     const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
     if (isTabLocked || isUrlDomainLocked) {
+      // Add to lockedTabs if domain-locked but not already in the set
+      if (isUrlDomainLocked && !isTabLocked) {
+        lockedTabs.add(details.tabId);
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      }
       // Re-lock when DOM is ready
       setTimeout(() => {
         lockTab(details.tabId);
@@ -557,6 +599,12 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
     if (isTabLocked || isUrlDomainLocked) {
+      // Add to lockedTabs if domain-locked but not already in the set
+      if (isUrlDomainLocked && !isTabLocked) {
+        lockedTabs.add(details.tabId);
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      }
+      
       // Final re-lock when page is fully loaded
       setTimeout(() => {
         lockTab(details.tabId);

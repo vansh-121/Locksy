@@ -39,7 +39,7 @@ All notable changes to Locksy will be documented in this file.
   - Robust URL pattern matching for domain locks
   - Support for exact hostname matching
   - Wildcard subdomain support with `*.` prefix
-  - Fallback pattern matching for flexible domain locking
+  - Secure pattern matching without overly broad fallbacks
   
 - **User Interface**:
   - New "Domain Lock" button in main popup
@@ -51,11 +51,33 @@ All notable changes to Locksy will be documented in this file.
   - Enhanced unlock dialog for domain-locked tabs
   - Visual indicators for locked domains
 
+#### Bug Fixes
+- **Pattern Matching**: Fixed wildcard domain matching to correctly match subdomains
+  - Corrected logic to prevent false matches (e.g., `corp.com` no longer matches `incorporate.com`)
+  - Improved wildcard pattern to properly match `example.com` and `*.example.com`
+  - Removed overly broad fallback pattern matching for better security
+  
+- **Domain Lock Removal**: Fixed tab unlocking when domain lock is removed
+  - Corrected logic to unlock all tabs matching the removed domain patterns
+  - Previously only unlocked tabs matching the initiating tab's URL
+  
+- **Code Deduplication**: Removed duplicate pattern matching logic
+  - Centralized pattern matching in background script
+  - Content script now queries background script for domain lock status
+  - Ensures consistency and easier maintenance
+
+#### Code Quality
+- **CSS Refactoring**: Separated inline styles into CSS classes
+  - Moved unlock scope dialog styles to dedicated CSS classes
+  - Improved code readability and maintainability
+  - Better separation of concerns (structure vs. presentation)
+
 #### Technical Details
 - **New Files**:
   - `src/js/domain-manager.js`: Domain lock management logic
   - `src/html/domain-manager.html`: Domain manager interface
   - `src/css/domain-manager.css`: Domain manager styles
+  - `src/css/content.css`: Content script styles reference
   
 - **Updated Files**:
   - `src/js/background.js`: Domain lock pattern matching and management
