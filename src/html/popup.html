@@ -67,32 +67,7 @@
 
       <div class="button-group">
         <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
-      </div>
-
-      <div class="domain-lock-section">
-        <h3 style="font-size: 14px; font-weight: 600; color: #2c3e50; margin: 20px 0 12px 0;">🌐 Domain Lock</h3>
-        <p style="margin: 0 0 12px 0; color: #6c757d; font-size: 12px; font-weight: 500;">
-          Lock all tabs matching a domain pattern (persists across browser restarts)
-        </p>
-
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-          <input type="text" id="domainPattern" placeholder="example.com or *.example.com" style="flex: 1; padding: 10px 12px; border: 2px solid #e9ecef; border-radius: 8px; 
-                        font-size: 13px; font-family: 'Segoe UI', sans-serif; outline: none; 
-                        transition: all 0.2s ease;" />
-          <button id="lockDomain" class="btn-domain" style="white-space: nowrap;">🌐 Lock Domain</button>
-        </div>
-
-        <div id="lockedDomainsList" style="margin-top: 12px;">
-          <div style="font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 8px;">
-            Locked Domains:
-          </div>
-          <div id="domainsContainer" style="max-height: 150px; overflow-y: auto;">
-            <div id="noDomainsMessage" style="padding: 12px; text-align: center; color: #6c757d; 
-                                               font-size: 12px; background: #f8f9fa; border-radius: 6px;">
-              No domains locked yet
-            </div>
-          </div>
-        </div>
+        <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
       </div>
 
       <div
