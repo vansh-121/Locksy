@@ -428,3 +428,115 @@ button:disabled {
   color: #667eea;
   font-weight: 700;
 }
+
+/* Domain Lock Section Styles */
+.domain-lock-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e9ecef;
+}
+
+.btn-domain {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  margin: 0;
+  width: auto;
+}
+
+.btn-domain:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-domain:active {
+  transform: translateY(0);
+}
+
+#domainPattern {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Segoe UI', sans-serif;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#domainPattern:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#domainsContainer {
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#domainsContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+#domainsContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+#domainsContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+#domainsContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.domain-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid #007bff;
+  transition: all 0.2s ease;
+}
+
+.domain-item:hover {
+  background: #e9ecef;
+  transform: translateX(2px);
+}
+
+.btn-unlock-domain {
+  padding: 6px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.btn-unlock-domain:hover {
+  background: #c82333;
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-unlock-domain:active {
+  transform: translateY(0);
+}

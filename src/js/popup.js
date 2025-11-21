@@ -299,6 +299,33 @@ function initializeMainUI() {
         <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
       </div>
 
+      <div class="domain-lock-section">
+        <h3 style="font-size: 14px; font-weight: 600; color: #2c3e50; margin: 20px 0 12px 0;">🌐 Domain Lock</h3>
+        <p style="margin: 0 0 12px 0; color: #6c757d; font-size: 12px; font-weight: 500;">
+          Lock all tabs matching a domain pattern (persists across browser restarts)
+        </p>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="text" id="domainPattern" placeholder="example.com or *.example.com" 
+                 style="flex: 1; padding: 10px 12px; border: 2px solid #e9ecef; border-radius: 8px; 
+                        font-size: 13px; font-family: 'Segoe UI', sans-serif; outline: none; 
+                        transition: all 0.2s ease;" />
+          <button id="lockDomain" class="btn-domain" style="white-space: nowrap;">🌐 Lock Domain</button>
+        </div>
+
+        <div id="lockedDomainsList" style="margin-top: 12px;">
+          <div style="font-size: 12px; font-weight: 600; color: #495057; margin-bottom: 8px;">
+            Locked Domains:
+          </div>
+          <div id="domainsContainer" style="max-height: 150px; overflow-y: auto;">
+            <div id="noDomainsMessage" style="padding: 12px; text-align: center; color: #6c757d; 
+                                               font-size: 12px; background: #f8f9fa; border-radius: 6px;">
+              No domains locked yet
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
         <p style="margin: 0; font-size: 12px; color: #155724; font-weight: 500;">
           <strong>💡 Tip:</strong> Locked tabs can only be unlocked by entering the correct password on the tab itself.
@@ -328,12 +355,17 @@ function initializeMainUI() {
   const strengthIndicator = document.getElementById("passwordStrengthIndicator");
   const strengthText = document.getElementById("strengthText");
   const strengthBar = document.getElementById("strengthBar");
+  const domainPatternInput = document.getElementById("domainPattern");
+  const lockDomainBtn = document.getElementById("lockDomain");
+  const domainsContainer = document.getElementById("domainsContainer");
+  const noDomainsMessage = document.getElementById("noDomainsMessage");
 
   // Enhanced element validation
   const requiredElements = {
     toggleSwitch, statusIndicator, statusText, statusDot, controlsSection,
     passwordInput, currentPasswordInput, currentPasswordGroup, passwordLabel,
-    setPasswordBtn, lockTabBtn, strengthIndicator, strengthText, strengthBar
+    setPasswordBtn, lockTabBtn, strengthIndicator, strengthText, strengthBar,
+    domainPatternInput, lockDomainBtn, domainsContainer, noDomainsMessage
   };
 
   // Check for missing elements
@@ -556,6 +588,22 @@ function initializeMainUI() {
     });
   }
 
+  // Domain lock button
+  if (lockDomainBtn && domainPatternInput) {
+    lockDomainBtn.addEventListener("click", () => {
+      handleLockDomain();
+    });
+
+    domainPatternInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        handleLockDomain();
+      }
+    });
+  }
+
+  // Load and display locked domains
+  loadLockedDomains();
+
   // CRITICAL SECURITY FUNCTION: Handle Password Change with Verification
   function handleSecurePasswordChange() {
     try {
@@ -691,6 +739,124 @@ function showNotification(message, type = "info") {
   } catch (error) {
     alert(message); // Fallback to alert
   }
+}
+
+// Domain lock helper functions
+function handleLockDomain() {
+  try {
+    if (!isExtensionActive) {
+      showNotification("Please activate the extension first!", "warning");
+      return;
+    }
+
+    const domainPatternInput = document.getElementById("domainPattern");
+    if (!domainPatternInput) return;
+
+    const pattern = domainPatternInput.value.trim();
+
+    if (!pattern) {
+      showNotification("Please enter a domain pattern!", "warning");
+      return;
+    }
+
+    // Check if password is set
+    chrome.storage.local.get("lockPassword", (data) => {
+      if (!data.lockPassword) {
+        showNotification("Please set a master password first!", "warning");
+        return;
+      }
+
+      // Send lock domain message to background
+      chrome.runtime.sendMessage({
+        action: "lockDomain",
+        pattern: pattern
+      }, (response) => {
+        if (chrome.runtime.lastError) {
+          showNotification("❌ Failed to lock domain: " + chrome.runtime.lastError.message, "error");
+        } else if (response && response.success) {
+          showNotification(`✅ Domain "${pattern}" locked successfully!`, "success");
+          domainPatternInput.value = "";
+          loadLockedDomains();
+        } else if (response && response.error) {
+          showNotification("❌ " + response.error, "error");
+        }
+      });
+    });
+  } catch (error) {
+    showNotification("Error locking domain", "error");
+  }
+}
+
+function loadLockedDomains() {
+  chrome.runtime.sendMessage({ action: "getLockedDomains" }, (response) => {
+    if (response && response.success && response.domains) {
+      displayLockedDomains(response.domains);
+    }
+  });
+}
+
+function displayLockedDomains(domains) {
+  const domainsContainer = document.getElementById("domainsContainer");
+  const noDomainsMessage = document.getElementById("noDomainsMessage");
+
+  if (!domainsContainer) return;
+
+  if (domains.length === 0) {
+    if (noDomainsMessage) {
+      noDomainsMessage.style.display = "block";
+    }
+    domainsContainer.innerHTML = `
+      <div id="noDomainsMessage" style="padding: 12px; text-align: center; color: #6c757d; 
+                                         font-size: 12px; background: #f8f9fa; border-radius: 6px;">
+        No domains locked yet
+      </div>
+    `;
+  } else {
+    domainsContainer.innerHTML = domains.map(pattern => `
+      <div class="domain-item" style="display: flex; align-items: center; justify-content: space-between; 
+                                      padding: 10px 12px; background: #f8f9fa; border-radius: 6px; 
+                                      margin-bottom: 8px; border-left: 3px solid #007bff;">
+        <span style="font-size: 13px; font-weight: 500; color: #2c3e50; flex: 1; 
+                     font-family: 'Consolas', monospace;">🌐 ${escapeHtml(pattern)}</span>
+        <button class="btn-unlock-domain" data-pattern="${escapeHtml(pattern)}" 
+                style="padding: 6px 12px; background: #dc3545; color: white; border: none; 
+                       border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; 
+                       transition: all 0.2s ease;">
+          🗑️ Remove
+        </button>
+      </div>
+    `).join('');
+
+    // Add event listeners to unlock buttons
+    domainsContainer.querySelectorAll('.btn-unlock-domain').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const pattern = e.target.getAttribute('data-pattern');
+        handleUnlockDomain(pattern);
+      });
+    });
+  }
+}
+
+function handleUnlockDomain(pattern) {
+  if (confirm(`Remove domain lock for "${pattern}"?\n\nThis will unlock all tabs matching this pattern.`)) {
+    chrome.runtime.sendMessage({
+      action: "unlockDomain",
+      pattern: pattern
+    }, (response) => {
+      if (response && response.success) {
+        showNotification(`✅ Domain "${pattern}" unlocked successfully!`, "success");
+        loadLockedDomains();
+      } else {
+        showNotification("❌ Failed to unlock domain", "error");
+      }
+    });
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Developer Information - Configuration

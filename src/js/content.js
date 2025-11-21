@@ -1,3 +1,23 @@
+// Message listener for overlay removal
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "removeOverlay") {
+    const overlay = document.getElementById("lockOverlay");
+    const pageBlur = document.getElementById("securePageBlur");
+    const interactionBlocker = document.getElementById("secureInteractionBlocker");
+
+    if (overlay) {
+      overlay.style.opacity = "0";
+      overlay.style.transform = "scale(0.9)";
+      setTimeout(() => {
+        overlay.remove();
+        if (pageBlur) pageBlur.remove();
+        if (interactionBlocker) interactionBlocker.remove();
+      }, 300);
+    }
+    sendResponse({ success: true });
+  }
+});
+
 // Check if extension is active before showing lock overlay
 chrome.storage.local.get("extensionActive", (data) => {
   if (!data.extensionActive) {
@@ -493,7 +513,7 @@ chrome.storage.local.get("extensionActive", (data) => {
       const startTime = performance.now();
       try {
         // Attempt console operation to detect if DevTools is open
-        const tempFunc = () => {};
+        const tempFunc = () => { };
         tempFunc();
       } catch (e) {
         // Ignore
@@ -606,12 +626,38 @@ chrome.storage.local.get("extensionActive", (data) => {
         setTimeout(async () => {
           const isMatch = await verifyPassword(enteredPassword, data.lockPassword);
           if (data && isMatch) {
-            // Notify background script that tab is unlocked
-            chrome.runtime.sendMessage({
-              action: "unlock",
-              tabId: null // Will be filled by background script using sender.tab.id
+            // Check if this tab is domain-locked to offer unlock scope options
+            chrome.storage.local.get("lockedDomains", (domainData) => {
+              const lockedDomains = domainData.lockedDomains || [];
+              const currentUrl = window.location.href;
+
+              // Check if current URL matches any locked domain
+              const isDomainLocked = lockedDomains.some(pattern => {
+                try {
+                  const hostname = new URL(currentUrl).hostname;
+                  if (pattern === hostname) return true;
+                  if (pattern.startsWith('*.')) {
+                    const domain = pattern.slice(2);
+                    return hostname.endsWith(domain) || hostname === domain.replace('*.', '');
+                  }
+                  return hostname.includes(pattern) || pattern.includes(hostname);
+                } catch (e) {
+                  return false;
+                }
+              });
+
+              if (isDomainLocked) {
+                // Show unlock scope options
+                showUnlockScopeOptions();
+              } else {
+                // Regular tab lock - just unlock
+                chrome.runtime.sendMessage({
+                  action: "unlock",
+                  scope: "tab-only"
+                });
+                unlock();
+              }
             });
-            unlock();
           } else {
             showError("Incorrect password! Please try again.");
             unlockBtn.innerHTML = "Unlock Tab";
@@ -623,6 +669,94 @@ chrome.storage.local.get("extensionActive", (data) => {
         }, 500);
       });
     };
+
+    function showUnlockScopeOptions() {
+      // Replace unlock button with scope options
+      const lockContainer = overlay.querySelector('.lock-container');
+      const hostname = new URL(window.location.href).hostname;
+
+      lockContainer.innerHTML = `
+        <div style="text-align: center;">
+          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(255, 255, 255, 0.2); 
+                      border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">✅</span>
+          </div>
+          <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: white;">Password Correct!</h1>
+          <p style="font-size: 16px; margin: 0 0 28px 0; color: rgba(255, 255, 255, 0.9); line-height: 1.5;">
+            This tab is protected by a domain lock.<br>
+            Choose unlock scope:
+          </p>
+          
+          <button id="unlockThisTab" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
+                                            border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
+                                            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); 
+                                            color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); 
+                                            transition: all 0.3s ease;">
+            🔓 Unlock This Tab Only
+          </button>
+          
+          <button id="unlockAllDomainTabs" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
+                                                   border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
+                                                   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
+                                                   color: white; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
+                                                   transition: all 0.3s ease;">
+            🌐 Unlock All ${hostname} Tabs
+          </button>
+          
+          <button id="removeDomainLock" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
+                                               border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
+                                               background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
+                                               color: white; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); 
+                                               transition: all 0.3s ease;">
+            🗑️ Remove Domain Lock Entirely
+          </button>
+          
+          <p style="font-size: 12px; margin: 20px 0 0 0; color: rgba(255, 255, 255, 0.7); line-height: 1.4;">
+            <strong>Note:</strong> "This Tab Only" keeps the domain lock active but temporarily unlocks this tab.
+          </p>
+        </div>
+      `;
+
+      // Add event listeners for scope buttons
+      const unlockThisTab = overlay.querySelector('#unlockThisTab');
+      const unlockAllDomainTabs = overlay.querySelector('#unlockAllDomainTabs');
+      const removeDomainLock = overlay.querySelector('#removeDomainLock');
+
+      unlockThisTab.onclick = () => {
+        chrome.runtime.sendMessage({
+          action: "unlock",
+          scope: "tab-only"
+        });
+        unlock();
+      };
+
+      unlockAllDomainTabs.onclick = () => {
+        chrome.runtime.sendMessage({
+          action: "unlock",
+          scope: "all-domain-tabs"
+        });
+        unlock();
+      };
+
+      removeDomainLock.onclick = () => {
+        chrome.runtime.sendMessage({
+          action: "unlock",
+          scope: "remove-domain-lock"
+        });
+        unlock();
+      };
+
+      // Add hover effects
+      [unlockThisTab, unlockAllDomainTabs, removeDomainLock].forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          btn.style.transform = 'translateY(-2px)';
+          btn.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = 'translateY(0)';
+        });
+      });
+    }
 
     // Auto-focus password input
     setTimeout(() => passwordInput.focus(), 100);
