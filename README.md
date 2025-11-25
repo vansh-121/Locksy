@@ -7,7 +7,7 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.5-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.6-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -37,6 +37,39 @@
 ---
 
 ## 🆕 Recent Improvements
+
+### Version 1.0.6 - DOMAIN LOCK FEATURE (November 22, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![New Feature](https://img.shields.io/badge/feature-domain%20lock-blueviolet?style=flat-square)
+  
+</div>
+
+#### 🌐 **New Feature: Domain Lock**
+- 🔒 **Lock Entire Domains**: Lock all tabs matching a domain pattern (e.g., `*.google.com`, `github.com`)
+- 🔄 **Persistent Protection**: Domain locks persist across browser restarts and sessions
+- 🆕 **Auto-Lock New Tabs**: Automatically locks new tabs that match locked domain patterns
+- ⚙️ **Unlock Preferences**: Choose default unlock behavior for each domain:
+  - Unlock only the current tab (keeps domain lock active)
+  - Unlock all tabs for this domain (temporary exemption)
+  - Remember your preference for future unlocks
+- 🎯 **Wildcard Support**: Lock entire subdomains with `*.example.com` pattern
+- 🛡️ **Domain Manager**: Dedicated interface to manage all locked domains and preferences
+
+#### 🔧 **Technical Improvements**
+- **Pattern Matching**: Smart domain pattern matching with exact match and wildcard support
+- **Temporary Exemptions**: Track temporarily unlocked tabs separately from domain locks
+- **Preference Storage**: Per-domain unlock preference persistence
+- **Service Worker Optimization**: Domain locks restored on service worker wake-up
+
+**What's New:** This version introduces a powerful domain locking feature that lets you protect all tabs from specific websites. Perfect for locking work domains (like company portals), sensitive services (like banking sites), or entire platforms (like social media). Set it once, and all matching tabs are automatically protected!
+
+---
 
 ### Version 1.0.5 - Release (November 15, 2025)
 
