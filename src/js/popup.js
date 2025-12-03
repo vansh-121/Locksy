@@ -727,8 +727,16 @@ const DEVELOPER_INFO = {
   email: "vansh.sethi98760@gmail.com"
 };
 
+// Track if developer info has been initialized to prevent duplicate listeners
+let developerInfoInitialized = false;
+
 // Initialize developer information links and toggle
 function initializeDeveloperInfo() {
+  // Prevent duplicate initialization
+  if (developerInfoInitialized) {
+    return;
+  }
+
   try {
     const developerName = document.getElementById("developerName");
     const githubLink = document.getElementById("githubLink");
@@ -736,6 +744,11 @@ function initializeDeveloperInfo() {
     const emailLink = document.getElementById("emailLink");
     const toggleButton = document.getElementById("toggleDeveloperInfo");
     const developerInfoSection = document.getElementById("developerInfo");
+
+    // Only proceed if at least some elements exist
+    if (!toggleButton && !githubLink) {
+      return;
+    }
 
     if (developerName) {
       developerName.textContent = DEVELOPER_INFO.name;
@@ -759,10 +772,8 @@ function initializeDeveloperInfo() {
 
     if (emailLink) {
       emailLink.href = `mailto:${DEVELOPER_INFO.email}`;
-      emailLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        chrome.tabs.create({ url: `mailto:${DEVELOPER_INFO.email}` });
-      });
+      // Allow default mailto: behavior to open default mail client
+      // No need to prevent default or use chrome.tabs.create for mailto links
     }
 
     // Toggle button functionality
@@ -777,14 +788,10 @@ function initializeDeveloperInfo() {
         }
       });
     }
+
+    // Mark as initialized
+    developerInfoInitialized = true;
   } catch (error) {
     // Silently handle initialization errors
   }
-}
-
-// Call this function after DOM is loaded
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDeveloperInfo);
-} else {
-  initializeDeveloperInfo();
 }
