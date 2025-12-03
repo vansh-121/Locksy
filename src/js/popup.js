@@ -298,6 +298,7 @@ function initializeMainUI() {
       <div id="lockControls" class="button-group" style="display: none;">
         <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
+        <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
       </div>
 
       <div id="lockTip" style="display: none; margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
@@ -406,6 +407,7 @@ function initializeMainUI() {
   function updatePasswordUI() {
     const lockControls = document.getElementById("lockControls");
     const lockTip = document.getElementById("lockTip");
+    const keyboardShortcuts = document.getElementById("keyboardShortcuts");
 
     if (hasExistingPassword) {
       // Password exists - require current password to change
@@ -414,10 +416,11 @@ function initializeMainUI() {
       passwordInput.placeholder = "Enter new master password";
       setPasswordBtn.textContent = "Change Password";
       setPasswordBtn.className = "btn-primary";
-      
+
       // Show lock controls since password is set
       if (lockControls) lockControls.style.display = "block";
       if (lockTip) lockTip.style.display = "block";
+      if (keyboardShortcuts) keyboardShortcuts.style.display = "block";
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";
@@ -425,10 +428,11 @@ function initializeMainUI() {
       passwordInput.placeholder = "Set Your Master Password";
       setPasswordBtn.textContent = "Set Password";
       setPasswordBtn.className = "btn-primary";
-      
+
       // Hide lock controls until password is set
       if (lockControls) lockControls.style.display = "none";
       if (lockTip) lockTip.style.display = "none";
+      if (keyboardShortcuts) keyboardShortcuts.style.display = "none";
     }
   }
 
@@ -578,6 +582,36 @@ function initializeMainUI() {
         type: 'popup',
         width: 500,
         height: 650
+      });
+    });
+  }
+
+  // Open Keyboard Shortcuts Page button
+  const openShortcutsBtn = document.getElementById("openShortcutsPage");
+  if (openShortcutsBtn) {
+    openShortcutsBtn.addEventListener("click", () => {
+      // Detect browser and open appropriate shortcuts page
+      const userAgent = navigator.userAgent.toLowerCase();
+      let shortcutsUrl = 'chrome://extensions/shortcuts';
+
+      if (userAgent.includes('edg/')) {
+        shortcutsUrl = 'edge://extensions/shortcuts';
+      } else if (userAgent.includes('brave')) {
+        shortcutsUrl = 'brave://extensions/shortcuts';
+      } else if (userAgent.includes('opr/') || userAgent.includes('opera')) {
+        shortcutsUrl = 'opera://extensions/shortcuts';
+      } else if (userAgent.includes('vivaldi')) {
+        shortcutsUrl = 'vivaldi://extensions/shortcuts';
+      }
+
+      // Open shortcuts page in new tab
+      chrome.tabs.create({ url: shortcutsUrl }, () => {
+        if (chrome.runtime.lastError) {
+          // Fallback if direct navigation fails
+          showNotification("⚙️ Please manually navigate to your browser's extensions shortcuts page", "info");
+        } else {
+          showNotification("✅ Opening keyboard shortcuts page...", "success");
+        }
       });
     });
   }

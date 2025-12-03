@@ -215,8 +215,11 @@
 ### 🎯 Core Functionality
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
+- **Domain Locking**: Lock entire domains with wildcard support
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
+- **Keyboard Shortcuts**: Optional customizable shortcuts for power users
+- **Badge Counter**: See number of locked tabs at a glance
 - **Incognito Mode**: Works seamlessly in private browsing windows (requires manual activation)
 
 ### 🎨 Enhanced UI
@@ -326,6 +329,55 @@ For security and technical reasons, the following types of tabs **cannot be lock
 - **Visual Security Indicators**: Clear UI showing security requirements
 - **Failed Attempt Logging**: Security events tracked in console
 - **Incognito Protection**: Same security level in private browsing mode
+
+### ⌨️ Keyboard Shortcuts
+Locksy includes pre-configured keyboard shortcuts that work out-of-the-box. **Ready to use** - No setup required!
+
+**Available Commands:**
+- **Lock Current Tab** (`Alt+Shift+9`) - Instantly locks the active tab
+- **Open Domain Manager** (`Alt+Shift+0`) - Opens Domain Lock Manager window
+- **Lock All Tabs** (`Alt+Shift+8`) - Locks all tabs in current window
+
+**⚙️ Customize if Needed:**
+
+1. **Navigate to Shortcuts Page:**
+   - Chrome: `chrome://extensions/shortcuts`
+   - Edge: `edge://extensions/shortcuts`
+   - Brave: `brave://extensions/shortcuts`
+
+2. **Find Locksy** in the list
+
+3. **Assign Your Preferred Keys:**
+   - Click the pencil icon next to each command
+   - Press your desired key combination
+   - **Default shortcuts** (auto-assigned):
+     - `Alt+Shift+9` - Lock Current Tab
+     - `Alt+Shift+0` - Domain Manager
+     - `Alt+Shift+8` - Lock All Tabs
+   - **Change if needed** - Click pencil icon at `chrome://extensions/shortcuts`
+
+4. **Avoid These Conflicts:**
+   - ❌ Don't use keys already taken by other extensions
+   - ❌ Avoid browser shortcuts (Ctrl+T, Ctrl+W, Ctrl+D, etc.)
+   - ✅ Use `Alt+Shift+[Letter]` combinations for best results
+   - ✅ Try alternative letters if conflicts occur (e.g., Alt+Shift+Q, Alt+Shift+Z)
+
+**Troubleshooting:**
+- **"Not set" or grayed out?** Another extension is using that combo
+- **Not working?** Check if browser shortcuts override it
+- **Still conflicts?** Try different key combinations like:
+  - `Alt+Shift+Q` (Q for Quick lock)
+  - `Alt+Shift+Z` (Z for locK - alternative)
+  - `Ctrl+Shift+Period` for special keys
+  - `Alt+Shift+[0-9]` for number combinations
+
+**Features:**
+- ✨ Smart notifications for every action
+- 🛡️ Automatic safety checks (password, activation status)
+- ⚡ Instant feedback with detailed messages
+- 🎯 Bulk operations (lock all tabs at once)
+
+See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed usage guide.
 
 ### 🕶️ Incognito Mode
 1. **Enable Permission**: Go to `chrome://extensions/` → Locksy → Details → "Allow in Incognito"

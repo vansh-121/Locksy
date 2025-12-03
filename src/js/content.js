@@ -1,6 +1,9 @@
 // Store original favicon to restore later
 let originalFavicon = null;
 
+// Mark that this content script is loaded
+let contentScriptLoaded = true;
+
 // Function to create and set lock icon favicon
 function setLockFavicon() {
   // Store original favicon if not already stored
@@ -59,8 +62,21 @@ function restoreOriginalFavicon() {
   }
 }
 
-// Message listener for overlay removal
+// Message listener for overlay removal, ping, and creating lock
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "ping") {
+    // Respond to ping to indicate script is loaded
+    sendResponse({ loaded: true });
+    return true;
+  }
+
+  if (message.action === "createLock") {
+    // Create the lock overlay
+    createLockOverlay();
+    sendResponse({ success: true });
+    return true;
+  }
+
   if (message.action === "removeOverlay") {
     const overlay = document.getElementById("lockOverlay");
     const pageBlur = document.getElementById("securePageBlur");
@@ -73,25 +89,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         overlay.remove();
         if (pageBlur) pageBlur.remove();
         if (interactionBlocker) interactionBlocker.remove();
-        
+
         // Restore original favicon when unlocked
         restoreOriginalFavicon();
       }, 300);
     }
     sendResponse({ success: true });
+    return true;
   }
 });
 
-// Check if extension is active before showing lock overlay
-chrome.storage.local.get("extensionActive", (data) => {
-  if (!data.extensionActive) {
-    return; // Don't show lock overlay if extension is inactive
+// Function to create the lock overlay
+function createLockOverlay() {
+  // Remove existing overlay if present (to allow re-locking)
+  const existingOverlay = document.getElementById("lockOverlay");
+  if (existingOverlay) {
+    existingOverlay.remove();
+    const existingBlur = document.getElementById("securePageBlur");
+    const existingBlocker = document.getElementById("secureInteractionBlocker");
+    if (existingBlur) existingBlur.remove();
+    if (existingBlocker) existingBlocker.remove();
   }
 
-  // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
-  // which is injected programmatically from background.js
+  // Check if extension is active
+  chrome.storage.local.get("extensionActive", (data) => {
+    if (!data.extensionActive) {
+      return; // Don't show lock overlay if extension is inactive
+    }
 
-  if (!document.getElementById("lockOverlay")) {
+    // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
+    // which is injected programmatically from background.js
     // SECURITY LAYER 1: Blur all page content BEFORE creating overlay
     const pageBlur = document.createElement("div");
     pageBlur.id = "securePageBlur";
@@ -294,7 +321,7 @@ chrome.storage.local.get("extensionActive", (data) => {
           overlay.remove();
           pageBlur.remove();
           interactionBlocker.remove();
-          
+
           // Restore original favicon
           restoreOriginalFavicon();
         }, 300);
@@ -860,6 +887,8 @@ chrome.storage.local.get("extensionActive", (data) => {
 
     // Auto-focus password input
     setTimeout(() => passwordInput.focus(), 100);
-  }
+  });
+}
 
-});
+// Call createLockOverlay on initial script load
+createLockOverlay();
