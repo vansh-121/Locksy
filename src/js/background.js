@@ -1,7 +1,17 @@
 let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
-let lockingInProgress = new Set(); // Track tabs currently being locked to prevent duplicate injections
+let lockingInProgress = new Map(); // Track tabs currently being locked with timestamp
+
+// Clean up old timestamps every minute to prevent memory leak
+setInterval(() => {
+  const now = Date.now();
+  for (const [tabId, timestamp] of lockingInProgress.entries()) {
+    if (now - timestamp > 60000) { // Remove entries older than 60 seconds
+      lockingInProgress.delete(tabId);
+    }
+  }
+}, 60000);
 
 // Function to update extension badge with locked tabs count
 function updateBadge() {
@@ -385,19 +395,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 function lockTab(tabId, sendResponse) {
   // Check if we're already locking this tab (prevents race conditions)
-  if (lockingInProgress.has(tabId)) {
+  const now = Date.now();
+  const lastLockTime = lockingInProgress.get(tabId);
+  
+  // If locked within last 5 seconds, ignore this request
+  if (lastLockTime && (now - lastLockTime) < 5000) {
     if (sendResponse) {
-      sendResponse({ success: true, message: "Lock already in progress" });
+      sendResponse({ success: true, message: "Lock already in progress or recently completed" });
     }
     return;
   }
 
-  // Mark this tab as being locked
-  lockingInProgress.add(tabId);
+  // Mark this tab as being locked with current timestamp
+  lockingInProgress.set(tabId, now);
 
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
-      lockingInProgress.delete(tabId);
+      // Keep timestamp, will expire naturally after 5 seconds
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
@@ -445,8 +459,7 @@ function injectAndLock(tabId, tab, sendResponse) {
         chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
         updateBadge();
 
-        // Clear lock flag after 2 seconds to allow re-locks after navigation
-        setTimeout(() => lockingInProgress.delete(tabId), 2000);
+        // Timestamp will naturally expire after 5 seconds
 
         chrome.notifications.create({
           type: "basic",
@@ -459,8 +472,7 @@ function injectAndLock(tabId, tab, sendResponse) {
           sendResponse({ success: true, message: "Tab locked successfully" });
         }
       }).catch((error) => {
-        // Clear lock flag on error
-        lockingInProgress.delete(tabId);
+        // Keep timestamp, will expire naturally after 5 seconds
         
         const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
         chrome.notifications.create({
@@ -478,8 +490,7 @@ function injectAndLock(tabId, tab, sendResponse) {
       // Content script already exists, just send createLock message
       chrome.tabs.sendMessage(tabId, { action: "createLock" }, (response) => {
         if (chrome.runtime.lastError || !response || !response.success) {
-          // Clear throttle on error
-          lockingInProgress.delete(tabId);
+          // Keep timestamp, will expire naturally after 5 seconds
           
           const errorMsg = "Failed to create lock overlay";
           chrome.notifications.create({
@@ -498,8 +509,7 @@ function injectAndLock(tabId, tab, sendResponse) {
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
           updateBadge();
 
-          // Clear lock flag after 2 seconds to allow re-locks after navigation
-          setTimeout(() => lockingInProgress.delete(tabId), 2000);
+          // Timestamp will naturally expire after 5 seconds
 
           chrome.notifications.create({
             type: "basic",
@@ -536,7 +546,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   // Wait for URL to be available and check if it matches a locked domain
   const checkAndLock = (tabId, changeInfo) => {
     if (changeInfo.url && isDomainLocked(changeInfo.url) && !temporarilyUnlockedTabs.has(tabId)) {
-      setTimeout(() => lockTab(tabId), 10);
+      lockTab(tabId);
     }
   };
 
@@ -551,7 +561,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   chrome.tabs.onUpdated.addListener(listener);
 });
 
-// Handle tab updates (including refreshes) - ULTRA-FAST re-lock
+// Handle tab updates (refreshes, navigations, page loads)
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Ensure lockedTabs is loaded (in case service worker just woke up)
   if (lockedTabs.size === 0 && lockedDomains.length === 0) {
@@ -562,26 +572,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const isTabLocked = lockedTabs.has(tabId);
   const isTabDomainLocked = tab.url && isDomainLocked(tab.url) && !temporarilyUnlockedTabs.has(tabId);
 
-  // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
-  if (isTabLocked || isTabDomainLocked) {
-    if (changeInfo.status === 'loading') {
-      // IMMEDIATE re-lock on loading - 10ms delay only
-      setTimeout(() => {
-        lockTab(tabId);
-      }, 10);
-    } else if (changeInfo.status === 'complete') {
-      // Double-check re-lock on complete - 5ms delay
-      setTimeout(() => {
-        lockTab(tabId);
-      }, 5);
-    }
-
-    // Additional check for any URL changes
-    if (changeInfo.url) {
-      setTimeout(() => {
-        lockTab(tabId);
-      }, 5);
-    }
+  // Re-lock when page load completes
+  if ((isTabLocked || isTabDomainLocked) && changeInfo.status === 'complete') {
+    lockTab(tabId);
   }
 
   // Clear temporary exemption if URL changes to non-matching domain
@@ -592,82 +585,21 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 });
 
-// Handle navigation events to maintain locks - INSTANT re-lock
-chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
-  // Ensure lockedTabs is loaded (in case service worker just woke up)
-  if (lockedTabs.size === 0 && lockedDomains.length === 0) {
-    await restoreLockedTabs();
-  }
 
-  if (details.frameId === 0) {
-    const isTabLocked = lockedTabs.has(details.tabId);
-    const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
-    if (isTabLocked || isUrlDomainLocked) {
-      // Tab is locked and user is trying to navigate - re-lock INSTANTLY
-      setTimeout(() => {
-        lockTab(details.tabId);
-      }, 5); // Reduced from 200ms to 5ms
-    }
-  }
-});
-
-// Additional security: Monitor for any committed navigation
-chrome.webNavigation.onCommitted.addListener(async (details) => {
-  // Ensure lockedTabs is loaded (in case service worker just woke up)
-  if (lockedTabs.size === 0 && lockedDomains.length === 0) {
-    await restoreLockedTabs();
-  }
-
-  if (details.frameId === 0) {
-    const isTabLocked = lockedTabs.has(details.tabId);
-    const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
-
-    if (isTabLocked || isUrlDomainLocked) {
-      // Re-lock immediately on committed navigation
-      setTimeout(() => {
-        lockTab(details.tabId);
-      }, 1); // Almost instant - 1ms delay
-    }
-  }
-});
-
-// Additional security: Monitor for DOM content loaded
-chrome.webNavigation.onDOMContentLoaded.addListener(async (details) => {
-  // Ensure lockedTabs is loaded (in case service worker just woke up)
-  if (lockedTabs.size === 0 && lockedDomains.length === 0) {
-    await restoreLockedTabs();
-  }
-
-  if (details.frameId === 0) {
-    const isTabLocked = lockedTabs.has(details.tabId);
-    const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
-
-    if (isTabLocked || isUrlDomainLocked) {
-      // Re-lock when DOM is ready
-      setTimeout(() => {
-        lockTab(details.tabId);
-      }, 1); // Almost instant - 1ms delay
-    }
-  }
-});
-
-// Additional security: Monitor for completed navigation
+// Backup safety net: Ensure lock is applied when navigation completes
 chrome.webNavigation.onCompleted.addListener(async (details) => {
-  // Ensure lockedTabs is loaded (in case service worker just woke up)
-  if (lockedTabs.size === 0 && lockedDomains.length === 0) {
-    await restoreLockedTabs();
-  }
-
   if (details.frameId === 0) {
+    // Ensure lockedTabs is loaded
+    if (lockedTabs.size === 0 && lockedDomains.length === 0) {
+      await restoreLockedTabs();
+    }
+
     const isTabLocked = lockedTabs.has(details.tabId);
     const isUrlDomainLocked = isDomainLocked(details.url) && !temporarilyUnlockedTabs.has(details.tabId);
 
     if (isTabLocked || isUrlDomainLocked) {
-      // Final re-lock when page is fully loaded
-      setTimeout(() => {
-        lockTab(details.tabId);
-      }, 5);
+      lockTab(details.tabId);
     }
   }
 });
