@@ -1,3 +1,64 @@
+// Store original favicon to restore later
+let originalFavicon = null;
+
+// Function to create and set lock icon favicon
+function setLockFavicon() {
+  // Store original favicon if not already stored
+  if (!originalFavicon) {
+    const existingFavicon = document.querySelector('link[rel*="icon"]');
+    if (existingFavicon) {
+      originalFavicon = existingFavicon.href;
+    }
+  }
+
+  // Create canvas to draw lock icon
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+
+  // Draw red background circle
+  ctx.fillStyle = '#dc3545';
+  ctx.beginPath();
+  ctx.arc(16, 16, 16, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Draw lock icon
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 20px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🔒', 16, 16);
+
+  // Convert to data URL
+  const faviconUrl = canvas.toDataURL('image/png');
+
+  // Remove existing favicons
+  const existingLinks = document.querySelectorAll('link[rel*="icon"]');
+  existingLinks.forEach(link => link.remove());
+
+  // Add new lock favicon
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.type = 'image/png';
+  link.href = faviconUrl;
+  document.head.appendChild(link);
+}
+
+// Function to restore original favicon
+function restoreOriginalFavicon() {
+  if (originalFavicon) {
+    const existingLinks = document.querySelectorAll('link[rel*="icon"]');
+    existingLinks.forEach(link => link.remove());
+
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/x-icon';
+    link.href = originalFavicon;
+    document.head.appendChild(link);
+  }
+}
+
 // Message listener for overlay removal
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "removeOverlay") {
@@ -12,6 +73,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         overlay.remove();
         if (pageBlur) pageBlur.remove();
         if (interactionBlocker) interactionBlocker.remove();
+        
+        // Restore original favicon when unlocked
+        restoreOriginalFavicon();
       }, 300);
     }
     sendResponse({ success: true });
@@ -230,11 +294,17 @@ chrome.storage.local.get("extensionActive", (data) => {
           overlay.remove();
           pageBlur.remove();
           interactionBlocker.remove();
+          
+          // Restore original favicon
+          restoreOriginalFavicon();
         }, 300);
       }, 800);
     }
 
     document.body.appendChild(overlay);
+
+    // Set lock icon on favicon
+    setLockFavicon();
 
     // ========== CRITICAL SECURITY: MUTATION OBSERVER TO PREVENT OVERLAY DELETION (OPTIMIZED) ==========
     let securityViolations = 0;

@@ -2,6 +2,19 @@ let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
 
+// Function to update extension badge with locked tabs count
+function updateBadge() {
+  const count = lockedTabs.size;
+  
+  if (count > 0) {
+    chrome.action.setBadgeText({ text: count.toString() });
+    chrome.action.setBadgeBackgroundColor({ color: '#dc3545' }); // Red background
+    chrome.action.setBadgeTextColor({ color: '#ffffff' }); // White text
+  } else {
+    chrome.action.setBadgeText({ text: '' }); // Clear badge when no locks
+  }
+}
+
 // Pattern matching for domain locks
 function matchesPattern(url, pattern) {
   try {
@@ -81,6 +94,10 @@ async function restoreLockedTabs() {
       if (data.lockedDomains && Array.isArray(data.lockedDomains)) {
         lockedDomains = data.lockedDomains;
       }
+      
+      // Update badge after restoring
+      updateBadge();
+      
       resolve();
     });
   });
@@ -166,6 +183,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           lockedTabs.add(message.tabId);
           // Persist locked tabs to storage
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+          // Update badge
+          updateBadge();
           lockTab(message.tabId, sendResponse);
         } else {
           chrome.notifications.create({
@@ -188,6 +207,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Just unlock this specific tab
         lockedTabs.delete(tabId);
         chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        // Update badge
+        updateBadge();
 
         // If tab was domain-locked, add to temporary exemption
         chrome.tabs.get(tabId, (tab) => {
@@ -212,6 +233,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 } catch (e) { }
               });
               chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              // Update badge
+              updateBadge();
             });
           }
         });
@@ -238,6 +261,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 }
               });
               chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              // Update badge
+              updateBadge();
             });
           }
         });
@@ -245,6 +270,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Default: just unlock this tab
         lockedTabs.delete(tabId);
         chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        // Update badge
+        updateBadge();
       }
 
       chrome.notifications.create({
@@ -289,6 +316,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                   lockTab(tab.id);
                 }
               });
+              // Update badge after locking all matching tabs
+              setTimeout(() => updateBadge(), 500);
             });
 
             chrome.notifications.create({
@@ -329,6 +358,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
           });
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+          updateBadge();
         });
 
         chrome.notifications.create({
@@ -372,7 +402,12 @@ function lockTab(tabId, sendResponse) {
       chrome.scripting.executeScript({
         target: { tabId },
         files: ["src/js/crypto-utils.js", "src/js/content.js"],
-      }).then(() => {
+        }).then(() => {
+        // Add to locked tabs and update badge
+        lockedTabs.add(tabId);
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        updateBadge();
+        
         chrome.notifications.create({
           type: "basic",
           iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
@@ -417,6 +452,8 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   temporarilyUnlockedTabs.delete(tabId);
   // Update storage
   chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+  // Update badge
+  updateBadge();
 });
 
 // Handle new tabs - auto-lock if domain is locked
