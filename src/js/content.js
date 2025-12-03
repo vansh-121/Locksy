@@ -1,9 +1,6 @@
 // Store original favicon to restore later
 let originalFavicon = null;
 
-// Mark that this content script is loaded
-let contentScriptLoaded = true;
-
 // Function to create and set lock icon favicon
 function setLockFavicon() {
   // Store original favicon if not already stored
@@ -62,21 +59,8 @@ function restoreOriginalFavicon() {
   }
 }
 
-// Message listener for overlay removal, ping, and creating lock
+// Message listener for overlay removal
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "ping") {
-    // Respond to ping to indicate script is loaded
-    sendResponse({ loaded: true });
-    return true;
-  }
-
-  if (message.action === "createLock") {
-    // Create the lock overlay
-    createLockOverlay();
-    sendResponse({ success: true });
-    return true;
-  }
-
   if (message.action === "removeOverlay") {
     const overlay = document.getElementById("lockOverlay");
     const pageBlur = document.getElementById("securePageBlur");
@@ -99,23 +83,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Function to create the lock overlay
-function createLockOverlay() {
-  // Remove existing overlay if present (to allow re-locking)
-  const existingOverlay = document.getElementById("lockOverlay");
-  if (existingOverlay) {
-    existingOverlay.remove();
-    const existingBlur = document.getElementById("securePageBlur");
-    const existingBlocker = document.getElementById("secureInteractionBlocker");
-    if (existingBlur) existingBlur.remove();
-    if (existingBlocker) existingBlocker.remove();
+// Check if extension is active before showing lock overlay
+chrome.storage.local.get("extensionActive", (data) => {
+  if (!data.extensionActive) {
+    return; // Don't show lock overlay if extension is inactive
   }
 
-  // Check if extension is active
-  chrome.storage.local.get("extensionActive", (data) => {
-    if (!data.extensionActive) {
-      return; // Don't show lock overlay if extension is inactive
-    }
+  // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
+  // which is injected programmatically from background.js
+
+  if (!document.getElementById("lockOverlay")) {
 
     // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
     // which is injected programmatically from background.js
@@ -887,8 +864,6 @@ function createLockOverlay() {
 
     // Auto-focus password input
     setTimeout(() => passwordInput.focus(), 100);
-  });
-}
+  }
 
-// Call createLockOverlay on initial script load
-createLockOverlay();
+});
