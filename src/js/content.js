@@ -1,5 +1,7 @@
-// Store original favicon to restore later
-let originalFavicon = null;
+// Store original favicon to restore later (check if already declared)
+if (typeof originalFavicon === 'undefined') {
+  var originalFavicon = null;
+}
 
 // Function to create and set lock icon favicon
 function setLockFavicon() {
