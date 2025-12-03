@@ -59,8 +59,25 @@ function restoreOriginalFavicon() {
   }
 }
 
-// Message listener for overlay removal
+// Message listener for overlay removal, ping, and createLock
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "ping") {
+    // Respond to ping to indicate script is loaded
+    sendResponse({ loaded: true });
+    return true;
+  }
+
+  if (message.action === "createLock") {
+    // Create lock overlay if it doesn't exist
+    if (!document.getElementById("lockOverlay")) {
+      createLockOverlay();
+      sendResponse({ success: true });
+    } else {
+      sendResponse({ success: true, message: "Lock already exists" });
+    }
+    return true;
+  }
+
   if (message.action === "removeOverlay") {
     const overlay = document.getElementById("lockOverlay");
     const pageBlur = document.getElementById("securePageBlur");
@@ -83,16 +100,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Check if extension is active before showing lock overlay
-chrome.storage.local.get("extensionActive", (data) => {
-  if (!data.extensionActive) {
-    return; // Don't show lock overlay if extension is inactive
-  }
+// Function to create the lock overlay
+function createLockOverlay() {
+  // Check if extension is active before showing lock overlay
+  chrome.storage.local.get("extensionActive", (data) => {
+    if (!data.extensionActive) {
+      return; // Don't show lock overlay if extension is inactive
+    }
 
-  // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
-  // which is injected programmatically from background.js
-
-  if (!document.getElementById("lockOverlay")) {
+    // Don't create if overlay already exists
+    if (document.getElementById("lockOverlay")) {
+      return;
+    }
 
     // Note: hashPassword and verifyPassword functions are now provided by crypto-utils.js
     // which is injected programmatically from background.js
@@ -864,6 +883,8 @@ chrome.storage.local.get("extensionActive", (data) => {
 
     // Auto-focus password input
     setTimeout(() => passwordInput.focus(), 100);
-  }
+  });
+}
 
-});
+// Call createLockOverlay on initial script load
+createLockOverlay();
