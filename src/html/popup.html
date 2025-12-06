@@ -66,7 +66,16 @@
       </div>
 
       <div id="lockControls" class="button-group" style="display: none;">
-        <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
+        <div class="lock-buttons-group">
+          <button id="lockTab" class="btn-lock-single">
+            <span class="btn-icon">🔒</span>
+            <span class="btn-text">Current Tab</span>
+          </button>
+          <button id="lockAllTabs" class="btn-lock-all">
+            <span class="btn-icon">🔐</span>
+            <span class="btn-text">All Tabs</span>
+          </button>
+        </div>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts">⌨️ Keyboard Shortcuts</button>
       </div>

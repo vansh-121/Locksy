@@ -296,7 +296,16 @@ function initializeMainUI() {
       </div>
 
       <div id="lockControls" class="button-group" style="display: none;">
-        <button id="lockTab" class="btn-success">🔒 Lock Current Tab</button>
+        <div class="lock-buttons-group">
+          <button id="lockTab" class="btn-lock-single">
+            <span class="btn-icon">🔒</span>
+            <span class="btn-text">Current Tab</span>
+          </button>
+          <button id="lockAllTabs" class="btn-lock-all">
+            <span class="btn-icon">🔐</span>
+            <span class="btn-text">All Tabs</span>
+          </button>
+        </div>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
       </div>
@@ -327,6 +336,7 @@ function initializeMainUI() {
   const passwordLabel = document.getElementById("passwordLabel");
   const setPasswordBtn = document.getElementById("setPassword");
   const lockTabBtn = document.getElementById("lockTab");
+  const lockAllTabsBtn = document.getElementById("lockAllTabs");
   const strengthIndicator = document.getElementById("passwordStrengthIndicator");
   const strengthText = document.getElementById("strengthText");
   const strengthBar = document.getElementById("strengthBar");
@@ -336,7 +346,7 @@ function initializeMainUI() {
   const requiredElements = {
     toggleSwitch, statusIndicator, statusText, statusDot, controlsSection,
     passwordInput, currentPasswordInput, currentPasswordGroup, passwordLabel,
-    setPasswordBtn, lockTabBtn, strengthIndicator, strengthText, strengthBar,
+    setPasswordBtn, lockTabBtn, lockAllTabsBtn, strengthIndicator, strengthText, strengthBar,
     openDomainManagerBtn
   };
 
@@ -578,6 +588,94 @@ function initializeMainUI() {
         });
       } catch (error) {
         showNotification("Error locking tab", "error");
+      }
+    });
+  }
+
+  // Lock All Tabs button
+  if (lockAllTabsBtn) {
+    lockAllTabsBtn.addEventListener("click", () => {
+      try {
+        if (!isExtensionActive) {
+          showNotification("Please activate the extension first!", "warning");
+          return;
+        }
+
+        // Check if password is set
+        chrome.storage.local.get("lockPassword", (data) => {
+          if (!data.lockPassword) {
+            showNotification("Please set a master password first!", "warning");
+            return;
+          }
+
+          // Get all tabs
+          chrome.tabs.query({}, (tabs) => {
+            if (!tabs || tabs.length === 0) {
+              showNotification("No tabs to lock!", "warning");
+              return;
+            }
+
+            let lockedCount = 0;
+            let skippedCount = 0;
+            let totalTabs = tabs.length;
+
+            // Filter lockable tabs
+            const lockableTabs = tabs.filter(tab => {
+              if (tab.url &&
+                (tab.url.startsWith("chrome://") ||
+                  tab.url.startsWith("edge://") ||
+                  tab.url.startsWith("about:") ||
+                  tab.url.startsWith("chrome-extension://") ||
+                  tab.url.startsWith("extension://") ||
+                  tab.url === "")) {
+                skippedCount++;
+                return false;
+              }
+              return true;
+            });
+
+            if (lockableTabs.length === 0) {
+              showNotification("⚠️ No lockable tabs found! All tabs are system pages or extensions.", "warning");
+              return;
+            }
+
+            // Show processing notification
+            showNotification(`🔄 Locking ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}...`, "info");
+
+            // Lock each tab
+            lockableTabs.forEach((tab, index) => {
+              chrome.runtime.sendMessage({
+                action: "lock",
+                tabId: tab.id
+              }, (response) => {
+                if (response && response.success) {
+                  lockedCount++;
+                }
+
+                // Show final result after all tabs processed
+                if (index === lockableTabs.length - 1) {
+                  setTimeout(() => {
+                    if (lockedCount === lockableTabs.length) {
+                      showNotification(`✅ Successfully locked ${lockedCount} tab${lockedCount !== 1 ? 's' : ''}!`, "success");
+                    } else if (lockedCount > 0) {
+                      showNotification(`✅ Locked ${lockedCount} of ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}!`, "success");
+                    } else {
+                      showNotification("❌ Failed to lock tabs. Please try again.", "error");
+                    }
+
+                    if (skippedCount > 0) {
+                      setTimeout(() => {
+                        showNotification(`ℹ️ Skipped ${skippedCount} system tab${skippedCount !== 1 ? 's' : ''}`, "info");
+                      }, 2000);
+                    }
+                  }, 500);
+                }
+              });
+            });
+          });
+        });
+      } catch (error) {
+        showNotification("Error locking tabs", "error");
       }
     });
   }
