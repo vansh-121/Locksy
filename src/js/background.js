@@ -90,15 +90,45 @@ async function restoreLockedTabs() {
     chrome.storage.local.get(["lockedTabIds", "lockedDomains"], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
+
+        // Validate that tabs still exist after browser restart
+        validateAndCleanLockedTabs();
       }
       if (data.lockedDomains && Array.isArray(data.lockedDomains)) {
         lockedDomains = data.lockedDomains;
       }
 
-      // Update badge after restoring
-      updateBadge();
-
       resolve();
+    });
+  });
+}
+
+// Validate locked tabs and remove stale ones
+function validateAndCleanLockedTabs() {
+  if (lockedTabs.size === 0) {
+    updateBadge();
+    return;
+  }
+
+  const tabIds = Array.from(lockedTabs);
+  let validatedCount = 0;
+  let checkedCount = 0;
+
+  tabIds.forEach(tabId => {
+    chrome.tabs.get(tabId, (tab) => {
+      checkedCount++;
+
+      if (chrome.runtime.lastError || !tab) {
+        // Tab doesn't exist anymore, remove it
+        lockedTabs.delete(tabId);
+        temporarilyUnlockedTabs.delete(tabId);
+      }
+
+      // When all tabs are checked, update storage and badge
+      if (checkedCount === tabIds.length) {
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        updateBadge();
+      }
     });
   });
 }
@@ -121,8 +151,23 @@ async function restoreLockedState() {
 
 // CRITICAL: Initialize on service worker startup (including after it goes to sleep)
 chrome.runtime.onStartup.addListener(async () => {
-  await restoreLockedState();
+  try {
+    await restoreLockedState();
+  } catch (error) {
+    console.error('Failed to restore locked state on startup:', error);
+    // Attempt recovery
+    setTimeout(() => restoreLockedState(), 1000);
+  }
 });
+
+// ADDITIONAL: Initialize immediately when service worker wakes up
+(async function initServiceWorker() {
+  try {
+    await restoreLockedState();
+  } catch (error) {
+    console.error('Failed to initialize service worker:', error);
+  }
+})();
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   // Open welcome page on first install
@@ -311,13 +356,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (addLockedDomain(pattern)) {
             // Lock all existing tabs matching this domain
             chrome.tabs.query({}, (tabs) => {
-              tabs.forEach(tab => {
-                if (tab.url && isDomainLocked(tab.url)) {
-                  lockTab(tab.id);
-                }
+              const matchingTabs = tabs.filter(tab => tab.url && isDomainLocked(tab.url));
+
+              if (matchingTabs.length === 0) {
+                updateBadge();
+                chrome.notifications.create({
+                  type: "basic",
+                  iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                  title: "Domain Locked",
+                  message: `Domain "${pattern}" has been locked successfully. (No matching tabs currently open)`,
+                  priority: 1,
+                });
+                sendResponse({ success: true, pattern: pattern });
+                return;
+              }
+
+              // Add tabs to lockedTabs immediately
+              matchingTabs.forEach(tab => {
+                lockedTabs.add(tab.id);
               });
-              // Update badge after locking all matching tabs
-              setTimeout(() => updateBadge(), 500);
+
+              // Persist to storage and update badge immediately
+              chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              updateBadge();
+
+              // Then inject the lock overlay
+              matchingTabs.forEach(tab => {
+                lockTab(tab.id);
+              });
             });
 
             chrome.notifications.create({
@@ -382,9 +448,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true; // Keep the message channel open for async response
 });
 
-function lockTab(tabId, sendResponse) {
+function lockTab(tabId, sendResponse, retryCount = 0) {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 500;
+
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
+      console.error('Failed to get tab:', chrome.runtime.lastError);
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
@@ -397,26 +467,46 @@ function lockTab(tabId, sendResponse) {
       !tab.url.startsWith("edge://") &&
       !tab.url.startsWith("about:") &&
       !tab.url.startsWith("file://")) {
-      
+
       // First check if content script is already loaded
       chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
         if (chrome.runtime.lastError || !response) {
-          // Content script not loaded, inject it
+          // Content script not loaded, inject it with retry logic
           chrome.scripting.executeScript({
             target: { tabId },
             files: ["src/js/crypto-utils.js", "src/js/content.js"],
           }).then(() => {
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-              title: "Tab Locked",
-              message: `Tab "${tab.title}" has been locked successfully.`,
-              priority: 1,
-            });
-            if (sendResponse) {
-              sendResponse({ success: true, message: "Tab locked successfully" });
-            }
+            // Wait a moment for script to initialize, then verify
+            setTimeout(() => {
+              chrome.tabs.sendMessage(tabId, { action: "ping" }, (verifyResponse) => {
+                if (chrome.runtime.lastError || !verifyResponse) {
+                  // Script injection might have failed, retry if possible
+                  if (retryCount < MAX_RETRIES) {
+                    console.warn(`Content script verification failed, retry ${retryCount + 1}/${MAX_RETRIES}`);
+                    setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+                    return;
+                  }
+                }
+                chrome.notifications.create({
+                  type: "basic",
+                  iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                  title: "Tab Locked",
+                  message: `Tab "${tab.title}" has been locked successfully.`,
+                  priority: 1,
+                });
+                if (sendResponse) {
+                  sendResponse({ success: true, message: "Tab locked successfully" });
+                }
+              });
+            }, 200);
           }).catch((error) => {
+            console.error('Failed to inject content script:', error);
+            // Retry if we haven't exceeded max retries
+            if (retryCount < MAX_RETRIES) {
+              console.warn(`Retrying content script injection (${retryCount + 1}/${MAX_RETRIES})`);
+              setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+              return;
+            }
             const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
             chrome.notifications.create({
               type: "basic",
@@ -433,26 +523,34 @@ function lockTab(tabId, sendResponse) {
           // Content script already loaded, just create lock overlay
           chrome.tabs.sendMessage(tabId, { action: "createLock" }, (lockResponse) => {
             if (chrome.runtime.lastError || !lockResponse || !lockResponse.success) {
-              // If createLock fails, try re-injecting
-              chrome.scripting.executeScript({
-                target: { tabId },
-                files: ["src/js/crypto-utils.js", "src/js/content.js"],
-              }).then(() => {
-                chrome.notifications.create({
-                  type: "basic",
-                  iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-                  title: "Tab Locked",
-                  message: `Tab "${tab.title}" has been locked successfully.`,
-                  priority: 1,
+              console.warn('createLock failed, attempting re-injection');
+              // If createLock fails, try re-injecting with retry
+              if (retryCount < MAX_RETRIES) {
+                chrome.scripting.executeScript({
+                  target: { tabId },
+                  files: ["src/js/crypto-utils.js", "src/js/content.js"],
+                }).then(() => {
+                  chrome.notifications.create({
+                    type: "basic",
+                    iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                    title: "Tab Locked",
+                    message: `Tab "${tab.title}" has been locked successfully.`,
+                    priority: 1,
+                  });
+                  if (sendResponse) {
+                    sendResponse({ success: true, message: "Tab locked successfully" });
+                  }
+                }).catch((error) => {
+                  console.error('Re-injection failed:', error);
+                  if (retryCount < MAX_RETRIES - 1) {
+                    setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+                  } else if (sendResponse) {
+                    sendResponse({ success: false, error: "Failed to lock tab after retries" });
+                  }
                 });
-                if (sendResponse) {
-                  sendResponse({ success: true, message: "Tab locked successfully" });
-                }
-              }).catch((error) => {
-                if (sendResponse) {
-                  sendResponse({ success: false, error: "Failed to lock tab" });
-                }
-              });
+              } else if (sendResponse) {
+                sendResponse({ success: false, error: "Failed to lock tab after retries" });
+              }
             } else {
               chrome.notifications.create({
                 type: "basic",
@@ -485,12 +583,16 @@ function lockTab(tabId, sendResponse) {
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => {
+  const wasLocked = lockedTabs.has(tabId);
   lockedTabs.delete(tabId);
   temporarilyUnlockedTabs.delete(tabId);
-  // Update storage
-  chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
-  // Update badge
-  updateBadge();
+
+  if (wasLocked) {
+    // Update storage only if tab was actually locked
+    chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    // Update badge
+    updateBadge();
+  }
 });
 
 // Handle new tabs - auto-lock if domain is locked
@@ -503,6 +605,9 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   // Wait for URL to be available and check if it matches a locked domain
   const checkAndLock = (tabId, changeInfo) => {
     if (changeInfo.url && isDomainLocked(changeInfo.url) && !temporarilyUnlockedTabs.has(tabId)) {
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
       lockTab(tabId);
     }
   };
@@ -531,6 +636,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
   // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
   if (isTabLocked || isTabDomainLocked) {
+    // Ensure tab is in lockedTabs Set for badge counting
+    if (!lockedTabs.has(tabId)) {
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+    }
+
     if (changeInfo.status === 'loading') {
       // IMMEDIATE re-lock on loading - 10ms delay only
       setTimeout(() => {
@@ -723,7 +835,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
       lockedTabs.add(tab.id);
       chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
       updateBadge();
-      
+
       lockTab(tab.id, (response) => {
         if (response && response.success) {
           chrome.notifications.create({

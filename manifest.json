@@ -3,6 +3,7 @@
   "name": "Locksy - Tab Locker & Password Protection",
   "version": "1.0.7",
   "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with ultimate SHA-256 + Salt encryption.",
+  "minimum_chrome_version": "88",
   "incognito": "spanning",
   "permissions": [
     "storage",

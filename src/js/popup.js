@@ -354,6 +354,8 @@ function initializeMainUI() {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.local.get(["extensionActive", "lockPassword"], (data) => {
       if (chrome.runtime.lastError) {
+        console.error('Failed to load extension state:', chrome.runtime.lastError);
+        // Use safe defaults
         isExtensionActive = true;
         hasExistingPassword = false;
       } else {
@@ -363,6 +365,7 @@ function initializeMainUI() {
       updateSecureUI();
     });
   } else {
+    console.warn('Chrome storage API not available');
     isExtensionActive = true;
     hasExistingPassword = false;
     updateSecureUI();
@@ -396,7 +399,12 @@ function initializeMainUI() {
 
       // Save state
       if (typeof chrome !== 'undefined' && chrome.storage) {
-        chrome.storage.local.set({ extensionActive: isExtensionActive });
+        chrome.storage.local.set({ extensionActive: isExtensionActive }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('Failed to save extension state:', chrome.runtime.lastError);
+            showNotification('Failed to save settings', 'error');
+          }
+        });
       }
     } catch (error) {
       // Error updating UI
