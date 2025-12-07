@@ -696,28 +696,12 @@ function initializeMainUI() {
   const openShortcutsBtn = document.getElementById("openShortcutsPage");
   if (openShortcutsBtn) {
     openShortcutsBtn.addEventListener("click", () => {
-      // Detect browser and open appropriate shortcuts page
-      const userAgent = navigator.userAgent.toLowerCase();
-      let shortcutsUrl = 'chrome://extensions/shortcuts';
-
-      if (userAgent.includes('edg/')) {
-        shortcutsUrl = 'edge://extensions/shortcuts';
-      } else if (userAgent.includes('brave')) {
-        shortcutsUrl = 'brave://extensions/shortcuts';
-      } else if (userAgent.includes('opr/') || userAgent.includes('opera')) {
-        shortcutsUrl = 'opera://extensions/shortcuts';
-      } else if (userAgent.includes('vivaldi')) {
-        shortcutsUrl = 'vivaldi://extensions/shortcuts';
-      }
-
-      // Open shortcuts page in new tab
-      chrome.tabs.create({ url: shortcutsUrl }, () => {
-        if (chrome.runtime.lastError) {
-          // Fallback if direct navigation fails
-          showNotification("⚙️ Please manually navigate to your browser's extensions shortcuts page", "info");
-        } else {
-          showNotification("✅ Opening keyboard shortcuts page...", "success");
-        }
+      // Open keyboard shortcuts in a popup window (like Domain Manager)
+      chrome.windows.create({
+        url: chrome.runtime.getURL('src/html/keyboard-shortcuts.html'),
+        type: 'popup',
+        width: 700,
+        height: 700
       });
     });
   }

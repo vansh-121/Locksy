@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Shortcuts - Locksy</title>
+    <link rel="stylesheet" href="../css/keyboard-shortcuts.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="../../assets/images/icon.png" alt="Locksy" class="header-icon">
+            <h1>⌨️ Keyboard Shortcuts</h1>
+            <p class="subtitle">Quickly access Locksy features with keyboard shortcuts</p>
+        </div>
+
+        <div class="shortcuts-list">
+            <div class="shortcut-card">
+                <div class="shortcut-icon">🔒</div>
+                <div class="shortcut-info">
+                    <h3>Lock Current Tab</h3>
+                    <p class="shortcut-description">Instantly locks the currently active tab</p>
+                    <div class="shortcut-keys" id="shortcut-lock-current-tab">
+                        <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>9</kbd>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shortcut-card">
+                <div class="shortcut-icon">🌐</div>
+                <div class="shortcut-info">
+                    <h3>Open Domain Lock Manager</h3>
+                    <p class="shortcut-description">Opens the Domain Lock Manager window</p>
+                    <div class="shortcut-keys" id="shortcut-open-domain-manager">
+                        <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>0</kbd>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shortcut-card">
+                <div class="shortcut-icon">🔐</div>
+                <div class="shortcut-info">
+                    <h3>Lock All Tabs</h3>
+                    <p class="shortcut-description">Locks all tabs in the current window at once</p>
+                    <div class="shortcut-keys" id="shortcut-lock-all-tabs">
+                        <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>8</kbd>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-banner">
+            <div class="info-icon">💡</div>
+            <div class="info-text">
+                <strong>Customize Your Shortcuts</strong>
+                <p>Want to change these shortcuts? Click the button below to open your browser's keyboard shortcuts
+                    settings.</p>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="customizeShortcutsBtn" class="btn-primary">
+                <span class="btn-icon">⚙️</span>
+                <span class="btn-text">Customize Shortcuts</span>
+            </button>
+            <button id="backToPopupBtn" class="btn-secondary">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">Back to Extension</span>
+            </button>
+        </div>
+
+        <div class="help-section">
+            <h3>📋 Tips</h3>
+            <ul>
+                <li><strong>Default keys use numbers</strong> to avoid conflicts with other extensions</li>
+                <li><strong>Shortcuts work globally</strong> across all tabs when the extension is active</li>
+                <li><strong>Press the key combination</strong> exactly as shown to trigger the action</li>
+                <li><strong>Customize anytime</strong> by clicking the "Customize Shortcuts" button above</li>
+            </ul>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="../js/keyboard-shortcuts.js"></script>
+</body>
+
+</html>

@@ -363,17 +363,17 @@ button:disabled {
   .lock-buttons-group {
     gap: 10px !important;
   }
-  
+
   .btn-lock-single,
   .btn-lock-all {
     padding: 10px 6px;
     min-height: 62px;
   }
-  
+
   .btn-icon {
     font-size: 22px;
   }
-  
+
   .btn-text {
     font-size: 13px;
   }
@@ -383,17 +383,17 @@ button:disabled {
   .lock-buttons-group {
     gap: 8px !important;
   }
-  
+
   .btn-lock-single,
   .btn-lock-all {
     padding: 10px 4px;
     min-height: 60px;
   }
-  
+
   .btn-icon {
     font-size: 20px;
   }
-  
+
   .btn-text {
     font-size: 12px;
   }
