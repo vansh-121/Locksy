@@ -55,25 +55,19 @@
   - **Alt+Shift+9**: Lock current tab instantly
   - **Alt+Shift+0**: Open Domain Lock Manager
   - **Alt+Shift+8**: Lock all tabs in current window
-- 🔧 **Fully Customizable**: Change shortcuts at `chrome://extensions/shortcuts` if needed
-- 🔔 **Smart Notifications**: Every keyboard action provides instant visual feedback
-  - Success messages for completed actions
-  - Error messages with helpful guidance
-  - Status updates for bulk operations
-- 🛡️ **Safety Checks**: Automatic validation before executing shortcuts
-  - Checks extension activation status
-  - Verifies password is set
-  - Validates tab compatibility
-  - Prevents duplicate locks
+  - **Fully Customizable**: All the shortcut keys are customizable in keyboard shortcut manager.
+
 - ⚡ **Bulk Operations**: Lock all tabs feature via keyboard
   - Locks all compatible tabs in current window
   - Automatically skips system and extension pages
   - Reports count of locked and skipped tabs
 
 #### 🔒 **Visual Indicators**
+
 - 🎨 **Lock Icon on Tab Favicon**: Locked tabs display a distinctive red lock icon
   - Dynamically generated using HTML5 Canvas
   - Original favicon automatically restored on unlock
+  
 - 🔢 **Badge Counter on Extension Icon**: Shows number of locked tabs at a glance
   - Red background with white text
   - Auto-updates on lock/unlock operations
@@ -81,6 +75,7 @@
   - Real-time updates for all scenarios
 
 #### 🎨 **Enhanced User Interface**
+
 - 📋 **Keyboard Shortcuts Info Panel**: Added in popup with visual kbd tags
 - 💡 **Contextual Display**: Shows shortcuts only when password is set
 - 🌈 **Modern Styling**: Gradient backgrounds and smooth animations
