@@ -7,7 +7,7 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.6-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.7-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -37,6 +37,63 @@
 ---
 
 ## 🆕 Recent Improvements
+
+### Version 1.0.7 - KEYBOARD SHORTCUTS & VISUAL INDICATORS (December 7, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![New Feature](https://img.shields.io/badge/feature-keyboard%20shortcuts-blueviolet?style=flat-square)
+  
+</div>
+
+#### ⌨️ **New Feature: Keyboard Shortcuts**
+- 🎯 **Pre-configured Shortcuts**: Ready-to-use keyboard shortcuts that work immediately
+  - **Alt+Shift+9**: Lock current tab instantly
+  - **Alt+Shift+0**: Open Domain Lock Manager
+  - **Alt+Shift+8**: Lock all tabs in current window
+- 🔧 **Fully Customizable**: Change shortcuts at `chrome://extensions/shortcuts` if needed
+- 🔔 **Smart Notifications**: Every keyboard action provides instant visual feedback
+  - Success messages for completed actions
+  - Error messages with helpful guidance
+  - Status updates for bulk operations
+- 🛡️ **Safety Checks**: Automatic validation before executing shortcuts
+  - Checks extension activation status
+  - Verifies password is set
+  - Validates tab compatibility
+  - Prevents duplicate locks
+- ⚡ **Bulk Operations**: Lock all tabs feature via keyboard
+  - Locks all compatible tabs in current window
+  - Automatically skips system and extension pages
+  - Reports count of locked and skipped tabs
+
+#### 🔒 **Visual Indicators**
+- 🎨 **Lock Icon on Tab Favicon**: Locked tabs display a distinctive red lock icon
+  - Dynamically generated using HTML5 Canvas
+  - Original favicon automatically restored on unlock
+- 🔢 **Badge Counter on Extension Icon**: Shows number of locked tabs at a glance
+  - Red background with white text
+  - Auto-updates on lock/unlock operations
+  - Persists across browser restarts
+  - Real-time updates for all scenarios
+
+#### 🎨 **Enhanced User Interface**
+- 📋 **Keyboard Shortcuts Info Panel**: Added in popup with visual kbd tags
+- 💡 **Contextual Display**: Shows shortcuts only when password is set
+- 🌈 **Modern Styling**: Gradient backgrounds and smooth animations
+
+#### 🔧 **Technical Improvements**
+- **Command Handlers**: Four dedicated functions for keyboard shortcuts
+- **Badge System**: Real-time counter updates across all operations
+- **Favicon Management**: Dynamic lock icon generation and restoration
+- **Enhanced Documentation**: Comprehensive keyboard shortcuts guide
+
+**What's New:** This version introduces power-user features with pre-configured keyboard shortcuts for instant tab locking, domain management, and bulk operations. Visual indicators including lock icons on tab favicons and a badge counter provide clear feedback about locked tabs. The shortcuts work out-of-the-box and can be customized if needed!
+
+---
 
 ### Version 1.0.6 - DOMAIN LOCK FEATURE (November 22, 2025)
 

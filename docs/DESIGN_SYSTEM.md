@@ -1,7 +1,7 @@
 # 🎨 Locksy Extension - Design System
 
-**Version:** 1.0.4  
-**Last Updated:** November 7, 2025
+**Version:** 1.0.7  
+**Last Updated:** December 7, 2025
 
 ---
 
