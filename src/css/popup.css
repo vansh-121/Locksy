@@ -206,7 +206,7 @@ input::placeholder {
 button {
   width: 100%;
   padding: 14px 18px;
-  margin: 10px 0;
+  margin: 4px;
   border: none;
   border-radius: 12px;
   font-size: 15px;
@@ -243,6 +243,7 @@ button:disabled {
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  margin-top: 12px;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -294,13 +295,160 @@ button:disabled {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   margin-top: 12px;
 }
 
-.button-group button {
+.button-group>button {
   width: 100%;
 }
+
+/* Lock Buttons Group */
+.lock-buttons-group {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  width: 100% !important;
+  flex-direction: row !important;
+  margin: 0 0 12px 0 !important;
+}
+
+/* Common button styles for lock, domain, and shortcuts buttons */
+.btn-lock-single,
+.btn-lock-all,
+.btn-domain,
+.btn-shortcuts {
+  color: white;
+  border: none;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-lock-single,
+.btn-lock-all {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 12px 8px;
+  min-height: 65px;
+}
+
+.btn-icon {
+  font-size: 24px;
+  display: block;
+}
+
+.btn-text {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Responsive adjustments for smaller popup widths */
+@media (max-width: 380px) {
+  .lock-buttons-group {
+    gap: 10px !important;
+  }
+
+  .btn-lock-single,
+  .btn-lock-all {
+    padding: 10px 6px;
+    min-height: 62px;
+  }
+
+  .btn-icon {
+    font-size: 22px;
+  }
+
+  .btn-text {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 340px) {
+  .lock-buttons-group {
+    gap: 8px !important;
+  }
+
+  .btn-lock-single,
+  .btn-lock-all {
+    padding: 10px 4px;
+    min-height: 60px;
+  }
+
+  .btn-icon {
+    font-size: 20px;
+  }
+
+  .btn-text {
+    font-size: 12px;
+  }
+}
+
+.btn-lock-single {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.btn-lock-all {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.btn-domain {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.btn-shortcuts {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.btn-lock-single:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+  background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+}
+
+.btn-lock-all:hover:not(:disabled),
+.btn-domain:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+.btn-shortcuts:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-lock-single:active,
+.btn-lock-all:active,
+.btn-domain:active,
+.btn-shortcuts:active {
+  transform: translateY(0);
+}
+
+.btn-lock-single:disabled,
+.btn-lock-all:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Legacy responsive adjustments - removed to maintain parallel format */
 
 .controls-section:not(.enabled)::before {
   content: "Extension Disabled";
@@ -436,30 +584,6 @@ button:disabled {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 2px solid #e9ecef;
-}
-
-.btn-domain {
-  padding: 14px 18px;
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  width: 100%;
-}
-
-.btn-domain:hover {
-  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-.btn-domain:active {
-  transform: translateY(0);
 }
 
 #domainPattern {

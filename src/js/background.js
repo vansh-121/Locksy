@@ -2,6 +2,19 @@ let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
 
+// Function to update extension badge with locked tabs count
+function updateBadge() {
+  const count = lockedTabs.size;
+
+  if (count > 0) {
+    chrome.action.setBadgeText({ text: count.toString() });
+    chrome.action.setBadgeBackgroundColor({ color: '#dc3545' }); // Red background
+    chrome.action.setBadgeTextColor({ color: '#ffffff' }); // White text
+  } else {
+    chrome.action.setBadgeText({ text: '' }); // Clear badge when no locks
+  }
+}
+
 // Pattern matching for domain locks
 function matchesPattern(url, pattern) {
   try {
@@ -56,7 +69,7 @@ function removeLockedDomain(pattern) {
   if (index > -1) {
     lockedDomains.splice(index, 1);
     chrome.storage.local.set({ lockedDomains: lockedDomains });
-    
+
     // Clear preferences for this domain when it's removed
     chrome.storage.local.get("domainUnlockPreferences", (data) => {
       const prefs = data.domainUnlockPreferences || {};
@@ -65,7 +78,7 @@ function removeLockedDomain(pattern) {
         chrome.storage.local.set({ domainUnlockPreferences: prefs });
       }
     });
-    
+
     return true;
   }
   return false;
@@ -77,11 +90,45 @@ async function restoreLockedTabs() {
     chrome.storage.local.get(["lockedTabIds", "lockedDomains"], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
+
+        // Validate that tabs still exist after browser restart
+        validateAndCleanLockedTabs();
       }
       if (data.lockedDomains && Array.isArray(data.lockedDomains)) {
         lockedDomains = data.lockedDomains;
       }
+
       resolve();
+    });
+  });
+}
+
+// Validate locked tabs and remove stale ones
+function validateAndCleanLockedTabs() {
+  if (lockedTabs.size === 0) {
+    updateBadge();
+    return;
+  }
+
+  const tabIds = Array.from(lockedTabs);
+  let validatedCount = 0;
+  let checkedCount = 0;
+
+  tabIds.forEach(tabId => {
+    chrome.tabs.get(tabId, (tab) => {
+      checkedCount++;
+
+      if (chrome.runtime.lastError || !tab) {
+        // Tab doesn't exist anymore, remove it
+        lockedTabs.delete(tabId);
+        temporarilyUnlockedTabs.delete(tabId);
+      }
+
+      // When all tabs are checked, update storage and badge
+      if (checkedCount === tabIds.length) {
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        updateBadge();
+      }
     });
   });
 }
@@ -104,8 +151,23 @@ async function restoreLockedState() {
 
 // CRITICAL: Initialize on service worker startup (including after it goes to sleep)
 chrome.runtime.onStartup.addListener(async () => {
-  await restoreLockedState();
+  try {
+    await restoreLockedState();
+  } catch (error) {
+    console.error('Failed to restore locked state on startup:', error);
+    // Attempt recovery
+    setTimeout(() => restoreLockedState(), 1000);
+  }
 });
+
+// ADDITIONAL: Initialize immediately when service worker wakes up
+(async function initServiceWorker() {
+  try {
+    await restoreLockedState();
+  } catch (error) {
+    console.error('Failed to initialize service worker:', error);
+  }
+})();
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   // Open welcome page on first install
@@ -166,6 +228,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           lockedTabs.add(message.tabId);
           // Persist locked tabs to storage
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+          // Update badge
+          updateBadge();
           lockTab(message.tabId, sendResponse);
         } else {
           chrome.notifications.create({
@@ -188,6 +252,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Just unlock this specific tab
         lockedTabs.delete(tabId);
         chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        // Update badge
+        updateBadge();
 
         // If tab was domain-locked, add to temporary exemption
         chrome.tabs.get(tabId, (tab) => {
@@ -212,6 +278,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 } catch (e) { }
               });
               chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              // Update badge
+              updateBadge();
             });
           }
         });
@@ -238,6 +306,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 }
               });
               chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              // Update badge
+              updateBadge();
             });
           }
         });
@@ -245,6 +315,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Default: just unlock this tab
         lockedTabs.delete(tabId);
         chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        // Update badge
+        updateBadge();
       }
 
       chrome.notifications.create({
@@ -284,10 +356,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (addLockedDomain(pattern)) {
             // Lock all existing tabs matching this domain
             chrome.tabs.query({}, (tabs) => {
-              tabs.forEach(tab => {
-                if (tab.url && isDomainLocked(tab.url)) {
-                  lockTab(tab.id);
-                }
+              const matchingTabs = tabs.filter(tab => tab.url && isDomainLocked(tab.url));
+
+              if (matchingTabs.length === 0) {
+                updateBadge();
+                chrome.notifications.create({
+                  type: "basic",
+                  iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                  title: "Domain Locked",
+                  message: `Domain "${pattern}" has been locked successfully. (No matching tabs currently open)`,
+                  priority: 1,
+                });
+                sendResponse({ success: true, pattern: pattern });
+                return;
+              }
+
+              // Add tabs to lockedTabs immediately
+              matchingTabs.forEach(tab => {
+                lockedTabs.add(tab.id);
+              });
+
+              // Persist to storage and update badge immediately
+              chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+              updateBadge();
+
+              // Then inject the lock overlay
+              matchingTabs.forEach(tab => {
+                lockTab(tab.id);
               });
             });
 
@@ -329,6 +424,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
           });
           chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+          updateBadge();
         });
 
         chrome.notifications.create({
@@ -352,9 +448,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true; // Keep the message channel open for async response
 });
 
-function lockTab(tabId, sendResponse) {
+function lockTab(tabId, sendResponse, retryCount = 0) {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 500;
+
   chrome.tabs.get(tabId, (tab) => {
     if (chrome.runtime.lastError) {
+      console.error('Failed to get tab:', chrome.runtime.lastError);
       if (sendResponse) {
         sendResponse({ success: false, error: "Could not access tab: " + chrome.runtime.lastError.message });
       }
@@ -367,33 +467,103 @@ function lockTab(tabId, sendResponse) {
       !tab.url.startsWith("edge://") &&
       !tab.url.startsWith("about:") &&
       !tab.url.startsWith("file://")) {
-      // Inject crypto-utils.js first, then content.js
-      // This makes crypto functions available to content.js
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["src/js/crypto-utils.js", "src/js/content.js"],
-      }).then(() => {
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-          title: "Tab Locked",
-          message: `Tab "${tab.title}" has been locked successfully.`,
-          priority: 1,
-        });
-        if (sendResponse) {
-          sendResponse({ success: true, message: "Tab locked successfully" });
-        }
-      }).catch((error) => {
-        const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-          title: "Lock Failed",
-          message: errorMsg,
-          priority: 2,
-        });
-        if (sendResponse) {
-          sendResponse({ success: false, error: errorMsg });
+
+      // First check if content script is already loaded
+      chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
+        if (chrome.runtime.lastError || !response) {
+          // Content script not loaded, inject it with retry logic
+          chrome.scripting.executeScript({
+            target: { tabId },
+            files: ["src/js/crypto-utils.js", "src/js/content.js"],
+          }).then(() => {
+            // Wait a moment for script to initialize, then verify
+            setTimeout(() => {
+              chrome.tabs.sendMessage(tabId, { action: "ping" }, (verifyResponse) => {
+                if (chrome.runtime.lastError || !verifyResponse) {
+                  // Script injection might have failed, retry if possible
+                  if (retryCount < MAX_RETRIES) {
+                    console.warn(`Content script verification failed, retry ${retryCount + 1}/${MAX_RETRIES}`);
+                    setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+                    return;
+                  }
+                }
+                chrome.notifications.create({
+                  type: "basic",
+                  iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                  title: "Tab Locked",
+                  message: `Tab "${tab.title}" has been locked successfully.`,
+                  priority: 1,
+                });
+                if (sendResponse) {
+                  sendResponse({ success: true, message: "Tab locked successfully" });
+                }
+              });
+            }, 200);
+          }).catch((error) => {
+            console.error('Failed to inject content script:', error);
+            // Retry if we haven't exceeded max retries
+            if (retryCount < MAX_RETRIES) {
+              console.warn(`Retrying content script injection (${retryCount + 1}/${MAX_RETRIES})`);
+              setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+              return;
+            }
+            const errorMsg = "Unable to lock this tab. It may be a restricted page, system page, or local file.";
+            chrome.notifications.create({
+              type: "basic",
+              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+              title: "Lock Failed",
+              message: errorMsg,
+              priority: 2,
+            });
+            if (sendResponse) {
+              sendResponse({ success: false, error: errorMsg });
+            }
+          });
+        } else {
+          // Content script already loaded, just create lock overlay
+          chrome.tabs.sendMessage(tabId, { action: "createLock" }, (lockResponse) => {
+            if (chrome.runtime.lastError || !lockResponse || !lockResponse.success) {
+              console.warn('createLock failed, attempting re-injection');
+              // If createLock fails, try re-injecting with retry
+              if (retryCount < MAX_RETRIES) {
+                chrome.scripting.executeScript({
+                  target: { tabId },
+                  files: ["src/js/crypto-utils.js", "src/js/content.js"],
+                }).then(() => {
+                  chrome.notifications.create({
+                    type: "basic",
+                    iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                    title: "Tab Locked",
+                    message: `Tab "${tab.title}" has been locked successfully.`,
+                    priority: 1,
+                  });
+                  if (sendResponse) {
+                    sendResponse({ success: true, message: "Tab locked successfully" });
+                  }
+                }).catch((error) => {
+                  console.error('Re-injection failed:', error);
+                  if (retryCount < MAX_RETRIES - 1) {
+                    setTimeout(() => lockTab(tabId, sendResponse, retryCount + 1), RETRY_DELAY);
+                  } else if (sendResponse) {
+                    sendResponse({ success: false, error: "Failed to lock tab after retries" });
+                  }
+                });
+              } else if (sendResponse) {
+                sendResponse({ success: false, error: "Failed to lock tab after retries" });
+              }
+            } else {
+              chrome.notifications.create({
+                type: "basic",
+                iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                title: "Tab Locked",
+                message: `Tab "${tab.title}" has been locked successfully.`,
+                priority: 1,
+              });
+              if (sendResponse) {
+                sendResponse({ success: true, message: "Tab locked successfully" });
+              }
+            }
+          });
         }
       });
     } else {
@@ -413,10 +583,16 @@ function lockTab(tabId, sendResponse) {
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => {
+  const wasLocked = lockedTabs.has(tabId);
   lockedTabs.delete(tabId);
   temporarilyUnlockedTabs.delete(tabId);
-  // Update storage
-  chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+
+  if (wasLocked) {
+    // Update storage only if tab was actually locked
+    chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    // Update badge
+    updateBadge();
+  }
 });
 
 // Handle new tabs - auto-lock if domain is locked
@@ -429,7 +605,10 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   // Wait for URL to be available and check if it matches a locked domain
   const checkAndLock = (tabId, changeInfo) => {
     if (changeInfo.url && isDomainLocked(changeInfo.url) && !temporarilyUnlockedTabs.has(tabId)) {
-      setTimeout(() => lockTab(tabId), 10);
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+      lockTab(tabId);
     }
   };
 
@@ -457,6 +636,13 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
   // If this tab is locked and the page is loading/complete, re-inject the lock IMMEDIATELY
   if (isTabLocked || isTabDomainLocked) {
+    // Ensure tab is in lockedTabs Set for badge counting
+    if (!lockedTabs.has(tabId)) {
+      lockedTabs.add(tabId);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+    }
+
     if (changeInfo.status === 'loading') {
       // IMMEDIATE re-lock on loading - 10ms delay only
       setTimeout(() => {
@@ -564,3 +750,206 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     }
   }
 });
+
+// ========== KEYBOARD SHORTCUTS HANDLER ==========
+chrome.commands.onCommand.addListener((command) => {
+  chrome.storage.local.get(['extensionActive', 'lockPassword'], (data) => {
+    const isActive = data.extensionActive !== false;
+    const hasPassword = !!data.lockPassword;
+
+    switch (command) {
+      case 'lock-current-tab':
+        handleLockCurrentTab(isActive, hasPassword);
+        break;
+
+      case 'open-domain-manager':
+        handleOpenDomainManager(isActive, hasPassword);
+        break;
+
+      case 'lock-all-tabs':
+        handleLockAllTabs(isActive, hasPassword);
+        break;
+    }
+  });
+});
+
+// Handler: Lock current tab via keyboard shortcut
+function handleLockCurrentTab(isActive, hasPassword) {
+  if (!isActive) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Extension Inactive',
+      message: 'Please activate the extension first! (Ctrl+Shift+E)',
+      priority: 2
+    });
+    return;
+  }
+
+  if (!hasPassword) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Password Required',
+      message: 'Please set a master password first in the extension popup.',
+      priority: 2
+    });
+    return;
+  }
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      const tab = tabs[0];
+
+      // Check if tab is already locked
+      if (lockedTabs.has(tab.id)) {
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+          title: 'Already Locked',
+          message: `Tab "${tab.title}" is already locked.`,
+          priority: 1
+        });
+        return;
+      }
+
+      // Check if tab can be locked
+      if (tab.url &&
+        (tab.url.startsWith('chrome://') ||
+          tab.url.startsWith('chrome-extension://') ||
+          tab.url.startsWith('edge://') ||
+          tab.url.startsWith('about:') ||
+          tab.url.startsWith('file://'))) {
+        chrome.notifications.create({
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+          title: 'Cannot Lock Tab',
+          message: 'System pages and extension pages cannot be locked for security reasons.',
+          priority: 2
+        });
+        return;
+      }
+
+      // Lock the tab
+      // Add to locked tabs BEFORE calling lockTab (same as popup button)
+      lockedTabs.add(tab.id);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+
+      lockTab(tab.id, (response) => {
+        if (response && response.success) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '🔒 Tab Locked',
+            message: `"${tab.title}" locked via keyboard shortcut!`,
+            priority: 1
+          });
+        }
+      });
+    }
+  });
+}
+
+// Handler: Open Domain Lock Manager via keyboard shortcut
+function handleOpenDomainManager(isActive, hasPassword) {
+  if (!isActive) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Extension Inactive',
+      message: 'Please activate the extension first! (Ctrl+Shift+E)',
+      priority: 2
+    });
+    return;
+  }
+
+  if (!hasPassword) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Password Required',
+      message: 'Please set a master password first.',
+      priority: 2
+    });
+    return;
+  }
+
+  chrome.windows.create({
+    url: chrome.runtime.getURL('src/html/domain-manager.html'),
+    type: 'popup',
+    width: 500,
+    height: 650
+  });
+}
+
+// Handler: Lock all tabs in current window via keyboard shortcut
+function handleLockAllTabs(isActive, hasPassword) {
+  if (!isActive) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Extension Inactive',
+      message: 'Please activate the extension first! (Ctrl+Shift+E)',
+      priority: 2
+    });
+    return;
+  }
+
+  if (!hasPassword) {
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: 'Password Required',
+      message: 'Please set a master password first.',
+      priority: 2
+    });
+    return;
+  }
+
+  chrome.tabs.query({ currentWindow: true }, (tabs) => {
+    let lockedCount = 0;
+    let skippedCount = 0;
+
+    tabs.forEach(tab => {
+      // Skip if already locked
+      if (lockedTabs.has(tab.id)) {
+        return;
+      }
+
+      // Skip system pages
+      if (tab.url &&
+        (tab.url.startsWith('chrome://') ||
+          tab.url.startsWith('chrome-extension://') ||
+          tab.url.startsWith('edge://') ||
+          tab.url.startsWith('about:') ||
+          tab.url.startsWith('file://'))) {
+        skippedCount++;
+        return;
+      }
+
+      // Add to locked tabs and lock the tab
+      lockedTabs.add(tab.id);
+      lockTab(tab.id);
+      lockedCount++;
+    });
+
+    // Update storage and badge after locking all tabs
+    chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    updateBadge();
+
+    // Show notification
+    let message = `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked successfully!`;
+    if (skippedCount > 0) {
+      message += ` (${skippedCount} system tab${skippedCount !== 1 ? 's' : ''} skipped)`;
+    }
+
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+      title: '🔒 Bulk Lock Complete',
+      message: message,
+      priority: 1
+    });
+  });
+}

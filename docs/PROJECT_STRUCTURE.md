@@ -13,16 +13,20 @@ Locksy Extension/
 │
 ├── docs/                      # Documentation files
 │   ├── CHANGELOG.md          # Version history and changes
+│   ├── DESIGN_SYSTEM.md      # Design system and styling guide
+│   ├── KEYBOARD_SHORTCUTS.md # Keyboard shortcuts documentation
 │   ├── PRIVACY.md            # Privacy policy
 │   └── PROJECT_STRUCTURE.md  # This file - project organization guide
 │
 ├── src/                       # Source code
 │   ├── css/                  # Stylesheets
 │   │   ├── domain-manager.css # Domain Lock Manager UI styles
+│   │   ├── keyboard-shortcuts.css # Keyboard shortcuts styles
 │   │   └── popup.css         # Popup UI styles
 │   │
 │   ├── html/                 # HTML templates
 │   │   ├── domain-manager.html # Domain Lock Manager interface
+│   │   ├── keyboard-shortcuts.html # Keyboard shortcuts guide
 │   │   └── popup.html        # Extension popup interface
 │   │
 │   └── js/                   # JavaScript files
@@ -30,6 +34,7 @@ Locksy Extension/
 │       ├── content.js        # Content script (injected into locked tabs)
 │       ├── crypto-utils.js   # Cryptographic utilities (SHA-256, salt generation)
 │       ├── domain-manager.js # Domain lock management logic
+│       ├── keyboard-shortcuts.js # Keyboard shortcuts guide logic
 │       └── popup.js          # Popup UI logic and event handlers
 │
 ├── .gitignore                # Git ignore rules
@@ -51,18 +56,21 @@ Locksy Extension/
 ### Source Files (`src/`)
 
 #### JavaScript (`src/js/`)
-- **background.js**: Service worker that manages locked tabs, domain locks, handles messaging, and monitors tab events
-- **content.js**: Injected into locked tabs to display the password overlay and verify passwords
+- **background.js**: Service worker that manages locked tabs, domain locks, keyboard shortcut handlers, badge updates, and monitors tab events
+- **content.js**: Injected into locked tabs to display the password overlay, verify passwords, and manage favicon lock indicators
 - **crypto-utils.js**: Utility functions for secure password hashing with SHA-256 and salt generation
 - **domain-manager.js**: Domain lock management UI logic and domain pattern handling
-- **popup.js**: Logic for the extension popup UI, password management, and tab locking controls
+- **keyboard-shortcuts.js**: Keyboard shortcuts guide page logic and navigation
+- **popup.js**: Logic for the extension popup UI, password management, tab locking controls, and keyboard shortcuts display
 
 #### HTML (`src/html/`)
 - **domain-manager.html**: User interface for the Domain Lock Manager
+- **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
 - **popup.html**: User interface for the extension popup
 
 #### CSS (`src/css/`)
 - **domain-manager.css**: Styles for the Domain Lock Manager interface
+- **keyboard-shortcuts.css**: Styles for the keyboard shortcuts guide page
 - **popup.css**: Styles for the popup interface
 
 ### Assets (`assets/`)
@@ -70,6 +78,8 @@ Locksy Extension/
 
 ### Documentation (`docs/`)
 - **CHANGELOG.md**: Version history with detailed change logs
+- **DESIGN_SYSTEM.md**: Design system, color palette, and styling guidelines
+- **KEYBOARD_SHORTCUTS.md**: Comprehensive keyboard shortcuts documentation
 - **PRIVACY.md**: Privacy policy explaining data handling
 - **PROJECT_STRUCTURE.md**: This file - explains project organization
 
@@ -84,12 +94,15 @@ Locksy Extension/
 ### Functionality
 - Lock any browser tab with password protection
 - Lock entire domains with pattern matching (exact and wildcard)
+- Keyboard shortcuts for quick locking and bulk operations
+- Visual indicators: lock icons on tab favicons and badge counter
 - Persistent lock state across browser restarts
 - Auto-lock new tabs matching locked domain patterns
 - Instant re-locking on navigation/refresh
 - Extension enable/disable toggle
 - Password strength indicator
 - Domain Lock Manager with unlock preferences
+- Smart notifications for keyboard shortcut actions
 
 ## Development Notes
 
@@ -109,17 +122,19 @@ This extension does not require a build step. All files are used directly by Chr
 - Root directory contains only essential files (manifest, readme, license)
 
 ## Version
-Current Version: 1.0.6
+Current Version: 1.0.7
 
 ## Technology Stack
 - JavaScript (ES6+)
 - Chrome Extension Manifest V3
 - Web Crypto API
+- HTML5 Canvas API (for favicon manipulation)
 - Chrome Storage API
 - Chrome Tabs API
 - Chrome Scripting API
 - Chrome Notifications API
 - Chrome Web Navigation API
+- Chrome Commands API (keyboard shortcuts)
 
 ## Browser Compatibility
 - Chrome (Manifest V3)

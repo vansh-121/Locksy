@@ -7,7 +7,7 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.6-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-1.0.7-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -37,6 +37,58 @@
 ---
 
 ## 🆕 Recent Improvements
+
+### Version 1.0.7 - KEYBOARD SHORTCUTS & VISUAL INDICATORS (December 7, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![New Feature](https://img.shields.io/badge/feature-keyboard%20shortcuts-blueviolet?style=flat-square)
+  
+</div>
+
+#### ⌨️ **New Feature: Keyboard Shortcuts**
+- 🎯 **Pre-configured Shortcuts**: Ready-to-use keyboard shortcuts that work immediately
+  - **Alt+Shift+9**: Lock current tab instantly
+  - **Alt+Shift+0**: Open Domain Lock Manager
+  - **Alt+Shift+8**: Lock all tabs in current window
+  - **Fully Customizable**: All the shortcut keys are customizable in keyboard shortcut manager.
+
+- ⚡ **Bulk Operations**: Lock all tabs feature via keyboard
+  - Locks all compatible tabs in current window
+  - Automatically skips system and extension pages
+  - Reports count of locked and skipped tabs
+
+#### 🔒 **Visual Indicators**
+
+- 🎨 **Lock Icon on Tab Favicon**: Locked tabs display a distinctive red lock icon
+  - Dynamically generated using HTML5 Canvas
+  - Original favicon automatically restored on unlock
+  
+- 🔢 **Badge Counter on Extension Icon**: Shows number of locked tabs at a glance
+  - Red background with white text
+  - Auto-updates on lock/unlock operations
+  - Persists across browser restarts
+  - Real-time updates for all scenarios
+
+#### 🎨 **Enhanced User Interface**
+
+- 📋 **Keyboard Shortcuts Info Panel**: Added in popup with visual kbd tags
+- 💡 **Contextual Display**: Shows shortcuts only when password is set
+- 🌈 **Modern Styling**: Gradient backgrounds and smooth animations
+
+#### 🔧 **Technical Improvements**
+- **Command Handlers**: Four dedicated functions for keyboard shortcuts
+- **Badge System**: Real-time counter updates across all operations
+- **Favicon Management**: Dynamic lock icon generation and restoration
+- **Enhanced Documentation**: Comprehensive keyboard shortcuts guide
+
+**What's New:** This version introduces power-user features with pre-configured keyboard shortcuts for instant tab locking, domain management, and bulk operations. Visual indicators including lock icons on tab favicons and a badge counter provide clear feedback about locked tabs. The shortcuts work out-of-the-box and can be customized if needed!
+
+---
 
 ### Version 1.0.6 - DOMAIN LOCK FEATURE (November 22, 2025)
 
@@ -89,84 +141,7 @@
 
 ---
 
-### Version 1.0.4 - SALTED PASSWORD HASHING & BUG FIXES (November 8, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  ![Security Enhanced](https://img.shields.io/badge/security-enhanced-brightgreen?style=flat-square)
-  
-</div>
-
-#### 🔒 **Security Enhancements**
-- 🧂 **Salted Password Hashing**: Implemented cryptographically secure salted hashing for maximum password protection
-  - Each password now uses a unique 128-bit random salt generated via `crypto.getRandomValues()`
-  - Salt stored with hash in format `salt:hash` to prevent rainbow table and precomputed hash attacks
-  - **Backward Compatible**: Existing passwords automatically migrate to new format on next use
-- 🛡️ **Enhanced Cryptographic Security**: Protects against advanced attack vectors like rainbow tables and dictionary attacks
-
-#### 🐛 **Bug Fixes**
-- 📁 **File URL Protection**: Added blocking for `file://` protocol URLs to prevent errors when locking local file tabs
-- ❌ **Error Handling**: Enhanced error messages to clearly indicate when local files cannot be locked
-- 🔍 **Console Logging**: Added detailed debug logs for troubleshooting tab access and script injection errors
-- 🔄 **Improved Stability**: Better validation for restricted URLs including local file system access
-
-#### 🔧 **Technical Improvements**
-- **crypto-utils.js**: New `generateSalt()` function for secure random salt generation
-- **Backward Compatibility**: Automatic detection and support for both salted and legacy password formats
-- **Enhanced Security**: Each password hash is now unique even for identical passwords
-- **Better Error Messages**: Clear explanations when system pages, local files, or restricted URLs cannot be locked
-
-**What Changed:** Upgraded password security from plain SHA-256 to salted SHA-256 hashing. Now each password gets a unique cryptographic salt, making the extension resistant to rainbow table attacks and ensuring even identical passwords produce different hashes. The implementation is fully backward compatible - existing users' passwords will work seamlessly. Also fixed critical bugs related to file:// URL handling.
-
-### Version 1.0.3 - IMPROVED USER FEEDBACK (November 3, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  ![UX Enhanced](https://img.shields.io/badge/UX-enhanced-brightgreen?style=flat-square)
-  
-</div>
-
-- 🎯 **Enhanced User Feedback**: Instant visual feedback when attempting to lock restricted tabs
-- ⚠️ **Clear Error Messages**: Users now see specific reasons why a tab cannot be locked
-- 🚫 **Pre-validation**: Tab URLs are checked before lock attempts to prevent confusion
-- ✅ **Success Confirmation**: Clear success messages when tabs are locked successfully
-- 🔧 **Improved Communication**: Better response handling between popup and background scripts
-- 🌐 **Multi-Browser Support**: Enhanced detection for Chrome, Edge, Brave, Opera, Vivaldi, and other Chromium browsers
-- 🔄 **Service Worker Persistence**: Fixed critical issue where locked tabs would lose protection after service worker goes to sleep
-- 🛡️ **Auto-Recovery**: Service worker now automatically restores locked tabs state when it wakes up
-
-**What Changed:** Previously, when users tried to lock system pages (chrome://, edge://, about:, etc.), nothing would happen, making them think the extension was broken. Now, users get clear, immediate feedback explaining exactly why a tab cannot be locked. Additionally, fixed a critical bug where locked tabs would lose protection after Chrome's service worker went to sleep (~30 seconds of inactivity). The extension now properly restores and maintains lock protection even after service worker restarts.
-
-### Version 1.0.2 - INCOGNITO MODE SUPPORT (October 31, 2025)
-
-<div align="center">
-  
-  ![Incognito](https://img.shields.io/badge/incognito-supported-blueviolet?style=flat-square)
-  
-</div>
-
-- 🕶️ **Incognito Mode Support**: Now works seamlessly in private browsing windows
-- 🔐 **Unified Password Protection**: Same password protects tabs in both normal and incognito modes
-- 🐛 **Bug Fix**: Removed deprecated unload event to eliminate console errors
-- ⚡ **Improved Stability**: Enhanced pagehide event handling for better lock persistence
-
-### Version 1.0.0 - INITIAL RELEASE (October 27, 2025)
-
-- 🔐 **SHA-256 Password Hashing**: Military-grade encryption for password security
-- 🔒 **Secure Tab Locking**: Lock any tab with password-protected overlay
-- ⚡ **Performance Optimized**: Lightweight and efficient background operation
-- 🎨 **Modern UI**: Clean, gradient-based interface with smooth animations
-- � **Privacy First**: 100% local storage, no external data transmission
-- �️ **Multi-Layer Security**: 8+ security layers to prevent bypass attempts
-- 🚀 **Production Ready**: GDPR/CCPA compliant with comprehensive privacy policy
+> 📜 **Full Version History**: See [CHANGELOG.md](docs/CHANGELOG.md) for complete version history and older releases.
 
 ---
 
@@ -215,8 +190,11 @@
 ### 🎯 Core Functionality
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
+- **Domain Locking**: Lock entire domains with wildcard support
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
+- **Keyboard Shortcuts**: Optional customizable shortcuts for power users
+- **Badge Counter**: See number of locked tabs at a glance
 - **Incognito Mode**: Works seamlessly in private browsing windows (requires manual activation)
 
 ### 🎨 Enhanced UI
@@ -326,6 +304,48 @@ For security and technical reasons, the following types of tabs **cannot be lock
 - **Visual Security Indicators**: Clear UI showing security requirements
 - **Failed Attempt Logging**: Security events tracked in console
 - **Incognito Protection**: Same security level in private browsing mode
+
+### ⌨️ Keyboard Shortcuts
+
+Locksy includes **pre-configured keyboard shortcuts** that work out-of-the-box. **Ready to use** - No setup required!
+
+#### 🎯 Available Shortcuts
+
+| Shortcut | Command | Description |
+|----------|---------|-------------|
+| `Alt+Shift+9` | **Lock Current Tab** | Instantly locks the active tab |
+| `Alt+Shift+0` | **Open Domain Manager** | Opens Domain Lock Manager window |
+| `Alt+Shift+8` | **Lock All Tabs** | Locks all tabs in current window |
+
+#### ✨ Features
+- 🔔 Smart notifications for every action
+- 🛡️ Automatic safety checks (password, activation status)
+- ⚡ Instant feedback with detailed messages
+- 🎯 Bulk operations (lock all tabs at once)
+
+#### ⚙️ Customize Shortcuts (Optional)
+
+1. **Navigate to Shortcuts Page:**
+   - Chrome: `chrome://extensions/shortcuts`
+   - Edge: `edge://extensions/shortcuts`
+   - Brave: `brave://extensions/shortcuts`
+
+2. **Find Locksy** in the list
+
+3. **Click the pencil icon** next to any command and press your desired key combination
+
+4. **Best Practices:**
+   - ✅ Use `Alt+Shift+[Key]` combinations for least conflicts
+   - ✅ Try alternative keys if conflicts occur (e.g., `Alt+Shift+Q`, `Alt+Shift+Z`)
+   - ❌ Avoid browser shortcuts (`Ctrl+T`, `Ctrl+W`, `Ctrl+D`, etc.)
+   - ❌ Don't use keys already taken by other extensions
+
+#### 🔧 Troubleshooting
+- **"Not set" or grayed out?** → Another extension is using that combo
+- **Not working?** → Check if browser shortcuts override it
+- **Still conflicts?** → Try alternative combinations like `Alt+Shift+Q`, `Ctrl+Shift+Period`, or `Alt+Shift+[0-9]`
+
+See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed usage guide.
 
 ### 🕶️ Incognito Mode
 1. **Enable Permission**: Go to `chrome://extensions/` → Locksy → Details → "Allow in Incognito"

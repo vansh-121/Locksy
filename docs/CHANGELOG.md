@@ -2,6 +2,104 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.7] - 2025-12-04
+
+### ⌨️ New Feature: Keyboard Shortcuts
+
+#### Added
+- **Keyboard Shortcuts System**: Optional customizable shortcuts for power users
+  - Lock current tab instantly
+  - Open Domain Lock Manager
+  - Lock all tabs in current window
+  - **Default shortcuts**: Alt+Shift+9 (Lock), Alt+Shift+0 (Domain Manager), Alt+Shift+8 (Lock All)
+  - **Customizable**: Change at `chrome://extensions/shortcuts` if needed
+  
+- **Smart Notifications**: Every keyboard action provides instant visual feedback
+  - Success messages for completed actions
+  - Error messages with helpful guidance
+  - Status updates for bulk operations
+  
+- **Customizable Shortcuts**: Full browser support for customization
+  - Chrome: `chrome://extensions/shortcuts`
+  - Edge: `edge://extensions/shortcuts`
+  - Custom key combinations for each command
+  
+- **Safety Checks**: Automatic validation before executing shortcuts
+  - Checks extension activation status
+  - Verifies password is set
+  - Validates tab compatibility (skips system pages)
+  - Prevents duplicate locks
+
+- **Bulk Operations**: Lock all tabs feature via keyboard
+  - Locks all compatible tabs in current window
+  - Automatically skips system and extension pages
+  - Reports count of locked and skipped tabs
+  - Updates badge counter in real-time
+
+#### Enhanced
+- **User Interface**:
+  - Added keyboard shortcuts info panel in popup
+  - Displays all available shortcuts with visual kbd tags
+  - Shows when password is set (auto-hides before setup)
+  - Styled with modern gradient background
+  
+- **Documentation**:
+  - New comprehensive keyboard shortcuts guide
+  - Usage examples and tips
+  - Customization instructions
+  - Troubleshooting section
+
+#### Technical Details
+- **Updated Files**:
+  - `manifest.json`: Added `commands` section with 4 keyboard shortcuts
+  - `src/js/background.js`: Added command listener and 4 handler functions
+  - `src/html/popup.html`: Added keyboard shortcuts info section
+  - `src/js/popup.js`: Updated to show/hide shortcuts based on password state
+  - `README.md`: Added keyboard shortcuts section with full documentation
+  
+- **New Files**:
+  - `docs/KEYBOARD_SHORTCUTS.md`: Complete keyboard shortcuts documentation
+
+- **Handler Functions**:
+  - `handleLockCurrentTab()`: Locks active tab with validation
+  - `handleToggleExtension()`: Toggles extension state
+  - `handleOpenDomainManager()`: Opens domain manager window
+  - `handleLockAllTabs()`: Bulk locks all tabs in window
+
+### 🔒 Visual Indicators Enhancement
+
+#### Added
+- **Lock Icon on Tab Favicon**: Locked tabs now display a distinctive red lock icon
+  - Dynamically generated using HTML5 Canvas
+  - Red circle background with white lock emoji
+  - Original favicon automatically restored on unlock
+  
+- **Badge Counter on Extension Icon**: Shows number of locked tabs at a glance
+  - Red background (#dc3545) with white text
+  - Auto-updates on lock/unlock operations
+  - Persists across browser restarts
+  - Disappears when no tabs are locked
+
+#### Enhanced
+- **Real-time Updates**: Badge updates instantly for all lock/unlock scenarios
+  - Individual tab locks/unlocks
+  - Domain locks/unlocks
+  - Bulk operations
+  - Tab closures
+  - Browser restarts
+
+#### Technical Details
+- **Updated Files**:
+  - `src/js/content.js`: Added favicon management functions
+  - `src/js/background.js`: Added badge update system
+  
+- **New Functions**:
+  - `setLockFavicon()`: Creates and applies lock icon to tab
+  - `restoreOriginalFavicon()`: Restores original tab icon
+  - `updateBadge()`: Updates extension icon badge counter
+
+---
+
 ## [1.0.6] - 2025-11-22
 
 ### 🌐 New Feature: Domain Lock
