@@ -608,70 +608,14 @@ function initializeMainUI() {
             return;
           }
 
-          // Get all tabs
-          chrome.tabs.query({}, (tabs) => {
-            if (!tabs || tabs.length === 0) {
-              showNotification("No tabs to lock!", "warning");
-              return;
+          // Send message to background script to handle locking
+          chrome.runtime.sendMessage({ action: "lockAllTabs" }, (response) => {
+            if (response && response.success) {
+              // Background script will show notification and handle all locking logic
+              // Optionally refresh the UI here if needed
+            } else {
+              showNotification("Failed to lock tabs. Please try again.", "error");
             }
-
-            let lockedCount = 0;
-            let skippedCount = 0;
-            let totalTabs = tabs.length;
-
-            // Filter lockable tabs
-            const lockableTabs = tabs.filter(tab => {
-              if (tab.url &&
-                (tab.url.startsWith("chrome://") ||
-                  tab.url.startsWith("edge://") ||
-                  tab.url.startsWith("about:") ||
-                  tab.url.startsWith("chrome-extension://") ||
-                  tab.url.startsWith("extension://") ||
-                  tab.url === "")) {
-                skippedCount++;
-                return false;
-              }
-              return true;
-            });
-
-            if (lockableTabs.length === 0) {
-              showNotification("⚠️ No lockable tabs found! All tabs are system pages or extensions.", "warning");
-              return;
-            }
-
-            // Show processing notification
-            showNotification(`🔄 Locking ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}...`, "info");
-
-            // Lock each tab
-            lockableTabs.forEach((tab, index) => {
-              chrome.runtime.sendMessage({
-                action: "lock",
-                tabId: tab.id
-              }, (response) => {
-                if (response && response.success) {
-                  lockedCount++;
-                }
-
-                // Show final result after all tabs processed
-                if (index === lockableTabs.length - 1) {
-                  setTimeout(() => {
-                    if (lockedCount === lockableTabs.length) {
-                      showNotification(`✅ Successfully locked ${lockedCount} tab${lockedCount !== 1 ? 's' : ''}!`, "success");
-                    } else if (lockedCount > 0) {
-                      showNotification(`✅ Locked ${lockedCount} of ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}!`, "success");
-                    } else {
-                      showNotification("❌ Failed to lock tabs. Please try again.", "error");
-                    }
-
-                    if (skippedCount > 0) {
-                      setTimeout(() => {
-                        showNotification(`ℹ️ Skipped ${skippedCount} system tab${skippedCount !== 1 ? 's' : ''}`, "info");
-                      }, 2000);
-                    }
-                  }, 500);
-                }
-              });
-            });
           });
         });
       } catch (error) {

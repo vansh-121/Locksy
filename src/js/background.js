@@ -441,6 +441,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.action === "getLockedDomains") {
       // Return list of locked domains
       sendResponse({ success: true, domains: lockedDomains });
+    } else if (message.action === "lockAllTabs") {
+      // Lock all tabs in current window
+      chrome.storage.local.get("lockPassword", (data) => {
+        if (!data.lockPassword) {
+          sendResponse({ success: false, error: "Password not set" });
+          return;
+        }
+
+        // Delegate to existing handleLockAllTabs function
+        handleLockAllTabs(true, true);
+        sendResponse({ success: true });
+      });
+      return true;
     }
     // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
   });
