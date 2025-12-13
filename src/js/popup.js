@@ -73,27 +73,58 @@ function showLockoutScreen(remainingTime) {
   const container = document.querySelector('.container');
   const minutes = Math.ceil(remainingTime / 60000);
 
-  container.innerHTML = `
-    <div style="text-align: center; padding: 40px 20px;">
-      <img src="../../assets/images/icon.png" alt="Locksy" style="width: 64px; height: 64px; margin-bottom: 20px; border-radius: 12px;">
-      <h2 style="color: #dc3545; margin-bottom: 16px;">Extension Locked</h2>
-      <p style="color: #6c757d; margin-bottom: 20px;">
-        Too many failed authentication attempts.<br>
-        Please wait ${minutes} minute${minutes !== 1 ? 's' : ''} before trying again.
-      </p>
-      <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 12px; margin-top: 20px;">
-        <p style="margin: 0; font-size: 12px; color: #721c24; font-weight: 500;">
-          <strong>🛡️ Security Measure:</strong> This extension is temporarily locked to prevent brute force attacks.
-        </p>
-      </div>
+  // Clear container
+  container.textContent = '';
 
-      <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e9ecef;">
-        <button id="toggleDeveloperInfo" class="btn-developer-toggle" style="width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;">
-          👨‍💻 Developer Info
-        </button>
-      </div>
-    </div>
-  `;
+  // Create wrapper div
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'text-align: center; padding: 40px 20px;';
+
+  // Create icon
+  const icon = document.createElement('img');
+  icon.src = '../../assets/images/icon.png';
+  icon.alt = 'Locksy';
+  icon.style.cssText = 'width: 64px; height: 64px; margin-bottom: 20px; border-radius: 12px;';
+  wrapper.appendChild(icon);
+
+  // Create heading
+  const heading = document.createElement('h2');
+  heading.textContent = 'Extension Locked';
+  heading.style.cssText = 'color: #dc3545; margin-bottom: 16px;';
+  wrapper.appendChild(heading);
+
+  // Create message paragraph
+  const message = document.createElement('p');
+  message.style.cssText = 'color: #6c757d; margin-bottom: 20px;';
+  message.appendChild(document.createTextNode('Too many failed authentication attempts.'));
+  message.appendChild(document.createElement('br'));
+  message.appendChild(document.createTextNode(`Please wait ${minutes} minute${minutes !== 1 ? 's' : ''} before trying again.`));
+  wrapper.appendChild(message);
+
+  // Create security measure box
+  const securityBox = document.createElement('div');
+  securityBox.style.cssText = 'background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 12px; margin-top: 20px;';
+  const securityText = document.createElement('p');
+  securityText.style.cssText = 'margin: 0; font-size: 12px; color: #721c24; font-weight: 500;';
+  const securityStrong = document.createElement('strong');
+  securityStrong.textContent = '🛡️ Security Measure:';
+  securityText.appendChild(securityStrong);
+  securityText.appendChild(document.createTextNode(' This extension is temporarily locked to prevent brute force attacks.'));
+  securityBox.appendChild(securityText);
+  wrapper.appendChild(securityBox);
+
+  // Create button container
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.cssText = 'margin-top: 30px; padding-top: 20px; border-top: 2px solid #e9ecef;';
+  const devButton = document.createElement('button');
+  devButton.id = 'toggleDeveloperInfo';
+  devButton.className = 'btn-developer-toggle';
+  devButton.textContent = '👨‍💻 Developer Info';
+  devButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;';
+  buttonContainer.appendChild(devButton);
+  wrapper.appendChild(buttonContainer);
+
+  container.appendChild(wrapper);
 
   // Auto-refresh when lockout expires
   setTimeout(() => {
@@ -108,58 +139,92 @@ function showLockoutScreen(remainingTime) {
 function showAuthenticationScreen() {
   const container = document.querySelector('.container');
 
-  container.innerHTML = `
-    <div style="text-align: center; padding: 30px 20px;">
-      <div style="font-size: 48px; margin-bottom: 20px;">🔐</div>
-      <h2 style="color: #2c3e50; margin-bottom: 12px;">Authentication Required</h2>
-      <p style="color: #6c757d; margin-bottom: 25px;">
-        Enter your master password to access the extension
-      </p>
-      
-      <div style="text-align: left;">
-        <input type="password" id="authPassword" placeholder="Enter your master password" 
-               style="width: 100%; padding: 14px 18px; margin: 10px 0; border: 2px solid #e9ecef; 
-                      border-radius: 12px; font-size: 15px; background: white; 
-                      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);" />
-        
-        <button id="authButton" class="btn-primary" 
-                style="width: 100%; padding: 14px 18px; margin: 10px 0; border: none; 
-                       border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; 
-                       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
-                       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
-          Authenticate
-        </button>
-      </div>
-      
-      <div id="authError" style="color: #dc3545; font-size: 14px; margin-top: 10px; opacity: 0; 
-                                 transition: opacity 0.3s ease;"></div>
-      
-      ${failedAttempts > 0 ? `
-      <div style="margin-top: 16px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
-        <p style="margin: 0; font-size: 12px; color: #856404; font-weight: 500;">
-          <strong>⚠️ Warning:</strong> ${MAX_FAILED_ATTEMPTS - failedAttempts} attempt${MAX_FAILED_ATTEMPTS - failedAttempts !== 1 ? 's' : ''} remaining before lockout
-        </p>
-      </div>` : ''}
-    </div>
-  `;
+  // Clear container
+  container.textContent = '';
 
-  const authPassword = document.getElementById('authPassword');
-  const authButton = document.getElementById('authButton');
-  const authError = document.getElementById('authError');
+  // Create wrapper div
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'text-align: center; padding: 30px 20px;';
+
+  // Create lock icon
+  const lockIcon = document.createElement('div');
+  lockIcon.textContent = '🔐';
+  lockIcon.style.cssText = 'font-size: 48px; margin-bottom: 20px;';
+  wrapper.appendChild(lockIcon);
+
+  // Create heading
+  const heading = document.createElement('h2');
+  heading.textContent = 'Authentication Required';
+  heading.style.cssText = 'color: #2c3e50; margin-bottom: 12px;';
+  wrapper.appendChild(heading);
+
+  // Create description
+  const description = document.createElement('p');
+  description.textContent = 'Enter your master password to access the extension';
+  description.style.cssText = 'color: #6c757d; margin-bottom: 25px;';
+  wrapper.appendChild(description);
+
+  // Create input container
+  const inputContainer = document.createElement('div');
+  inputContainer.style.cssText = 'text-align: left;';
+
+  const authInput = document.createElement('input');
+  authInput.type = 'password';
+  authInput.id = 'authPassword';
+  authInput.placeholder = 'Enter your master password';
+  authInput.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: 2px solid #e9ecef; border-radius: 12px; font-size: 15px; background: white; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);';
+  inputContainer.appendChild(authInput);
+
+  const authButton = document.createElement('button');
+  authButton.id = 'authButton';
+  authButton.className = 'btn-primary';
+  authButton.textContent = 'Authenticate';
+  authButton.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
+  inputContainer.appendChild(authButton);
+
+  wrapper.appendChild(inputContainer);
+
+  // Create error div
+  const authError = document.createElement('div');
+  authError.id = 'authError';
+  authError.style.cssText = 'color: #dc3545; font-size: 14px; margin-top: 10px; opacity: 0; transition: opacity 0.3s ease;';
+  wrapper.appendChild(authError);
+
+  // Add warning if there are failed attempts
+  if (failedAttempts > 0) {
+    const warningBox = document.createElement('div');
+    warningBox.style.cssText = 'margin-top: 16px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;';
+    const warningText = document.createElement('p');
+    warningText.style.cssText = 'margin: 0; font-size: 12px; color: #856404; font-weight: 500;';
+    const warningStrong = document.createElement('strong');
+    warningStrong.textContent = '⚠️ Warning:';
+    warningText.appendChild(warningStrong);
+    const attemptsRemaining = MAX_FAILED_ATTEMPTS - failedAttempts;
+    warningText.appendChild(document.createTextNode(` ${attemptsRemaining} attempt${attemptsRemaining !== 1 ? 's' : ''} remaining before lockout`));
+    warningBox.appendChild(warningText);
+    wrapper.appendChild(warningBox);
+  }
+
+  container.appendChild(wrapper);
+
+  // Get references to created elements
+  const authPasswordInput = document.getElementById('authPassword');
+  const authButtonElement = document.getElementById('authButton');
+  const authErrorElement = document.getElementById('authError');
 
   // Focus on password input
-  setTimeout(() => authPassword.focus(), 100);
+  setTimeout(() => authPasswordInput.focus(), 100);
 
   // Enter key support
-  authPassword.addEventListener('keypress', (e) => {
+  authPasswordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-      authButton.click();
+      authButtonElement.click();
     }
   });
 
   // Authentication handler
-  authButton.addEventListener('click', () => {
-    const password = authPassword.value.trim();
+  authButtonElement.addEventListener('click', () => {
+    const password = authPasswordInput.value.trim();
 
     if (!password) {
       showAuthError('Please enter your password');
@@ -167,8 +232,8 @@ function showAuthenticationScreen() {
     }
 
     // Show loading state
-    authButton.textContent = 'Verifying...';
-    authButton.disabled = true;
+    authButtonElement.textContent = 'Verifying...';
+    authButtonElement.disabled = true;
 
     chrome.storage.local.get(['lockPassword'], async (data) => {
       setTimeout(async () => {
@@ -183,23 +248,23 @@ function showAuthenticationScreen() {
         } else {
           // Authentication failed
           handleFailedAuth();
-          authButton.textContent = 'Authenticate';
-          authButton.disabled = false;
-          authPassword.value = '';
-          authPassword.focus();
+          authButtonElement.textContent = 'Authenticate';
+          authButtonElement.disabled = false;
+          authPasswordInput.value = '';
+          authPasswordInput.focus();
         }
       }, 500);
     });
   });
 
   function showAuthError(message) {
-    authError.textContent = message;
-    authError.style.opacity = '1';
-    authPassword.style.borderColor = '#dc3545';
+    authErrorElement.textContent = message;
+    authErrorElement.style.opacity = '1';
+    authPasswordInput.style.borderColor = '#dc3545';
 
     setTimeout(() => {
-      authError.style.opacity = '0';
-      authPassword.style.borderColor = '#e9ecef';
+      authErrorElement.style.opacity = '0';
+      authPasswordInput.style.borderColor = '#e9ecef';
     }, 3000);
   }
 }
@@ -608,14 +673,70 @@ function initializeMainUI() {
             return;
           }
 
-          // Send message to background script to handle locking
-          chrome.runtime.sendMessage({ action: "lockAllTabs" }, (response) => {
-            if (response && response.success) {
-              // Background script will show notification and handle all locking logic
-              // Optionally refresh the UI here if needed
-            } else {
-              showNotification("Failed to lock tabs. Please try again.", "error");
+          // Get all tabs
+          chrome.tabs.query({}, (tabs) => {
+            if (!tabs || tabs.length === 0) {
+              showNotification("No tabs to lock!", "warning");
+              return;
             }
+
+            let lockedCount = 0;
+            let skippedCount = 0;
+            let totalTabs = tabs.length;
+
+            // Filter lockable tabs
+            const lockableTabs = tabs.filter(tab => {
+              if (tab.url &&
+                (tab.url.startsWith("chrome://") ||
+                  tab.url.startsWith("edge://") ||
+                  tab.url.startsWith("about:") ||
+                  tab.url.startsWith("chrome-extension://") ||
+                  tab.url.startsWith("extension://") ||
+                  tab.url === "")) {
+                skippedCount++;
+                return false;
+              }
+              return true;
+            });
+
+            if (lockableTabs.length === 0) {
+              showNotification("⚠️ No lockable tabs found! All tabs are system pages or extensions.", "warning");
+              return;
+            }
+
+            // Show processing notification
+            showNotification(`🔄 Locking ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}...`, "info");
+
+            // Lock each tab
+            lockableTabs.forEach((tab, index) => {
+              chrome.runtime.sendMessage({
+                action: "lock",
+                tabId: tab.id
+              }, (response) => {
+                if (response && response.success) {
+                  lockedCount++;
+                }
+
+                // Show final result after all tabs processed
+                if (index === lockableTabs.length - 1) {
+                  setTimeout(() => {
+                    if (lockedCount === lockableTabs.length) {
+                      showNotification(`✅ Successfully locked ${lockedCount} tab${lockedCount !== 1 ? 's' : ''}!`, "success");
+                    } else if (lockedCount > 0) {
+                      showNotification(`✅ Locked ${lockedCount} of ${lockableTabs.length} tab${lockableTabs.length !== 1 ? 's' : ''}!`, "success");
+                    } else {
+                      showNotification("❌ Failed to lock tabs. Please try again.", "error");
+                    }
+
+                    if (skippedCount > 0) {
+                      setTimeout(() => {
+                        showNotification(`ℹ️ Skipped ${skippedCount} system tab${skippedCount !== 1 ? 's' : ''}`, "info");
+                      }, 2000);
+                    }
+                  }, 500);
+                }
+              });
+            });
           });
         });
       } catch (error) {

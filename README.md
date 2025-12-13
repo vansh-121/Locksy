@@ -3,18 +3,19 @@
   
   # 🔒 Locksy
   
-  ### Military-Grade Tab Protection for Chromium Browsers
+  ### Military-Grade Tab Protection for All Major Browsers
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.7-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org)
+  [![Version](https://img.shields.io/badge/version-1.0.8-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
   
   **A modern browser extension that provides military-grade tab protection with advanced security features.**
   
-  **Compatible with:** • Chrome • Edge • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
+  **Compatible with:** • Chrome • Edge • Firefox • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
   
   [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
   

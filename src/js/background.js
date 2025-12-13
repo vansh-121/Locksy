@@ -1,3 +1,15 @@
+﻿// Cross-browser compatibility note:
+// For Chrome/Edge: Polyfill loaded via importScripts() below
+// For Firefox: Polyfill loaded via manifest background.scripts array
+if (typeof importScripts === 'function') {
+  // Chrome/Edge service worker
+  try {
+    importScripts('browser-polyfill.min.js');
+  } catch (e) {
+    console.log('Polyfill load skipped:', e.message);
+  }
+}
+
 let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
@@ -966,3 +978,5 @@ function handleLockAllTabs(isActive, hasPassword) {
     });
   });
 }
+
+
