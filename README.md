@@ -7,7 +7,7 @@
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org)
+  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
   [![Version](https://img.shields.io/badge/version-1.0.8-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
@@ -164,23 +164,6 @@
 
 **What's New:** This version introduces a powerful domain locking feature that lets you protect all tabs from specific websites. Perfect for locking work domains (like company portals), sensitive services (like banking sites), or entire platforms (like social media). Set it once, and all matching tabs are automatically protected!
 
----
-
-### Version 1.0.5 - Release (November 15, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  
-</div>
-
-#### ⚡ **Performance Optimization & Code Enhancement**
-- 🚀 **Improved Speed**: Optimized core JavaScript for faster execution and enhanced responsiveness
-- 💻 **Code Quality**: Refactored and cleaned up codebase for improved maintainability
-- 🎯 **Enhanced Efficiency**: Overall extension performs faster with better responsiveness
 
 ---
 
