@@ -39,6 +39,48 @@
 
 ## 🆕 Recent Improvements
 
+### Version 1.0.8 - CROSS-BROWSER SUPPORT & SECURITY ENHANCEMENTS (December 17, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![New Feature](https://img.shields.io/badge/feature-cross%20browser-brightgreen?style=flat-square)
+  
+</div>
+
+#### 🦊 **Major Feature: Cross-Browser Support**
+- 🌐 **Full Cross-Browser Compatibility**: Works seamlessly across all major browsers
+  - Chrome, Edge, Firefox, Brave, Opera, Vivaldi, and all Chromium-based browsers
+  - WebExtension Polyfill for unified API support
+  - Identical features and functionality across all platforms
+  - Single unified codebase for all browsers
+
+#### 🔒 **Enhanced Security**
+- 🛡️ **XSS Prevention**: Advanced protection against code injection attacks
+  - Replaced all `innerHTML` with safe DOM methods
+  - Secure element creation and manipulation
+  - Protection against malicious dynamic HTML insertion
+  - Multiple security layers for content sanitization
+
+#### 📦 **Technical Improvements**
+- ⚡ **WebExtension API Compatibility**: Seamless browser operation
+  - Browser-agnostic API calls
+  - Unified manifest support for Firefox
+  - Enhanced polyfill integration
+  - Updated all HTML pages for cross-browser compatibility
+
+#### 🐛 **Bug Fixes**
+- Fixed "Lock All Tabs" functionality in background script
+- Improved popup integration with background actions
+- Enhanced service worker reliability across browsers
+
+**What's New:** This version introduces full cross-browser support with Firefox compatibility, enhanced XSS prevention for improved security, and a unified WebExtension API for seamless operation across all major browsers. The extension now provides identical features and security across Chrome, Edge, Firefox, Brave, Opera, and all Chromium-based browsers!
+
+---
+
 ### Version 1.0.7 - KEYBOARD SHORTCUTS & VISUAL INDICATORS (December 7, 2025)
 
 <div align="center">
