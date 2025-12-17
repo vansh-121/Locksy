@@ -252,12 +252,15 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 #### Microsoft Edge
 **[Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)** 🌐
 
+#### Mozilla Firefox
+**[Install from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/locksy/)** 🦊
+
 </div>
 
 **Installation Steps:**
 1. Click the link above for your browser
-2. Click **"Add to Chrome"** or **"Get"** (for Edge)
-3. Confirm by clicking **"Add extension"**
+2. Click **"Add to Chrome"**, **"Get"** (for Edge), or **"Add to Firefox"**
+3. Confirm by clicking **"Add extension"** or **"Add"**
 4. Locksy icon will appear in your toolbar! 🎉
 5. Pin it for quick access (click puzzle icon → pin Locksy)
 
@@ -272,7 +275,9 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 2. **Open Browser Extensions**
    - **Chrome/Brave/Opera/Vivaldi**: Navigate to `chrome://extensions/`
    - **Edge**: Navigate to `edge://extensions/`
-   - Enable **Developer mode** (toggle in top-right)
+   - **Firefox**: Navigate to `about:debugging#/runtime/this-firefox`
+   - Enable **Developer mode** (toggle in top-right for Chrome/Edge)
+   - For Firefox, click **"Load Temporary Add-on..."**
 
 3. **Load the extension**
    - Click **"Load unpacked"**
@@ -315,7 +320,7 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 
 #### ⚠️ Tabs That Cannot Be Locked
 For security and technical reasons, the following types of tabs **cannot be locked**:
-- 🚫 **Browser Settings Pages**: `chrome://`, `edge://`, `about:` pages
+- 🚫 **Browser Settings Pages**: `chrome://`, `edge://`, `about:` pages (Firefox internal pages)
 - 🚫 **Extension Pages**: Chrome Web Store, extension management pages
 - 🚫 **New Tab Pages**: Empty tabs or browser new tab pages
 - 🚫 **System Pages**: Browser internal pages and configurations
@@ -418,7 +423,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 - ✅ Use a strong password with letters, numbers, and symbols
 - ✅ The extension only works when activated via the toggle
-- ⚠️ System pages (`chrome://`, `edge://`, `about:`) cannot be locked for security reasons
+- ⚠️ System pages (`chrome://`, `edge://`, `about:`) and Firefox internal pages cannot be locked for security reasons
 - ⚠️ Extension pages and new tab pages cannot be locked due to browser restrictions
 - 💡 If you see an error when locking, check if the tab is a system or extension page
 - 🔒 Your password is stored securely in Chrome's local storage
