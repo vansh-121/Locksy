@@ -46,34 +46,34 @@
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/1.png" alt="Locksy Main Popup" width="100%">
+      <img src="assets/images/screenshots/1.png" alt="Locksy Main Features" width="100%">
       <br>
-      <b>Main Popup Interface</b>
+      <b>Securely Lock & Manage Your Browser Tabs</b>
       <br>
-      Lock current tab, manage domains, and access keyboard shortcuts
+      Lock individual tabs or windows with one-click privacy protection
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/2.png" alt="Tab Locked" width="100%">
+      <img src="assets/images/screenshots/2.png" alt="Security Features" width="100%">
       <br>
-      <b>Locked Tab Screen</b>
+      <b>Your Passwords, Your Control</b>
       <br>
-      Military-grade password protection with SHA-256 encryption
+      No data collection, SHA-256 encryption, offline-only operation
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/3.png" alt="Domain Manager" width="100%">
+      <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
       <br>
-      <b>Domain Lock Manager</b>
+      <b>Military-Grade Tab Protection</b>
       <br>
-      Manage locked domains with wildcard support
+      Enterprise-level security for your sensitive browser tabs
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/Final.png" alt="Extension in Action" width="100%">
+      <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
       <br>
-      <b>Visual Indicators</b>
+      <b>Tab Secured - Password Protected</b>
       <br>
-      Lock icons on tabs and badge counter showing locked tabs
+      Enter password to unlock and access your protected content
     </td>
   </tr>
 </table>
