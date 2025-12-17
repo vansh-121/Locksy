@@ -29,9 +29,9 @@
   
 **See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
   
-  [![Locksy Extension Demo](https://img.youtube.com/vi/C99yuKTqEFA/maxresdefault.jpg)](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  [![Locksy Extension Demo](https://img.youtube.com/vi/6uyd4sN5WiA/maxresdefault.jpg)](https://www.youtube.com/watch?v=6uyd4sN5WiA)
   
-  [🎬 Watch on YouTube](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  [🎬 Watch on YouTube](https://www.youtube.com/watch?v=6uyd4sN5WiA)
   
 </div>
 
