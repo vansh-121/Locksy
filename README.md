@@ -37,6 +37,72 @@
 
 ---
 
+## 📸 Screenshots
+
+<div align="center">
+
+### 🎯 Main Interface & Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/1.png" alt="Locksy Main Popup" width="100%">
+      <br>
+      <b>Main Popup Interface</b>
+      <br>
+      Lock current tab, manage domains, and access keyboard shortcuts
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/2.png" alt="Tab Locked" width="100%">
+      <br>
+      <b>Locked Tab Screen</b>
+      <br>
+      Military-grade password protection with SHA-256 encryption
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/3.png" alt="Domain Manager" width="100%">
+      <br>
+      <b>Domain Lock Manager</b>
+      <br>
+      Manage locked domains with wildcard support
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Final.png" alt="Extension in Action" width="100%">
+      <br>
+      <b>Visual Indicators</b>
+      <br>
+      Lock icons on tabs and badge counter showing locked tabs
+    </td>
+  </tr>
+</table>
+
+### 🚀 Quick Setup Guide
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 1.png" alt="Setup Step 1" width="100%">
+      <br>
+      <b>Step 1: Set Master Password</b>
+      <br>
+      Create a strong password with real-time strength indicator
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 3.png" alt="Setup Step 3" width="100%">
+      <br>
+      <b>Step 2: Start Locking Tabs</b>
+      <br>
+      One-click tab protection or use keyboard shortcuts
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
 ## 🆕 Recent Improvements
 
 ### Version 1.0.8 - CROSS-BROWSER SUPPORT & SECURITY ENHANCEMENTS (December 17, 2025)
