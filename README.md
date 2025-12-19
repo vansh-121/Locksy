@@ -3,18 +3,19 @@
   
   # 🔒 Locksy
   
-  ### Military-Grade Tab Protection for Chromium Browsers
+  ### Military-Grade Tab Protection for All Major Browsers
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
-  [![Version](https://img.shields.io/badge/version-1.0.7-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
+  [![Version](https://img.shields.io/badge/version-1.0.8-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-SHA--256%20%2B%20Salt-red?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
   
   **A modern browser extension that provides military-grade tab protection with advanced security features.**
   
-  **Compatible with:** • Chrome • Edge • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
+  **Compatible with:** • Chrome • Edge • Firefox • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
   
   [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
   
@@ -28,15 +29,123 @@
   
 **See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
   
-  [![Locksy Extension Demo](https://img.youtube.com/vi/C99yuKTqEFA/maxresdefault.jpg)](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  [![Locksy Extension Demo](https://img.youtube.com/vi/6uyd4sN5WiA/maxresdefault.jpg)](https://www.youtube.com/watch?v=6uyd4sN5WiA)
   
-  [🎬 Watch on YouTube](https://youtu.be/C99yuKTqEFA?si=ZIoSZel8nwgcSzZo)
+  [🎬 Watch on YouTube](https://www.youtube.com/watch?v=6uyd4sN5WiA)
   
 </div>
 
 ---
 
+## 📸 Screenshots
+
+<div align="center">
+
+### 🎯 Main Interface & Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/1.png" alt="Locksy Main Features" width="100%">
+      <br>
+      <b>Securely Lock & Manage Your Browser Tabs</b>
+      <br>
+      Lock individual tabs or windows with one-click privacy protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/2.png" alt="Security Features" width="100%">
+      <br>
+      <b>Your Passwords, Your Control</b>
+      <br>
+      No data collection, SHA-256 encryption, offline-only operation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
+      <br>
+      <b>Military-Grade Tab Protection</b>
+      <br>
+      Enterprise-level security for your sensitive browser tabs
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
+      <br>
+      <b>Tab Secured - Password Protected</b>
+      <br>
+      Enter password to unlock and access your protected content
+    </td>
+  </tr>
+</table>
+
+### 🚀 Quick Setup Guide
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 1.png" alt="Setup Step 1" width="100%">
+      <br>
+      <b>Step 1: Set Master Password</b>
+      <br>
+      Create a strong password with real-time strength indicator
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 3.png" alt="Setup Step 3" width="100%">
+      <br>
+      <b>Step 2: Start Locking Tabs</b>
+      <br>
+      One-click tab protection or use keyboard shortcuts
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
 ## 🆕 Recent Improvements
+
+### Version 1.0.8 - CROSS-BROWSER SUPPORT & SECURITY ENHANCEMENTS (December 17, 2025)
+
+<div align="center">
+  
+  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
+  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
+  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
+  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
+  ![New Feature](https://img.shields.io/badge/feature-cross%20browser-brightgreen?style=flat-square)
+  
+</div>
+
+#### 🦊 **Major Feature: Cross-Browser Support**
+- 🌐 **Full Cross-Browser Compatibility**: Works seamlessly across all major browsers
+  - Chrome, Edge, Firefox, Brave, Opera, Vivaldi, and all Chromium-based browsers
+  - WebExtension Polyfill for unified API support
+  - Identical features and functionality across all platforms
+  - Single unified codebase for all browsers
+
+#### 🔒 **Enhanced Security**
+- 🛡️ **XSS Prevention**: Advanced protection against code injection attacks
+  - Replaced all `innerHTML` with safe DOM methods
+  - Secure element creation and manipulation
+  - Protection against malicious dynamic HTML insertion
+  - Multiple security layers for content sanitization
+
+#### 📦 **Technical Improvements**
+- ⚡ **WebExtension API Compatibility**: Seamless browser operation
+  - Browser-agnostic API calls
+  - Unified manifest support for Firefox
+  - Enhanced polyfill integration
+  - Updated all HTML pages for cross-browser compatibility
+
+#### 🐛 **Bug Fixes**
+- Fixed "Lock All Tabs" functionality in background script
+- Improved popup integration with background actions
+- Enhanced service worker reliability across browsers
+
+**What's New:** This version introduces full cross-browser support with Firefox compatibility, enhanced XSS prevention for improved security, and a unified WebExtension API for seamless operation across all major browsers. The extension now provides identical features and security across Chrome, Edge, Firefox, Brave, Opera, and all Chromium-based browsers!
+
+---
 
 ### Version 1.0.7 - KEYBOARD SHORTCUTS & VISUAL INDICATORS (December 7, 2025)
 
@@ -121,23 +230,6 @@
 
 **What's New:** This version introduces a powerful domain locking feature that lets you protect all tabs from specific websites. Perfect for locking work domains (like company portals), sensitive services (like banking sites), or entire platforms (like social media). Set it once, and all matching tabs are automatically protected!
 
----
-
-### Version 1.0.5 - Release (November 15, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  
-</div>
-
-#### ⚡ **Performance Optimization & Code Enhancement**
-- 🚀 **Improved Speed**: Optimized core JavaScript for faster execution and enhanced responsiveness
-- 💻 **Code Quality**: Refactored and cleaned up codebase for improved maintainability
-- 🎯 **Enhanced Efficiency**: Overall extension performs faster with better responsiveness
 
 ---
 
@@ -226,12 +318,15 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 #### Microsoft Edge
 **[Install from Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)** 🌐
 
+#### Mozilla Firefox
+**[Install from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/locksy/)** 🦊
+
 </div>
 
 **Installation Steps:**
 1. Click the link above for your browser
-2. Click **"Add to Chrome"** or **"Get"** (for Edge)
-3. Confirm by clicking **"Add extension"**
+2. Click **"Add to Chrome"**, **"Get"** (for Edge), or **"Add to Firefox"**
+3. Confirm by clicking **"Add extension"** or **"Add"**
 4. Locksy icon will appear in your toolbar! 🎉
 5. Pin it for quick access (click puzzle icon → pin Locksy)
 
@@ -246,7 +341,9 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 2. **Open Browser Extensions**
    - **Chrome/Brave/Opera/Vivaldi**: Navigate to `chrome://extensions/`
    - **Edge**: Navigate to `edge://extensions/`
-   - Enable **Developer mode** (toggle in top-right)
+   - **Firefox**: Navigate to `about:debugging#/runtime/this-firefox`
+   - Enable **Developer mode** (toggle in top-right for Chrome/Edge)
+   - For Firefox, click **"Load Temporary Add-on..."**
 
 3. **Load the extension**
    - Click **"Load unpacked"**
@@ -289,7 +386,7 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 
 #### ⚠️ Tabs That Cannot Be Locked
 For security and technical reasons, the following types of tabs **cannot be locked**:
-- 🚫 **Browser Settings Pages**: `chrome://`, `edge://`, `about:` pages
+- 🚫 **Browser Settings Pages**: `chrome://`, `edge://`, `about:` pages (Firefox internal pages)
 - 🚫 **Extension Pages**: Chrome Web Store, extension management pages
 - 🚫 **New Tab Pages**: Empty tabs or browser new tab pages
 - 🚫 **System Pages**: Browser internal pages and configurations
@@ -392,7 +489,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 - ✅ Use a strong password with letters, numbers, and symbols
 - ✅ The extension only works when activated via the toggle
-- ⚠️ System pages (`chrome://`, `edge://`, `about:`) cannot be locked for security reasons
+- ⚠️ System pages (`chrome://`, `edge://`, `about:`) and Firefox internal pages cannot be locked for security reasons
 - ⚠️ Extension pages and new tab pages cannot be locked due to browser restrictions
 - 💡 If you see an error when locking, check if the tab is a system or extension page
 - 🔒 Your password is stored securely in Chrome's local storage

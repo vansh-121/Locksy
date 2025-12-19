@@ -2,6 +2,69 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [1.0.8] - 2025-12-17
+
+### 🦊 Major Feature: Cross-Browser Support
+
+#### Added
+- **Full Cross-Browser Compatibility**: Locksy now works seamlessly across all major browsers
+  - Chrome, Edge, Firefox, Brave, Opera, Vivaldi, and all Chromium-based browsers
+  - WebExtension Polyfill integration for unified API support
+  - Identical features and functionality across all platforms
+  - Single unified codebase for all browsers
+  
+- **Firefox Manifest Support**: Dedicated Firefox manifest configuration
+  - `manifest.firefox.json`: Firefox-specific settings
+  - WebExtension polyfill for browser API compatibility
+  - Service worker configuration for Firefox
+
+### 🔒 Enhanced Security
+
+#### Improved
+- **XSS Prevention**: Advanced protection against cross-site scripting attacks
+  - Replaced all `innerHTML` usage with safe DOM methods
+  - Secure element creation using `document.createElement()`
+  - Safe text content insertion using `textContent`
+  - Protection against malicious dynamic HTML insertion
+  - Multiple security layers for content sanitization
+  
+- **Secure DOM Manipulation**: Enhanced security across all components
+  - Content scripts use safe DOM methods exclusively
+  - Popup and domain manager use secure element creation
+  - Keyboard shortcuts page implements safe DOM practices
+
+### 📦 Technical Updates
+
+#### Enhanced
+- **WebExtension API Compatibility**: Seamless browser operation
+  - Browser-agnostic API calls throughout codebase
+  - WebExtension polyfill (`browser-polyfill.min.js`) integration
+  - Unified manifest support for cross-browser deployment
+  - Updated all HTML pages for cross-browser compatibility
+  
+- **Updated Files**:
+  - `manifest.firefox.json`: Created Firefox-specific manifest
+  - `src/js/content.js`: Replaced innerHTML with secure DOM methods
+  - `src/js/popup.js`: Enhanced with safe element creation
+  - `src/js/domain-manager.js`: Implemented secure DOM manipulation
+  - `src/js/keyboard-shortcuts.js`: Updated with safe DOM practices
+  - All HTML files: Added WebExtension polyfill support
+
+### 🐛 Bug Fixes
+
+#### Fixed
+- **Lock All Tabs Functionality**: Resolved background script action handling
+  - Implemented proper `lockAllTabs` action handler
+  - Fixed message passing between popup and background script
+  - Enhanced error handling for bulk operations
+  
+- **Popup Integration**: Improved communication with background service
+  - Fixed action message handling
+  - Enhanced response validation
+  - Better error reporting for failed operations
+
+---
+
 ## [1.0.7] - 2025-12-04
 
 ### ⌨️ New Feature: Keyboard Shortcuts

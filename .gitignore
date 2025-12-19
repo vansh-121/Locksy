@@ -25,3 +25,7 @@ test-crypto.html
 # Temporary files
 *.tmp
 *.log
+
+*.txt
+
+
