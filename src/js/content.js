@@ -630,10 +630,23 @@ function createLockOverlay() {
             devtoolsBlock.setAttribute("data-security-critical", "true");
             devtoolsBlock.setAttribute("data-lock-component", "devtools-block");
             devtoolsBlock.style.cssText = "position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(0,0,0,0.98)!important;z-index:2147483646!important;color:#ff0000!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:32px!important;font-weight:bold!important;flex-direction:column!important;pointer-events:auto!important;";
-            devtoolsBlock.innerHTML =
-              "🚫 DEVELOPER TOOLS BLOCKED<br>" +
-              "<span style='font-size:18px;color:#fff;margin-top:20px;'>Close DevTools to continue</span><br>" +
-              `<span style='font-size:14px;color:#ff6b6b;margin-top:10px;'>Detection Count: ${devtoolsAttempts}</span>`;
+
+            // Create content safely
+            const mainText = document.createTextNode('🚫 DEVELOPER TOOLS BLOCKED');
+            devtoolsBlock.appendChild(mainText);
+            devtoolsBlock.appendChild(document.createElement('br'));
+
+            const subText = document.createElement('span');
+            subText.style.cssText = 'font-size:18px;color:#fff;margin-top:20px;';
+            subText.textContent = 'Close DevTools to continue';
+            devtoolsBlock.appendChild(subText);
+            devtoolsBlock.appendChild(document.createElement('br'));
+
+            const countText = document.createElement('span');
+            countText.style.cssText = 'font-size:14px;color:#ff6b6b;margin-top:10px;';
+            countText.textContent = `Detection Count: ${devtoolsAttempts}`;
+            devtoolsBlock.appendChild(countText);
+
             document.body.appendChild(devtoolsBlock);
             criticalElements.add('devtoolsBlockOverlay');
           }
@@ -796,58 +809,98 @@ function createLockOverlay() {
       const lockContainer = overlay.querySelector('.lock-container');
       const hostname = new URL(window.location.href).hostname;
 
-      lockContainer.innerHTML = `
-        <div style="text-align: center;">
-          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(255, 255, 255, 0.2); 
-                      border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <span style="font-size: 48px;">✅</span>
-          </div>
-          <h1 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: #000000;">Password Correct!</h1>
-          <p style="font-size: 16px; margin: 0 0 28px 0; color: #000000; line-height: 1.5;">
-            This tab is protected by a domain lock.<br>
-            Choose unlock scope:
-          </p>
-          
-          <button id="unlockThisTab" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
-                                            border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
-                                            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); 
-                                            color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); 
-                                            transition: all 0.3s ease;">
-            🔓 Unlock This Tab Only
-          </button>
-          
-          <button id="unlockAllDomainTabs" style="width: 100%; padding: 14px 18px; margin: 8px 0; border: none; 
-                                                   border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; 
-                                                   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
-                                                   color: white; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); 
-                                                   transition: all 0.3s ease;">
-            🌐 Unlock All ${hostname} Tabs
-          </button>
-          
-          <div style="margin: 20px 0; padding: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #000000; font-size: 14px;">
-              <input type="checkbox" id="rememberChoice" style="width: 18px; height: 18px; cursor: pointer;">
-              <span>Remember this choice for <strong>${escapeHtml(domainPattern)}</strong></span>
-            </label>
-            <small style="display: block; margin-top: 8px; color: rgba(0, 0, 0, 0.7);">
-              You can change this anytime in Domain Lock Manager settings
-            </small>
-          </div>
-          
-          <p style="font-size: 12px; margin: 20px 0 0 0; color: rgba(0, 0, 0, 0.7); line-height: 1.4;">
-            <strong>Note:</strong> "This Tab Only" keeps the domain lock active but temporarily unlocks this tab.
-          </p>
-        </div>
-      `;
+      // Clear container
+      lockContainer.textContent = '';
+
+      // Create main wrapper
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'text-align: center;';
+
+      // Create success icon
+      const iconContainer = document.createElement('div');
+      iconContainer.style.cssText = 'width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;';
+      const icon = document.createElement('span');
+      icon.style.cssText = 'font-size: 48px;';
+      icon.textContent = '✅';
+      iconContainer.appendChild(icon);
+      wrapper.appendChild(iconContainer);
+
+      // Create heading
+      const heading = document.createElement('h1');
+      heading.style.cssText = 'font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: #000000;';
+      heading.textContent = 'Password Correct!';
+      wrapper.appendChild(heading);
+
+      // Create description
+      const description = document.createElement('p');
+      description.style.cssText = 'font-size: 16px; margin: 0 0 28px 0; color: #000000; line-height: 1.5;';
+      description.appendChild(document.createTextNode('This tab is protected by a domain lock.'));
+      description.appendChild(document.createElement('br'));
+      description.appendChild(document.createTextNode('Choose unlock scope:'));
+      wrapper.appendChild(description);
+
+      // Create "Unlock This Tab" button
+      const unlockThisTabBtn = document.createElement('button');
+      unlockThisTabBtn.id = 'unlockThisTab';
+      unlockThisTabBtn.style.cssText = 'width: 100%; padding: 14px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3); transition: all 0.3s ease;';
+      unlockThisTabBtn.textContent = '🔓 Unlock This Tab Only';
+      wrapper.appendChild(unlockThisTabBtn);
+
+      // Create "Unlock All Domain Tabs" button
+      const unlockAllBtn = document.createElement('button');
+      unlockAllBtn.id = 'unlockAllDomainTabs';
+      unlockAllBtn.style.cssText = 'width: 100%; padding: 14px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); transition: all 0.3s ease;';
+      unlockAllBtn.textContent = `🌐 Unlock All ${hostname} Tabs`;
+      wrapper.appendChild(unlockAllBtn);
+
+      // Create remember choice section
+      const rememberSection = document.createElement('div');
+      rememberSection.style.cssText = 'margin: 20px 0; padding: 16px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;';
+
+      const rememberLabel = document.createElement('label');
+      rememberLabel.style.cssText = 'display: flex; align-items: center; gap: 10px; cursor: pointer; color: #000000; font-size: 14px;';
+
+      const rememberCheckbox = document.createElement('input');
+      rememberCheckbox.type = 'checkbox';
+      rememberCheckbox.id = 'rememberChoice';
+      rememberCheckbox.style.cssText = 'width: 18px; height: 18px; cursor: pointer;';
+      rememberLabel.appendChild(rememberCheckbox);
+
+      const rememberSpan = document.createElement('span');
+      rememberSpan.appendChild(document.createTextNode('Remember this choice for '));
+      const domainStrong = document.createElement('strong');
+      domainStrong.textContent = domainPattern;
+      rememberSpan.appendChild(domainStrong);
+      rememberLabel.appendChild(rememberSpan);
+
+      rememberSection.appendChild(rememberLabel);
+
+      const rememberSmall = document.createElement('small');
+      rememberSmall.style.cssText = 'display: block; margin-top: 8px; color: rgba(0, 0, 0, 0.7);';
+      rememberSmall.textContent = 'You can change this anytime in Domain Lock Manager settings';
+      rememberSection.appendChild(rememberSmall);
+
+      wrapper.appendChild(rememberSection);
+
+      // Create note
+      const note = document.createElement('p');
+      note.style.cssText = 'font-size: 12px; margin: 20px 0 0 0; color: rgba(0, 0, 0, 0.7); line-height: 1.4;';
+      const noteStrong = document.createElement('strong');
+      noteStrong.textContent = 'Note:';
+      note.appendChild(noteStrong);
+      note.appendChild(document.createTextNode(' "This Tab Only" keeps the domain lock active but temporarily unlocks this tab.'));
+      wrapper.appendChild(note);
+
+      lockContainer.appendChild(wrapper);
 
       // Add event listeners for scope buttons
       const unlockThisTab = overlay.querySelector('#unlockThisTab');
       const unlockAllDomainTabs = overlay.querySelector('#unlockAllDomainTabs');
-      const rememberCheckbox = overlay.querySelector('#rememberChoice');
+      const rememberCheckboxElement = overlay.querySelector('#rememberChoice');
 
       const handleUnlock = (scope) => {
         // Check if user wants to remember this choice
-        if (rememberCheckbox.checked) {
+        if (rememberCheckboxElement.checked) {
           chrome.storage.local.get("domainUnlockPreferences", (data) => {
             const preferences = data.domainUnlockPreferences || {};
             preferences[domainPattern] = scope;

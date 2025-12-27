@@ -1,4 +1,4 @@
-// Keyboard Shortcuts Page Script
+﻿// Keyboard Shortcuts Page Script
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCurrentShortcuts();
@@ -24,7 +24,17 @@ function updateShortcutDisplay(commandName, shortcut) {
     if (element && shortcut) {
         // Parse the shortcut string and create kbd elements
         const keys = parseShortcut(shortcut);
-        element.innerHTML = keys.map(key => `<kbd>${key}</kbd>`).join(' + ');
+        // Clear existing content
+        element.textContent = '';
+        // Create kbd elements safely
+        keys.forEach((key, index) => {
+            if (index > 0) {
+                element.appendChild(document.createTextNode(' + '));
+            }
+            const kbd = document.createElement('kbd');
+            kbd.textContent = key;
+            element.appendChild(kbd);
+        });
     }
 }
 
@@ -83,11 +93,16 @@ function openBrowserShortcutsPage() {
         shortcutsUrl = 'vivaldi://extensions/shortcuts';
         browserName = 'Vivaldi';
     } else if (userAgent.includes('firefox')) {
-        shortcutsUrl = 'about:addons';
         browserName = 'Firefox';
+        // Firefox cannot open about:addons via tabs.create due to security restrictions
+        showNotification(
+            `To customize shortcuts in Firefox:\n1. Type "about:addons" in address bar\n2. Click settings icon (⚙️) next to Locksy\n3. Select "Manage Extension Shortcuts"`,
+            'info'
+        );
+        return;
     }
 
-    // Open shortcuts page in new tab
+    // Open shortcuts page in new tab (Chromium browsers only)
     if (typeof chrome !== 'undefined' && chrome.tabs) {
         chrome.tabs.create({ url: shortcutsUrl }, (tab) => {
             if (chrome.runtime.lastError) {
@@ -148,3 +163,5 @@ document.addEventListener('keydown', (e) => {
         openBrowserShortcutsPage();
     }
 });
+
+
