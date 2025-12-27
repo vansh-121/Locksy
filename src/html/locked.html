@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
+        content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:;">
     <title>🔒 Tab Locked - Locksy</title>
     <link rel="stylesheet" href="../css/locked.css">
     <link rel="icon" id="lockFavicon" type="image/png">
@@ -49,7 +49,7 @@
         </div>
 
         <!-- Unlock Scope Selection (shown for domain-locked tabs) -->
-        <div class="scope-selection" id="scopeSelection" style="display: none;">
+        <div class="scope-selection hidden" id="scopeSelection">
             <div class="success-icon">✅</div>
             <h1>Password Correct!</h1>
             <p class="subtitle">This tab is protected by a domain lock.<br>Choose unlock scope:</p>

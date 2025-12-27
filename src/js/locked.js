@@ -212,7 +212,8 @@ async function unlockWithPassword() {
                     unlockBtn.innerHTML = '🔒 Locked';
                     unlockBtn.disabled = true;
                     passwordInput.disabled = true;
-                    passwordInput.style.opacity = '0.5';
+                    passwordInput.classList.add('opacity-half');
+                    passwordInput.classList.remove('opacity-full');
                     passwordInput.value = ''; // Clear password for security
 
                     // Get actual remaining time from rate limit status
@@ -227,7 +228,8 @@ async function unlockWithPassword() {
                     unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
                     unlockBtn.disabled = false;
                     passwordInput.disabled = false;
-                    passwordInput.style.opacity = '1';
+                    passwordInput.classList.add('opacity-full');
+                    passwordInput.classList.remove('opacity-half');
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
@@ -236,7 +238,8 @@ async function unlockWithPassword() {
                 unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
                 unlockBtn.disabled = false;
                 passwordInput.disabled = false;
-                passwordInput.style.opacity = '1';
+                passwordInput.classList.add('opacity-full');
+                passwordInput.classList.remove('opacity-half');
                 passwordInput.value = '';
                 passwordInput.focus();
             }
@@ -286,7 +289,8 @@ function startCountdown(seconds) {
                 unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
                 unlockBtn.disabled = false;
                 passwordInput.disabled = false;
-                passwordInput.style.opacity = '1';
+                passwordInput.classList.add('opacity-full');
+                passwordInput.classList.remove('opacity-half');
                 passwordInput.value = '';
                 hideRateLimitInfo();
                 showError('✅ Ready - you can try again now');
@@ -304,7 +308,8 @@ function startCountdown(seconds) {
 function showError(message) {
     const errorDiv = document.getElementById('errorMessage');
     errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
+    errorDiv.classList.remove('hidden');
+    errorDiv.classList.add('visible');
 
     // Auto-hide after 5 seconds
     setTimeout(() => {
@@ -318,21 +323,24 @@ function showError(message) {
 function hideError() {
     const errorDiv = document.getElementById('errorMessage');
     errorDiv.textContent = '';
-    errorDiv.style.display = 'none';
+    errorDiv.classList.add('hidden');
+    errorDiv.classList.remove('visible');
 }
 
 // Show success message
 function showSuccess(message) {
     const successDiv = document.getElementById('successMessage');
     successDiv.textContent = message;
-    successDiv.style.display = 'block';
+    successDiv.classList.remove('hidden');
+    successDiv.classList.add('visible');
 }
 
 // Hide success message
 function hideSuccess() {
     const successDiv = document.getElementById('successMessage');
     successDiv.textContent = '';
-    successDiv.style.display = 'none';
+    successDiv.classList.add('hidden');
+    successDiv.classList.remove('visible');
 }
 
 // Show loading spinner
@@ -349,7 +357,8 @@ function showLoading(show) {
 function showRateLimitInfo(message, isLocked) {
     const infoDiv = document.getElementById('rateLimitInfo');
     infoDiv.textContent = message;
-    infoDiv.style.display = 'block';
+    infoDiv.classList.remove('hidden');
+    infoDiv.classList.add('visible');
 
     if (isLocked) {
         infoDiv.classList.add('locked');
@@ -362,7 +371,8 @@ function showRateLimitInfo(message, isLocked) {
 function hideRateLimitInfo() {
     const infoDiv = document.getElementById('rateLimitInfo');
     infoDiv.textContent = '';
-    infoDiv.style.display = 'none';
+    infoDiv.classList.add('hidden');
+    infoDiv.classList.remove('visible');
     infoDiv.classList.remove('locked');
 }
 
@@ -391,11 +401,13 @@ function showScopeSelection(domainPattern, originalUrl) {
     showLoading(false);
 
     // Hide main lock content
-    document.querySelector('.lock-content').style.display = 'none';
+    document.querySelector('.lock-content').classList.add('hidden');
+    document.querySelector('.lock-content').classList.remove('visible');
 
     // Show scope selection
     const scopeSelection = document.getElementById('scopeSelection');
-    scopeSelection.style.display = 'block';
+    scopeSelection.classList.remove('hidden');
+    scopeSelection.classList.add('visible');
 
     // Set domain name
     try {
@@ -451,8 +463,10 @@ async function unlockWithScope(scope) {
         if (response && !response.success) {
             showError('Error unlocking: ' + (response.error || 'Unknown error'));
             // Restore UI
-            document.querySelector('.lock-content').style.display = 'block';
-            document.getElementById('scopeSelection').style.display = 'none';
+            document.querySelector('.lock-content').classList.remove('hidden');
+            document.querySelector('.lock-content').classList.add('visible');
+            document.getElementById('scopeSelection').classList.add('hidden');
+            document.getElementById('scopeSelection').classList.remove('visible');
             showLoading(false);
             disableUnlock(false);
         }
@@ -462,8 +476,10 @@ async function unlockWithScope(scope) {
         console.error('Error unlocking tab:', error);
         showError('Error unlocking tab. Please try again.');
         // Restore UI
-        document.querySelector('.lock-content').style.display = 'block';
-        document.getElementById('scopeSelection').style.display = 'none';
+        document.querySelector('.lock-content').classList.remove('hidden');
+        document.querySelector('.lock-content').classList.add('visible');
+        document.getElementById('scopeSelection').classList.add('hidden');
+        document.getElementById('scopeSelection').classList.remove('visible');
         showLoading(false);
         disableUnlock(false);
     }
