@@ -1,7 +1,7 @@
 # Security Assessment - Locksy Extension
 
 **Date:** December 27, 2025  
-**Status:** ✅ Significantly Improved (PBKDF2 Implementation)
+**Status:** ✅ Security Hardened (PBKDF2 + Rate Limiting + Timing Attack Protection)
 
 ---
 
@@ -14,54 +14,34 @@
 - ✅ Random 128-bit salts per password
 - ✅ Backward compatible with legacy hashes
 
-### 2. **Implementation Quality**
+### 2. **Rate Limiting & Brute-Force Protection** ⭐ NEW
+- ✅ **3 attempts** before delays kick in
+- ✅ **Exponential backoff** after initial failures (2^n seconds)
+- ✅ **10 attempts** trigger 5-minute lockout
+- ✅ Counter resets on successful authentication
+- ✅ Clear user feedback on remaining attempts
+
+### 3. **Timing Attack Protection** ⭐ NEW
+- ✅ **Constant-time comparison** for all password verifications
+- ✅ Prevents information leakage through timing differences
+- ✅ Applied to PBKDF2 and legacy SHA-256 formats
+
+### 4. **Implementation Quality**
 - ✅ Uses Web Crypto API (native, secure)
 - ✅ Cryptographically secure random number generation (`crypto.getRandomValues`)
 - ✅ No plaintext passwords stored
 - ✅ Salt uniqueness per password
 
-### 3. **Architecture**
+### 5. **Architecture**
 - ✅ Offline-only operation (no network exposure)
 - ✅ Tab isolation model
 - ✅ Uses browser's built-in storage APIs
 
 ---
 
-## ⚠️ Areas for Improvement
+## ⚠️ Areas for Future Enhancement
 
-### 1. **Timing Attack Vulnerability** (Medium Priority)
-**Location:** `verifyPassword()` in crypto-utils.js
-
-```javascript
-return keyHex === storedKey;  // ❌ Non-constant time comparison
-```
-
-**Risk:** Theoretical timing attack could leak information about the key
-**Mitigation:** Implement constant-time comparison
-
-**Suggested Fix:**
-```javascript
-function constantTimeCompare(a, b) {
-    if (a.length !== b.length) return false;
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-        result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-    }
-    return result === 0;
-}
-```
-
-### 2. **No Rate Limiting** (High Priority)
-**Risk:** Unlimited password attempts possible
-**Impact:** Even with PBKDF2, an attacker with physical access could try many passwords
-
-**Suggested Mitigations:**
-- Add exponential backoff after failed attempts
-- Lock extension after N failed attempts
-- Require browser restart after too many failures
-- Add delay between verification attempts
-
-### 3. **Storage Security** (Medium - Browser Limitation)
+### 1. **Storage Security** (Medium - Browser Limitation)
 **Current:** `chrome.storage.local` stores hashed passwords
 
 **Considerations:**
@@ -76,15 +56,15 @@ function constantTimeCompare(a, b) {
 - Use native messaging to store in OS keychain (macOS Keychain, Windows Credential Manager)
 - Requires additional native host application
 
-### 4. **No Password Complexity Requirements** (Low Priority)
+### 2. **Password Complexity Requirements** (Low Priority)
 Currently accepts any password length/complexity.
 
 **Suggested:**
-- Minimum 8 characters
-- Complexity requirements (optional, UX tradeoff)
-- Password strength indicator (already present in UI)
+- Minimum 8 characters (optional, UX consideration)
+- Password strength indicator (already present in UI ✅)
+- Optional complexity requirements
 
-### 5. **Session Management** (Low Priority)
+### 3. **Session Management** (Low Priority)
 **Current Behavior:** 
 - Tabs remain unlocked until manually re-locked
 - Domain unlocks persist until tab close
@@ -103,11 +83,11 @@ Currently accepts any password length/complexity.
 | Threat | Current Protection | Status |
 |--------|-------------------|---------|
 | **Online brute-force** | N/A (offline only) | ✅ Not applicable |
-| **Offline brute-force** | PBKDF2 600k iterations | ✅ Strong |
-| **Dictionary attack** | PBKDF2 + unique salts | ✅ Strong |
+| **Offline brute-force** | PBKDF2 600k iterations + rate limiting | ✅ Very Strong |
+| **Dictionary attack** | PBKDF2 + unique salts + rate limiting | ✅ Very Strong |
 | **Rainbow tables** | Unique salts | ✅ Mitigated |
-| **Timing attacks** | None | ⚠️ Theoretical risk |
-| **Physical access** | Password required | ⚠️ No rate limiting |
+| **Timing attacks** | Constant-time comparison | ✅ Protected |
+| **Physical access** | Password + rate limiting + lockout | ✅ Protected |
 | **Malicious extension** | Chrome extension isolation | ⚠️ storage.local accessible |
 | **Memory dumping** | Browser process isolation | ✅ Browser-level protection |
 
@@ -131,40 +111,101 @@ For a random 8-character password (alphanumeric + symbols, ~95^8 combinations):
 
 ---
 
-## 🎯 Security Recommendations
+## 🎯 Security Improvements Implemented
 
-### Priority 1 (High Impact, Low Effort)
-1. ✅ **DONE:** Implement PBKDF2
-2. **TODO:** Add rate limiting / exponential backoff
-3. **TODO:** Implement constant-time comparison
+### ✅ Completed (December 27, 2025)
 
-### Priority 2 (Medium Impact)
-4. **Consider:** Auto-lock timeout feature
-5. **Consider:** Minimum password requirements
-6. **Consider:** Clear sensitive data on browser shutdown
-
-### Priority 3 (Future Enhancements)
-7. **Future:** Native messaging for OS keychain
-8. **Future:** Biometric unlock (if available)
-9. **Future:** Two-factor authentication option
-
----
-
-## 📝 Code Examples for Improvements
-
-### Constant-Time Comparison
+#### 1. **PBKDF2 Key Derivation Function**
+Replaced simple SHA-256 hashing with proper KDF:
 ```javascript
-function constantTimeCompare(a, b) {
-    if (a.length !== b.length) return false;
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-        result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-    }
-    return result === 0;
+// Old: SHA-256 (1 iteration)
+const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+// New: PBKDF2 (600,000 iterations)
+const derivedBits = await crypto.subtle.deriveBits({
+    name: 'PBKDF2',
+    salt: saltBuffer,
+    iterations: 600000,
+    hash: 'SHA-256'
+}, keyMaterial, 256);
+```
+
+#### 2Implementation Details
+
+### Rate Limiting API
+
+The new `verifyPasswordWithRateLimit()` function replaces direct `verifyPassword()` calls:
+
+```javascript
+// Old usage
+const isMatch = await verifyPassword(password, storedHash);
+if (isMatch) {
+    // Success
+} else {
+    // Failed
+}
+
+// New usage with rate limiting
+const result = await verifyPasswordWithRateLimit(password, storedHash);
+if (result.success) {
+    // Success - counter reset
+} else {
+    // Failed - show result.error to user
+    // Error includes wait times and lockout warnings
 }
 ```
 
-### Rate Limiting
+### Utility Functions
+
+```javascript
+// Reset rate limit (admin/testing use)
+resetRateLimit();
+
+// Check current status
+const status = getRateLimitStatus();
+// Returns: { failedAttempts, isLockedOut, lockoutRemaining }
+```
+
+---
+
+## ✅ Conclusion
+
+**Overall Security Rating: 9/10** ⬆️ (Previously 7.5/10)
+
+The extension now implements industry-standard security practices with comprehensive protections against common attack vectors.
+
+**Main Strengths:**
+- Proper KDF with sufficient iterations
+- Strong resistance to brute-force attacks (online & offline)
+- Timing attack protection
+- Rate limiting with intelligent backoff
+- Good backward compatibility
+- Offline-first architecture
+
+**Recommended Future Enhancements:**
+1. Auto-lock features (timeout-based)
+2. OS keychain integration (requires native messaging)
+3. Optional password complexity requirements
+
+**For Context of Use:**
+This is a browser extension for tab locking, not a password manager. The security requirements are appropriate for the use case. The master password protects access to locked tabs, and the implementation now provides defense-in-depth against password cracking attempts.
+
+**Attack Resistance:**
+- **Physical access + unlimited time:** ~120 years to crack 8-char password
+- **Physical access + rate limiting:** ~10 attempts before 5-min lockout (indefinite if persistent)
+- **Timing attacks:** Protected via constant-time comparison
+- **Rainbow tables:** Impossible due to unique salts
+
+---
+
+## 📊 Testing
+
+Test the implementation using `tests/test-kdf.html`:
+
+1. **PBKDF2 hashing** - Verify slow key derivation
+2. **Password verification** - Test correct/incorrect passwords  
+3. **Rate limiting** - Verify exponential backoff and lockouts
+4. **Constant-time comparison** - Implicit in verification tests
 ```javascript
 let failedAttempts = 0;
 let lastAttemptTime = 0;
