@@ -122,7 +122,8 @@ This extension does not require a build step. All files are used directly by Chr
 - Root directory contains only essential files (manifest, readme, license)
 
 ## Version
-Current Version: 1.0.8
+Current Version: 2.0.0
+Last Updated: December 27, 2025
 
 ## Technology Stack
 - JavaScript (ES6+)
