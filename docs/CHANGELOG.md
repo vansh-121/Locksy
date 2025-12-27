@@ -6,6 +6,38 @@ All notable changes to Locksy will be documented in this file.
 
 ### 🔐 MAJOR SECURITY OVERHAUL - ENTERPRISE-GRADE CRYPTOGRAPHY
 
+#### 🔥 Critical Bug Fixes & Security Patches
+
+##### Security Fixes
+- **BUG #4**: Fixed password exposure during rate limit countdown
+  - Password now cleared immediately when rate limited
+  - Added beforeunload listener for defense-in-depth
+  - Closes DevTools inspection vulnerability (2-300 second exposure window)
+  
+- **BUG #9**: Fixed extensionActive bypass vulnerability
+  - Removed security checks that could be disabled via DevTools
+  - Lock functionality now always active if extension installed
+  - Keyboard shortcuts and lock buttons cannot be bypassed
+  - extensionActive toggle now UI-only (cosmetic)
+
+##### Critical Fixes
+- **BUG #2**: Fixed temporarilyUnlockedTabs persistence
+  - Temporary domain unlocks now persist across service worker restarts
+  - Prevents unexpected re-locking after browser sleep/restart
+  - Added persistence at 6 modification points
+  
+- **BUG #3**: Fixed race condition in lock restoration
+  - Added restoration flag pattern to prevent race conditions
+  - Ensures locks are fully restored before enforcement checks
+  - Updated 4 navigation listeners (onUpdated, onCreated, onActivated, onBeforeNavigate)
+
+- **BUG #8**: Fixed CSP blocking red lock favicon
+  - Added `img-src 'self' data:` to Content Security Policy
+  - Red lock favicon now displays correctly
+
+##### UI Improvements
+- Changed security badge from technical "PBKDF2 (600k iterations)" to user-friendly "Secured with Advanced Encryption"
+
 #### 🎯 Breaking Changes
 - **PBKDF2 Key Derivation Function**: Replaced SHA-256 with industry-standard PBKDF2
   - 600,000 iterations (OWASP 2023 recommended minimum)

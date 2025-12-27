@@ -67,5 +67,18 @@
       },
       "description": "Lock all tabs in current window"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/html/locked.html",
+        "src/css/locked.css",
+        "src/js/locked.js",
+        "src/js/crypto-utils.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
