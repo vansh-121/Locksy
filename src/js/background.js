@@ -190,6 +190,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   }
 
+  // Set uninstall URL - opens when user uninstalls the extension
+  chrome.runtime.setUninstallURL('https://locksy.dev/uninstall');
+
   // Initialize extension state
   chrome.storage.local.get(["extensionActive", "lockPassword", "lockedTabIds", "lockedDomains"], (data) => {
     // Set default active state if not set
