@@ -571,10 +571,15 @@ async function lockTab(tabId, sendResponse) {
 
     // Add to locked tabs set and store data
     lockedTabs.add(tabId);
+
+    // CRITICAL: Ensure storage write completes before navigation (Firefox fix)
     await chrome.storage.local.set({
       lockedTabIds: Array.from(lockedTabs),
       [`lockData_${tabId}`]: lockData
     });
+
+    // Add small delay to ensure storage sync in Firefox
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     // Update badge
     updateBadge();
@@ -583,14 +588,8 @@ async function lockTab(tabId, sendResponse) {
     const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
     await chrome.tabs.update(tabId, { url: lockedUrl });
 
-    // Show notification
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-      title: "Tab Locked",
-      message: `Tab "${tab.title || 'Untitled'}" has been locked successfully.`,
-      priority: 1,
-    });
+    // Note: Notification removed - popup.js handles user feedback
+    // This prevents duplicate notifications
 
     if (sendResponse) {
       sendResponse({ success: true, message: "Tab locked successfully" });
@@ -724,8 +723,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     await restorationPromise;
   }
 
-  // Skip if already on locked page
+  // Skip if already on locked page OR navigating to locked page
   if (tab.url && tab.url.includes('/locked.html')) {
+    return;
+  }
+  if (changeInfo.url && changeInfo.url.includes('/locked.html')) {
     return;
   }
 
@@ -755,6 +757,8 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
           timestamp: Date.now()
         };
         await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
+        // Firefox fix: Small delay to ensure storage sync
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
       // Navigate to locked page
@@ -808,6 +812,8 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
           timestamp: Date.now()
         };
         await chrome.storage.local.set({ [`lockData_${details.tabId}`]: lockData });
+        // Firefox fix: Small delay to ensure storage sync
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
       chrome.tabs.update(details.tabId, { url: lockedUrl }).catch((error) => {

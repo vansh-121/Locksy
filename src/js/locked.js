@@ -47,6 +47,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // CRITICAL: Verify lock data exists and is valid
+    // Firefox-specific: Retry logic for storage race condition
+    try {
+        let tabLockData = null;
+        let attempts = 0;
+        const maxAttempts = 10; // Increased attempts for slower systems
+
+        // Retry up to 10 times with increasing delays for Firefox storage sync
+        while (attempts < maxAttempts) {
+            const lockData = await chrome.storage.local.get([`lockData_${currentTabId}`]);
+            tabLockData = lockData[`lockData_${currentTabId}`];
+
+            // Check if we have valid lock data
+            if (tabLockData && tabLockData.originalUrl &&
+                tabLockData.originalUrl !== 'about:blank' &&
+                tabLockData.originalUrl !== '') {
+                // Valid data found, break out
+                console.log('Lock data loaded successfully:', tabLockData.originalUrl);
+                break;
+            }
+
+            attempts++;
+            if (attempts < maxAttempts) {
+                // Exponential backoff: 50ms, 100ms, 200ms, etc.
+                const delay = Math.min(50 * Math.pow(2, attempts - 1), 500);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+
+        // Only show error if data is STILL invalid after all retries
+        if (!tabLockData || !tabLockData.originalUrl ||
+            tabLockData.originalUrl === 'about:blank' ||
+            tabLockData.originalUrl === '') {
+            console.warn('Lock data invalid after retries. Tab ID:', currentTabId, 'Data:', tabLockData);
+            showError('⚠️ Lock data may be invalid. Unlock will use browser default.');
+        }
+    } catch (error) {
+        console.error('Error checking lock data:', error);
+    }
+
     // Check initial rate limit status
     await checkRateLimitStatus();
 
@@ -453,6 +493,11 @@ async function unlockWithScope(scope) {
     try {
         showSuccess('✓ Unlocking...');
 
+        // Validate tab ID
+        if (!currentTabId || isNaN(currentTabId)) {
+            throw new Error('Invalid tab ID');
+        }
+
         // Tell background script to unlock with scope
         const response = await chrome.runtime.sendMessage({
             action: 'unlockTab',
@@ -460,26 +505,47 @@ async function unlockWithScope(scope) {
             scope: scope
         });
 
-        if (response && !response.success) {
+        // Check if response is valid
+        if (!response) {
+            throw new Error('No response from background script');
+        }
+
+        if (!response.success) {
             showError('Error unlocking: ' + (response.error || 'Unknown error'));
+
             // Restore UI
             document.querySelector('.lock-content').classList.remove('hidden');
             document.querySelector('.lock-content').classList.add('visible');
-            document.getElementById('scopeSelection').classList.add('hidden');
-            document.getElementById('scopeSelection').classList.remove('visible');
+            const scopeSelection = document.getElementById('scopeSelection');
+            if (scopeSelection) {
+                scopeSelection.classList.add('hidden');
+                scopeSelection.classList.remove('visible');
+            }
             showLoading(false);
             disableUnlock(false);
+            return;
         }
-        // Otherwise tab will navigate away
+
+        // SUCCESS: Background script has already navigated the tab
+        // Just wait for the navigation to complete - don't navigate from here
+        // The background script's chrome.tabs.update() is more reliable across browsers
+        console.log('Tab unlocked successfully, waiting for navigation...');
+
+        // The background script will handle navigation
+        // This page will be replaced automatically when the navigation completes
 
     } catch (error) {
         console.error('Error unlocking tab:', error);
-        showError('Error unlocking tab. Please try again.');
+        showError('Error: ' + error.message);
+
         // Restore UI
         document.querySelector('.lock-content').classList.remove('hidden');
         document.querySelector('.lock-content').classList.add('visible');
-        document.getElementById('scopeSelection').classList.add('hidden');
-        document.getElementById('scopeSelection').classList.remove('visible');
+        const scopeSelection = document.getElementById('scopeSelection');
+        if (scopeSelection) {
+            scopeSelection.classList.add('hidden');
+            scopeSelection.classList.remove('visible');
+        }
         showLoading(false);
         disableUnlock(false);
     }
