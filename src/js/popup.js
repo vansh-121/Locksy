@@ -1,5 +1,55 @@
 // SECURE Popup Script - VERSION 4.0 - ULTIMATE SECURITY WITH EXTENSION ACCESS CONTROL
 
+// ============================================================================
+// CENTRALIZED RATE LIMITING - Background Script Communication
+// ============================================================================
+// These functions communicate with the background script for password verification
+// to ensure a single, shared rate limiting state across the entire extension.
+
+/**
+ * Verify password with rate limiting via background script
+ * @param {string} password - The plain text password to verify
+ * @param {string} storedHash - The stored hash (not used, background script handles this)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+async function verifyPasswordWithRateLimit(password, storedHash) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      { action: "verifyPassword", password: password },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          resolve({ success: false, error: 'Failed to verify password' });
+          return;
+        }
+        resolve(response);
+      }
+    );
+  });
+}
+
+/**
+ * Get current rate limit status from background script
+ * @returns {Promise<{failedAttempts: number, isLockedOut: boolean, lockoutRemaining: number, waitRemaining: number}>}
+ */
+function getRateLimitStatus() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      { action: "getRateLimitStatus" },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          resolve({ failedAttempts: 0, isLockedOut: false, lockoutRemaining: 0, waitRemaining: 0 });
+          return;
+        }
+        resolve(response);
+      }
+    );
+  });
+}
+
+// ============================================================================
+// STATE MANAGEMENT
+// ============================================================================
+
 // State management
 let isExtensionActive = false;
 let hasExistingPassword = false;
@@ -258,7 +308,7 @@ function showAuthenticationScreen() {
             authPasswordInput.style.opacity = '0.5';
 
             // Get actual remaining time from rate limit status
-            const status = getRateLimitStatus();
+            const status = await getRateLimitStatus();
             const waitTime = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
             if (waitTime > 0) {
@@ -277,7 +327,7 @@ function showAuthenticationScreen() {
 
   function startRateLimitCountdown(seconds) {
     let remaining = seconds + 1; // Add 1 second buffer
-    const countdownInterval = setInterval(() => {
+    const countdownInterval = setInterval(async () => {
       remaining--;
       if (remaining > 0) {
         const mins = Math.floor(remaining / 60);
@@ -286,7 +336,7 @@ function showAuthenticationScreen() {
       } else {
         clearInterval(countdownInterval);
         // Verify rate limit is actually cleared
-        const status = getRateLimitStatus();
+        const status = await getRateLimitStatus();
         const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
         if (totalWait === 0) {

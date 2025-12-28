@@ -230,6 +230,140 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   });
 });
 
+// ============================================================================
+// CENTRALIZED RATE LIMITING & PASSWORD VERIFICATION
+// ============================================================================
+// This ensures a single, shared rate limiting state across the entire extension,
+// preventing bypass attacks by opening multiple tabs or popups.
+
+// Import crypto-utils for password verification
+if (typeof importScripts === 'function') {
+  try {
+    importScripts('crypto-utils.js');
+  } catch (e) {
+    console.error('Failed to load crypto-utils:', e);
+  }
+}
+
+// Rate limiting state (centralized in background script)
+let crypto_failedAttempts = 0;
+let crypto_lastAttemptTime = 0;
+const CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY = 3;
+const CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT = 10;
+const CRYPTO_LOCKOUT_DURATION = 300000; // 5 minutes in milliseconds
+
+/**
+ * Centralized password verification with rate limiting
+ * Called by popup and locked tabs via messaging
+ */
+async function verifyPasswordWithRateLimit(password, storedHash) {
+  const now = Date.now();
+
+  // Check if in lockout period
+  if (crypto_failedAttempts >= CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT) {
+    const timeSinceLast = now - crypto_lastAttemptTime;
+    if (timeSinceLast < CRYPTO_LOCKOUT_DURATION) {
+      const remainingTime = Math.ceil((CRYPTO_LOCKOUT_DURATION - timeSinceLast) / 1000);
+      const minutes = Math.floor(remainingTime / 60);
+      const seconds = remainingTime % 60;
+      return {
+        success: false,
+        error: `Too many failed attempts. Please wait ${minutes}m ${seconds}s before trying again.`
+      };
+    }
+    // Lockout expired, reset counter
+    crypto_failedAttempts = 0;
+  }
+
+  // Apply delay after initial failed attempts (exponential backoff)
+  if (crypto_failedAttempts >= CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY) {
+    const timeSinceLast = now - crypto_lastAttemptTime;
+    const requiredDelay = Math.pow(2, crypto_failedAttempts - CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY) * 1000;
+
+    if (timeSinceLast < requiredDelay) {
+      const waitTime = Math.ceil((requiredDelay - timeSinceLast) / 1000);
+      return {
+        success: false,
+        error: `Please wait ${waitTime} seconds before trying again.`
+      };
+    }
+  }
+
+  // Attempt verification using crypto-utils function
+  try {
+    const isValid = await verifyPassword(password, storedHash);
+
+    if (isValid) {
+      // Reset on successful authentication
+      crypto_failedAttempts = 0;
+      crypto_lastAttemptTime = 0;
+      return { success: true };
+    } else {
+      // Increment failed attempts
+      crypto_failedAttempts++;
+      crypto_lastAttemptTime = now;
+
+      let errorMsg = 'Incorrect password.';
+
+      // Warn about upcoming delays
+      if (crypto_failedAttempts === CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY) {
+        errorMsg = 'Incorrect password. ⚠️ Warning: Next failed attempt will require a 2-second wait.'
+      } else if (crypto_failedAttempts > CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY && crypto_failedAttempts < CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT) {
+        const remaining = CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT - crypto_failedAttempts;
+        const nextDelay = Math.pow(2, crypto_failedAttempts - CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY + 1);
+        errorMsg = `Incorrect password. ⚠️ ${remaining} attempts left before 5-minute lockout. Next wait: ${nextDelay}s.`;
+      } else if (crypto_failedAttempts >= CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT) {
+        errorMsg = '🚫 Account locked for 5 minutes due to too many failed attempts.';
+      }
+
+      return { success: false, error: errorMsg };
+    }
+  } catch (error) {
+    console.error('Password verification error:', error);
+    return { success: false, error: 'Verification failed. Please try again.' };
+  }
+}
+
+/**
+ * Get current rate limit status
+ */
+function getRateLimitStatus() {
+  const now = Date.now();
+  const isLockedOut = crypto_failedAttempts >= CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT &&
+    (now - crypto_lastAttemptTime) < CRYPTO_LOCKOUT_DURATION;
+  const lockoutRemaining = isLockedOut ?
+    Math.ceil((CRYPTO_LOCKOUT_DURATION - (now - crypto_lastAttemptTime)) / 1000) : 0;
+
+  // Calculate exponential backoff remaining time
+  let waitRemaining = 0;
+  if (crypto_failedAttempts >= CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY && crypto_failedAttempts < CRYPTO_MAX_ATTEMPTS_BEFORE_LOCKOUT) {
+    const timeSinceLast = now - crypto_lastAttemptTime;
+    const requiredDelay = Math.pow(2, crypto_failedAttempts - CRYPTO_MAX_ATTEMPTS_BEFORE_DELAY) * 1000;
+    if (timeSinceLast < requiredDelay) {
+      waitRemaining = Math.ceil((requiredDelay - timeSinceLast) / 1000);
+    }
+  }
+
+  return {
+    failedAttempts: crypto_failedAttempts,
+    isLockedOut,
+    lockoutRemaining,
+    waitRemaining
+  };
+}
+
+/**
+ * Reset rate limiting (for testing or administrative purposes)
+ */
+function resetRateLimit() {
+  crypto_failedAttempts = 0;
+  crypto_lastAttemptTime = 0;
+}
+
+// ============================================================================
+// MESSAGE HANDLERS
+// ============================================================================
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Process all lock/unlock actions regardless of extensionActive toggle
   // (Security-critical functionality should not be bypassable via DevTools)
@@ -501,6 +635,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === "getLockedDomains") {
     // Return list of locked domains
     sendResponse({ success: true, domains: lockedDomains });
+  } else if (message.action === "verifyPassword") {
+    // Centralized password verification with rate limiting
+    // Called by popup and locked pages
+    chrome.storage.local.get("lockPassword", async (data) => {
+      if (!data.lockPassword) {
+        sendResponse({ success: false, error: "No password configured" });
+        return;
+      }
+
+      const result = await verifyPasswordWithRateLimit(message.password, data.lockPassword);
+      sendResponse(result);
+    });
+    return true; // Keep message channel open for async response
+  } else if (message.action === "getRateLimitStatus") {
+    // Return current rate limit status
+    const status = getRateLimitStatus();
+    sendResponse(status);
   } else if (message.action === "lockAllTabs") {
     // Lock all tabs in current window
     chrome.storage.local.get("lockPassword", (data) => {
