@@ -249,7 +249,7 @@ async function unlockWithPassword() {
 
                 // Check if rate limited (error includes 'wait' or 'locked')
                 if (result.error && (result.error.includes('wait') || result.error.includes('locked'))) {
-                    unlockBtn.innerHTML = '🔒 Locked';
+                    unlockBtn.textContent = '🔒 Locked';
                     unlockBtn.disabled = true;
                     passwordInput.disabled = true;
                     passwordInput.classList.add('opacity-half');
@@ -265,7 +265,7 @@ async function unlockWithPassword() {
                     }
                 } else {
                     // Not rate limited, just wrong password
-                    unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
+                    unlockBtn.textContent = '🔓 Unlock Tab';
                     unlockBtn.disabled = false;
                     passwordInput.disabled = false;
                     passwordInput.classList.add('opacity-full');
@@ -275,7 +275,7 @@ async function unlockWithPassword() {
                 }
             } else {
                 showError('Incorrect password. Please try again.');
-                unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
+                unlockBtn.textContent = '🔓 Unlock Tab';
                 unlockBtn.disabled = false;
                 passwordInput.disabled = false;
                 passwordInput.classList.add('opacity-full');
@@ -313,9 +313,9 @@ function startCountdown(seconds) {
             const secs = remaining % 60;
             // Show "Wait X sec" or "Wait X min Y sec" format
             if (mins > 0) {
-                unlockBtn.innerHTML = `⏳ Wait ${mins} min ${secs} sec`;
+                unlockBtn.textContent = `⏳ Wait ${mins} min ${secs} sec`;
             } else {
-                unlockBtn.innerHTML = `⏳ Wait ${secs} sec`;
+                unlockBtn.textContent = `⏳ Wait ${secs} sec`;
             }
         } else {
             clearInterval(countdownInterval);
@@ -326,7 +326,7 @@ function startCountdown(seconds) {
             const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
             if (totalWait === 0) {
-                unlockBtn.innerHTML = '<span class="btn-icon">🔓</span><span>Unlock Tab</span>';
+                unlockBtn.textContent = '🔓 Unlock Tab';
                 unlockBtn.disabled = false;
                 passwordInput.disabled = false;
                 passwordInput.classList.add('opacity-full');
