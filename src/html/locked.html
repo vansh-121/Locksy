@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:;">
+    <title>🔒 Tab Locked - Locksy</title>
+    <link rel="stylesheet" href="../css/locked.css">
+    <link rel="icon" id="lockFavicon" type="image/png">
+</head>
+
+<body>
+    <div class="lock-container">
+        <div class="lock-content">
+            <div class="lock-icon">🔒</div>
+            <h1>Tab Secured</h1>
+            <p class="subtitle">This tab is protected with military-grade encryption. Enter your password to continue.
+            </p>
+
+            <div class="unlock-section">
+                <div class="input-group">
+                    <input type="password" id="passwordInput" placeholder="Enter your password" autocomplete="off"
+                        spellcheck="false">
+                </div>
+
+                <button id="unlockBtn" class="btn btn-unlock">
+                    <span class="btn-icon">🔓</span>
+                    <span>Unlock Tab</span>
+                </button>
+
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <div id="loadingSpinner" class="loading">
+                    <div class="spinner"></div>
+                </div>
+
+                <div id="rateLimitInfo" class="rate-limit-info"></div>
+            </div>
+
+            <div class="security-info">
+                <div class="security-badge">
+                    <span class="badge-icon">🛡️</span>
+                    <span>Secured with Advanced Encryption</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unlock Scope Selection (shown for domain-locked tabs) -->
+        <div class="scope-selection hidden" id="scopeSelection">
+            <div class="success-icon">✅</div>
+            <h1>Password Correct!</h1>
+            <p class="subtitle">This tab is protected by a domain lock.<br>Choose unlock scope:</p>
+
+            <button id="unlockThisTabBtn" class="btn btn-scope btn-primary">
+                <span class="btn-icon">🔓</span>
+                <span>Unlock This Tab Only</span>
+            </button>
+
+            <button id="unlockAllTabsBtn" class="btn btn-scope btn-secondary">
+                <span class="btn-icon">🌐</span>
+                <span id="unlockAllText">Unlock All Domain Tabs</span>
+            </button>
+
+            <div class="remember-choice">
+                <label>
+                    <input type="checkbox" id="rememberChoice">
+                    <span>Remember this choice for <strong id="domainName"></strong></span>
+                </label>
+                <small>You can change this in Domain Lock Manager settings</small>
+            </div>
+
+            <p class="note"><strong>Note:</strong> "This Tab Only" keeps the domain lock active but temporarily unlocks
+                this tab.</p>
+        </div>
+    </div>
+
+    <script src="../js/crypto-utils.js"></script>
+    <script src="../js/locked.js"></script>
+</body>
+
+</html>

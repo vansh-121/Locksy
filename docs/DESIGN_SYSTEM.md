@@ -1,7 +1,7 @@
 # 🎨 Locksy Extension - Design System
 
-**Version:** 1.0.8  
-**Last Updated:** December 7, 2025
+**Version:** 2.0.0  
+**Last Updated:** December 27, 2025
 
 ---
 
@@ -119,7 +119,7 @@
 
 ## Consistent Button Usage Guide
 
-### Current Implementation (v1.0.4)
+### Current Implementation (v2.0.0)
 
 | Button | Class | Color | Purpose |
 |--------|-------|-------|---------|
@@ -128,6 +128,8 @@
 | **Authenticate** | `btn-primary` | Purple | Login/verify identity |
 | **Lock Current Tab** | `btn-success` | Green | Primary lock action |
 | **Developer Info** | `btn-developer-toggle` | Purple | Toggle developer section |
+| **Unlock Operations** | `btn-warning` | Orange | Warning actions |
+| **Delete/Remove** | `btn-danger` | Red | Destructive actions |
 
 ### Future Additions (if needed)
 
@@ -297,5 +299,6 @@ When adding new UI elements, ensure:
 
 ---
 
-**Last Updated:** November 7, 2025  
-**Maintainer:** Locksy Development Team
+**Last Updated:** December 27, 2025  
+**Maintainer:** Locksy Development Team  
+**Version:** 2.0.0 (PBKDF2 Security Update)

@@ -732,8 +732,8 @@ function createLockOverlay() {
 
       chrome.storage.local.get("lockPassword", (data) => {
         setTimeout(async () => {
-          const isMatch = await verifyPassword(enteredPassword, data.lockPassword);
-          if (data && isMatch) {
+          const result = await verifyPasswordWithRateLimit(enteredPassword, data.lockPassword);
+          if (data && result.success) {
             // Check if this tab is domain-locked to offer unlock scope options
             chrome.storage.local.get(["lockedDomains", "domainUnlockPreferences"], (storageData) => {
               const lockedDomains = storageData.lockedDomains || [];
@@ -787,16 +787,64 @@ function createLockOverlay() {
               }
             });
           } else {
-            showError("Incorrect password! Please try again.");
-            unlockBtn.innerHTML = "Unlock Tab";
-            unlockBtn.disabled = false;
-            unlockBtn.style.opacity = "1";
-            passwordInput.value = "";
-            passwordInput.focus();
+            showError(result.error || "Incorrect password! Please try again.");
+
+            // Check if rate limited
+            if (result.error && (result.error.includes('wait') || result.error.includes('locked'))) {
+              unlockBtn.innerHTML = "🔒 Locked";
+              unlockBtn.disabled = true;
+              passwordInput.disabled = true;
+              passwordInput.style.opacity = "0.5";
+
+              // Get actual remaining time from rate limit status
+              const status = getRateLimitStatus();
+              const waitTime = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
+
+              if (waitTime > 0) {
+                startUnlockCountdown(waitTime);
+              }
+            } else {
+              unlockBtn.innerHTML = "Unlock Tab";
+              unlockBtn.disabled = false;
+              unlockBtn.style.opacity = "1";
+              passwordInput.value = "";
+              passwordInput.focus();
+            }
           }
         }, 500);
       });
     };
+
+    function startUnlockCountdown(seconds) {
+      let remaining = seconds + 1; // Add 1 second buffer
+      const countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          const mins = Math.floor(remaining / 60);
+          const secs = remaining % 60;
+          unlockBtn.innerHTML = `⏳ Wait ${mins > 0 ? mins + 'm ' : ''}${secs}s`;
+        } else {
+          clearInterval(countdownInterval);
+          // Verify rate limit is actually cleared
+          const status = getRateLimitStatus();
+          const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
+
+          if (totalWait === 0) {
+            unlockBtn.innerHTML = "Unlock Tab";
+            unlockBtn.disabled = false;
+            unlockBtn.style.opacity = "1";
+            passwordInput.disabled = false;
+            passwordInput.style.opacity = "1";
+            passwordInput.value = "";
+            showError("✅ Ready - you can try again now");
+            passwordInput.focus();
+          } else {
+            // Still locked, continue countdown
+            startUnlockCountdown(totalWait);
+          }
+        }
+      }, 1000);
+    }
 
     function escapeHtml(text) {
       const div = document.createElement('div');

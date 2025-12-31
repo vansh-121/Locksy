@@ -237,8 +237,8 @@ function showAuthenticationScreen() {
 
     chrome.storage.local.get(['lockPassword'], async (data) => {
       setTimeout(async () => {
-        const isMatch = await verifyPassword(password, data.lockPassword);
-        if (isMatch) {
+        const result = await verifyPasswordWithRateLimit(password, data.lockPassword);
+        if (result.success) {
           // Authentication successful
           isAuthenticated = true;
           resetFailedAttempts();
@@ -248,14 +248,62 @@ function showAuthenticationScreen() {
         } else {
           // Authentication failed
           handleFailedAuth();
-          authButtonElement.textContent = 'Authenticate';
-          authButtonElement.disabled = false;
-          authPasswordInput.value = '';
-          authPasswordInput.focus();
+          showAuthError(result.error || 'Incorrect password');
+
+          // Check if we need to disable the button due to rate limiting
+          if (result.error && (result.error.includes('wait') || result.error.includes('locked'))) {
+            authButtonElement.textContent = '🔒 Locked';
+            authButtonElement.disabled = true;
+            authPasswordInput.disabled = true;
+            authPasswordInput.style.opacity = '0.5';
+
+            // Get actual remaining time from rate limit status
+            const status = getRateLimitStatus();
+            const waitTime = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
+
+            if (waitTime > 0) {
+              startRateLimitCountdown(waitTime);
+            }
+          } else {
+            authButtonElement.textContent = 'Authenticate';
+            authButtonElement.disabled = false;
+            authPasswordInput.value = '';
+            authPasswordInput.focus();
+          }
         }
       }, 500);
     });
   });
+
+  function startRateLimitCountdown(seconds) {
+    let remaining = seconds + 1; // Add 1 second buffer
+    const countdownInterval = setInterval(() => {
+      remaining--;
+      if (remaining > 0) {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        authButtonElement.textContent = `⏳ Wait ${mins > 0 ? mins + 'm ' : ''}${secs}s`;
+      } else {
+        clearInterval(countdownInterval);
+        // Verify rate limit is actually cleared
+        const status = getRateLimitStatus();
+        const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
+
+        if (totalWait === 0) {
+          authButtonElement.textContent = 'Authenticate';
+          authButtonElement.disabled = false;
+          authPasswordInput.disabled = false;
+          authPasswordInput.style.opacity = '1';
+          authPasswordInput.value = '';
+          showAuthError('✅ Ready - you can try again now');
+          authPasswordInput.focus();
+        } else {
+          // Still locked, continue countdown
+          startRateLimitCountdown(totalWait);
+        }
+      }
+    }, 1000);
+  }
 
   function showAuthError(message) {
     authErrorElement.textContent = message;
@@ -804,9 +852,9 @@ function initializeMainUI() {
 
         // Verify current password
         chrome.storage.local.get("lockPassword", async (data) => {
-          const isMatch = await verifyPassword(currentPassword, data.lockPassword);
-          if (!isMatch) {
-            showNotification("Current password is incorrect!", "error");
+          const result = await verifyPasswordWithRateLimit(currentPassword, data.lockPassword);
+          if (!result.success) {
+            showNotification(result.error || "Current password is incorrect!", "error");
             currentPasswordInput.value = "";
             currentPasswordInput.focus();
             return;
