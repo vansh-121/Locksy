@@ -19,6 +19,18 @@
   
   [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
   
+  ---
+  
+  ## 🛡️ Trust & Transparency Badges
+  
+  [![Open Source](https://img.shields.io/badge/💯-Open%20Source-success?style=flat-square)](https://github.com/vansh-121/Locksy)
+  [![Verifiable Builds](https://img.shields.io/badge/✅-Verifiable%20Builds-informational?style=flat-square)](docs/BUILD_GUIDE.md)
+  [![No Telemetry](https://img.shields.io/badge/🚫-No%20Telemetry-critical?style=flat-square)](docs/PRIVACY.md)
+  [![100% Offline](https://img.shields.io/badge/📡-100%25%20Offline-blue?style=flat-square)](docs/SECURITY.md)
+  [![No Data Collection](https://img.shields.io/badge/🔒-No%20Data%20Collection-green?style=flat-square)](docs/PRIVACY.md)
+  
+  **New Project?** Yes. **Trustworthy?** Verify the code yourself! See [Trust & Verification](#-trust--verification)
+  
 </div>
 
 ---
@@ -104,6 +116,8 @@
 ---
 
 ## 🆕 Recent Improvements
+
+**📌 About Version Numbering**: Locksy v2.0 represents a complete cryptographic overhaul. While relatively new, the v2.0 designation reflects major breaking changes from earlier versions (v1.0-v1.5), following semantic versioning standards. [See full version history →](docs/CHANGELOG.md)
 
 ### Version 2.0.0 - MAJOR SECURITY OVERHAUL (December 27, 2025) 🔐
 
@@ -259,32 +273,91 @@
 
 ---
 
+## � Trust & Verification
+
+### 📦 Verify This Extension Matches The Source Code
+
+**Concerned about what you're installing?** You should be! Here's how to verify Locksy is trustworthy:
+
+#### 🚀 Quick Verification (5 minutes)
+
+**[→ Follow the 5-Minute Verification Guide](docs/VERIFY.md)**
+
+1. **Network Test**: Open DevTools → Use extension → Confirm ZERO network requests
+2. **Offline Test**: Disconnect internet → Extension still works perfectly
+3. **Source Check**: Compare installed files with GitHub repository
+
+**No network requests = No data can leave your device. It's that simple!**
+
+#### ✅ Three Ways to Deep Verify
+
+1. **Download Pre-Built Releases** (Easiest)
+   - Visit [GitHub Releases](https://github.com/vansh-121/Locksy/releases)
+   - Download `.zip` files with SHA-256 checksums
+   - Compare with your installed extension
+
+2. **Build From Source** (Most Secure)
+   ```bash
+   git clone https://github.com/vansh-121/Locksy.git
+   cd Locksy
+   npm install
+   npm run build
+   # Compare dist/ files with store version
+   ```
+   **[→ Full Build Instructions](docs/BUILD_GUIDE.md)**
+
+3. **Inspect Your Installation**
+   - Go to `chrome://extensions/` (or `edge://extensions/`)
+   - Enable Developer Mode
+   - Find Locksy → Details → View Source
+   - Compare files with this repository
+
+#### 🔐 Why You Should Verify
+
+The store listings warn: **"Read and change all your data on all websites"**
+
+**Sounds scary!** Here's the truth:
+- ✅ We need `<all_urls>` to inject the lock screen on ANY site you choose to lock
+- ✅ We **never** read page content, passwords, or personal data
+- ✅ The code is **100% open source** - check for yourself!
+- ✅ Works **completely offline** - no network requests
+- ✅ Detailed explanation in [docs/SECURITY.md](docs/SECURITY.md)
+
+**Don't take our word for it - verify the code yourself!**
+
+**[→ Read Full Security Analysis](docs/SECURITY.md)**
+
+---
+
 ## 🔒 Security Notes
 
 ### 🛡️ Password Security
-- **SHA-256 Hashing**: Passwords are hashed before storage using industry-standard cryptography
+- **PBKDF2-SHA256**: Enterprise-grade key derivation (600,000 iterations)
 - **No Plain Text Storage**: Your actual password is never stored, only the hash
 - **Current Password Required**: To change password, you must enter your current password first
 - **No Administrative Bypass**: No way to change password without knowing current one
 - **First-Time Setup**: Only when no password exists can you set one without verification
 - **Secure Storage**: Password hashes stored locally using Chrome's secure storage API
-- **No External Transmission**: No data sent to external servers
+- **No External Transmission**: No data sent to external servers - provably offline
 
 ### 🎯 Tab Locking Security
 - **Password-Only Unlock**: Tabs can ONLY be unlocked by entering correct password
 - **No Bypass Methods**: No administrative unlock or backdoor access
-- **Local Operation**: Extension works entirely offline
+- **Local Operation**: Extension works entirely offline (test by disconnecting internet!)
 - **System Page Protection**: Chrome system pages cannot be locked for security
 
 ### 🚨 What's Protected Against
 - ✅ **Unauthorized Password Changes**: Requires current password verification
-- ✅ **Brute Force Attacks**: Failed attempts logged and blocked
+- ✅ **Brute Force Attacks**: Exponential backoff with 5-minute lockout
+- ✅ **Timing Attacks**: Constant-time password comparison
 - ✅ **Administrative Bypass**: No backdoor or override methods
 - ✅ **Extension Hijacking**: Secure state management prevents tampering
 
 ---
 
 **🔐 SECURITY GUARANTEE: This extension is now truly secure against all known bypass methods and unauthorized access attempts.**
+
+**📖 Detailed Security Analysis**: See [docs/SECURITY.md](docs/SECURITY.md) for technical deep-dive
 
 ---
 

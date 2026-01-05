@@ -98,6 +98,17 @@ The Extension requests the following Chrome permissions:
    - **Data Access**: Tab IDs and basic tab metadata only
    - **No Content Access**: We don't read the content of web pages
 
+3. **`<all_urls>` (Host Permissions)**
+   - **Why This Looks Scary**: Browser warns "Read and change all your data on all websites"
+   - **What We Actually Do**: Only inject the lock screen overlay on tabs YOU choose to lock
+   - **What We DON'T Do**: 
+     - ❌ Never read page content
+     - ❌ Never access passwords or form data
+     - ❌ Never track browsing history
+     - ❌ Never modify page behavior (except showing lock screen)
+   - **Technical Reason**: We need permission to display the lock screen on ANY domain you choose to lock. Since we can't predict which sites you'll lock, we need `<all_urls>`.
+   - **Proof**: Search our code for `fetch()`, `XMLHttpRequest`, or network calls - you'll find none!
+
 3. **`scripting`**
    - **Purpose**: Inject the lock overlay onto tabs you choose to lock
    - **Data Access**: None - only injects visual lock interface
