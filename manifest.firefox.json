@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Locksy - Tab Locker & Password Protection",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Protect your sensitive tabs with military-grade password security. Lock any tab instantly with PBKDF2 key derivation & advanced rate limiting.",
   "incognito": "spanning",
   "browser_specific_settings": {
@@ -29,6 +29,7 @@
   "background": {
     "scripts": [
       "src/js/browser-polyfill.min.js",
+      "src/js/crypto-utils.js",
       "src/js/background.js"
     ]
   },
