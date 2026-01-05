@@ -27,7 +27,16 @@ function createZip(outputFile, files, manifestPath) {
 
         // Add directories
         archive.directory('src/', 'src');
-        archive.directory('assets/', 'assets');
+        
+        // Add assets but exclude screenshots folder
+        archive.directory('assets/', 'assets', (entry) => {
+            // Exclude the screenshots folder and its contents
+            const normalized = entry.name.replace(/\\/g, '/');
+            if (normalized.includes('images/screenshots')) {
+                return false;
+            }
+            return entry;
+        });
 
         archive.finalize();
     });
@@ -41,7 +50,7 @@ async function build() {
         fs.mkdirSync(distDir, { recursive: true });
     }
 
-    const rootFiles = ['LICENSE', 'README.md'];
+    const rootFiles = ['LICENSE'];
 
     try {
         // Build Chrome version
