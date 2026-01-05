@@ -88,34 +88,39 @@ function initializeExtension() {
       return;
     }
 
-    // SECURITY: Check for lockout first
-    chrome.storage.local.get(["failedAttempts", "lockoutUntil"], (data) => {
-      const now = Date.now();
-      failedAttempts = data.failedAttempts || 0;
-      lockoutUntil = data.lockoutUntil || 0;
-
-      if (lockoutUntil > now) {
-        showLockoutScreen(lockoutUntil - now);
-        return;
-      }
-
-      // Check if password exists and require authentication
-      chrome.storage.local.get(["lockPassword"], (passwordData) => {
-        hasExistingPassword = !!passwordData.lockPassword;
-
-        if (hasExistingPassword) {
-          showAuthenticationScreen();
-        } else {
-          // First time setup - proceed directly
-          isAuthenticated = true; // No auth needed for first setup
-          initializeMainUI();
-        }
-      });
-    });
+    // Continue with normal initialization
+    proceedWithNormalInitialization();
 
   } catch (error) {
     // Critical error during initialization
   }
+}
+
+function proceedWithNormalInitialization() {
+  // SECURITY: Check for lockout first
+  chrome.storage.local.get(["failedAttempts", "lockoutUntil"], (data) => {
+    const now = Date.now();
+    failedAttempts = data.failedAttempts || 0;
+    lockoutUntil = data.lockoutUntil || 0;
+
+    if (lockoutUntil > now) {
+      showLockoutScreen(lockoutUntil - now);
+      return;
+    }
+
+    // Check if password exists and require authentication
+    chrome.storage.local.get(["lockPassword"], (passwordData) => {
+      hasExistingPassword = !!passwordData.lockPassword;
+
+      if (hasExistingPassword) {
+        showAuthenticationScreen();
+      } else {
+        // First time setup - proceed directly
+        isAuthenticated = true; // No auth needed for first setup
+        initializeMainUI();
+      }
+    });
+  });
 }
 
 // SECURITY: Show lockout screen after too many failed attempts
@@ -1080,5 +1085,48 @@ function initializeDeveloperInfo() {
     developerInfoInitialized = true;
   } catch (error) {
     // Silently handle initialization errors
+  }
+}
+
+// ============================================================================
+// WHAT'S NEW OVERLAY FUNCTIONALITY
+// ============================================================================
+
+function showWhatsNewOverlay(version) {
+  const overlay = document.getElementById('whatsNewOverlay');
+  const versionBadge = document.getElementById('whatsNewVersion');
+  const dismissBtn = document.getElementById('dismissWhatsNew');
+
+  if (!overlay) return;
+
+  // Set version
+  if (versionBadge && version) {
+    versionBadge.textContent = 'v' + version;
+  }
+
+  // Show overlay
+  overlay.style.display = 'block';
+
+  // Handle dismiss button
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => {
+      // Hide overlay
+      overlay.style.display = 'none';
+
+      // Mark as seen
+      chrome.storage.local.set({ showWhatsNew: false }, () => {
+        // Continue with normal initialization
+        proceedWithNormalInitialization();
+      });
+    });
+  }
+
+  // Handle external changelog link (allow default behavior)
+  const changelogLink = overlay.querySelector('.changelog-link');
+  if (changelogLink) {
+    changelogLink.addEventListener('click', (e) => {
+      // Let it open in new tab (default behavior for target="_blank")
+      // After opening, user can still dismiss the overlay to continue
+    });
   }
 }

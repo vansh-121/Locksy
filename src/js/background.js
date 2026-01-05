@@ -198,6 +198,42 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   }
 
+  // Mark to show What's New on extension update
+  if (details.reason === 'update') {
+    const currentVersion = chrome.runtime.getManifest().version;
+    const previousVersion = details.previousVersion;
+
+    console.log(`Extension updated from v${previousVersion} to v${currentVersion}`);
+
+    // Only show What's New if the version actually changed
+    if (previousVersion && currentVersion !== previousVersion) {
+      // Set flag and switch popup to whats-new.html
+      chrome.storage.local.set({
+        showWhatsNew: true,
+        whatsNewVersion: currentVersion,
+        whatsNewPreviousVersion: previousVersion
+      }, () => {
+        // Change the popup to whats-new.html
+        chrome.action.setPopup({ popup: 'src/html/whats-new.html' }, () => {
+          // Try to open the popup automatically
+          chrome.action.openPopup().catch(err => {
+            // If popup can't be opened automatically, create a notification
+            chrome.notifications.create({
+              type: "basic",
+              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+              title: "Locksy Updated! 🎉",
+              message: `Click the extension icon to see what's new in v${currentVersion}`,
+              priority: 2,
+              requireInteraction: true
+            });
+          });
+        });
+      });
+    } else {
+      console.log('Extension reloaded with same version - skipping What\'s New');
+    }
+  }
+
   // Set uninstall URL - opens when user uninstalls the extension
   chrome.runtime.setUninstallURL('https://locksy.dev/uninstall');
 
