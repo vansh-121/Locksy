@@ -1,6 +1,6 @@
 {
   "name": "locksy-extension",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Tab Locker & Password Protection Extension with PBKDF2",
   "scripts": {
     "test:performance": "node tests/performance-test.js",
