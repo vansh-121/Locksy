@@ -114,7 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tabLockData.originalUrl !== 'about:blank' &&
                 tabLockData.originalUrl !== '') {
                 // Valid data found, break out
-                console.log('Lock data loaded successfully:', tabLockData.originalUrl);
                 break;
             }
 
@@ -579,7 +578,6 @@ async function unlockWithScope(scope) {
         // SUCCESS: Background script has already navigated the tab
         // Just wait for the navigation to complete - don't navigate from here
         // The background script's chrome.tabs.update() is more reliable across browsers
-        console.log('Tab unlocked successfully, waiting for navigation...');
 
         // The background script will handle navigation
         // This page will be replaced automatically when the navigation completes

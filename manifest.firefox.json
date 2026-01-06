@@ -18,7 +18,6 @@
   "permissions": [
     "storage",
     "tabs",
-    "scripting",
     "activeTab",
     "notifications",
     "webNavigation"
