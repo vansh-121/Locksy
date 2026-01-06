@@ -6,7 +6,7 @@ if (typeof importScripts === 'function') {
   try {
     importScripts('browser-polyfill.min.js');
   } catch (e) {
-    console.log('Polyfill load skipped:', e.message);
+    // Polyfill load skipped - not critical
   }
 }
 
@@ -649,7 +649,6 @@ async function unlockTab(tabId) {
     // Navigate back to original URL
     await chrome.tabs.update(tabId, { url: originalUrl });
 
-    console.log('Tab unlocked successfully:', tabId);
     return { success: true };
 
   } catch (error) {
@@ -746,7 +745,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 
     // Re-navigate to locked page if loading or URL changed
     if (changeInfo.status === 'loading' || changeInfo.url) {
-      console.log('Tab navigating while locked - enforcing lock:', tabId);
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
 
       // Store current URL as original URL if not already stored
@@ -801,7 +799,6 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 
     if (isTabLocked || isUrlDomainLocked) {
       // Tab is locked and user is trying to navigate - enforce lock
-      console.log('Navigation detected on locked tab - enforcing lock:', details.tabId);
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${details.tabId}`;
 
       // Store navigation URL as original URL if not already stored
@@ -850,7 +847,6 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const isTabDomainLocked = tab.url && isDomainLocked(tab.url) && !temporarilyUnlockedTabs.has(tabId);
 
     if (isTabLocked || isTabDomainLocked) {
-      console.log('Locked tab activated - enforcing lock:', tabId);
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
       chrome.tabs.update(tabId, { url: lockedUrl }).catch((error) => {
         console.error('Error enforcing lock on activation:', error);
