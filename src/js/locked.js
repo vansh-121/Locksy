@@ -1,6 +1,56 @@
 // Locksy - Locked Page Script
 // Handles password verification and unlock with rate limiting
 
+// ============================================================================
+// CENTRALIZED RATE LIMITING - Background Script Communication
+// ============================================================================
+// These functions communicate with the background script for password verification
+// to ensure a single, shared rate limiting state across the entire extension.
+
+/**
+ * Verify password with rate limiting via background script
+ * @param {string} password - The plain text password to verify
+ * @param {string} storedHash - The stored hash (not used, background script handles this)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+async function verifyPasswordWithRateLimit(password, storedHash) {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+            { action: "verifyPassword", password: password },
+            (response) => {
+                if (chrome.runtime.lastError) {
+                    resolve({ success: false, error: 'Failed to verify password' });
+                    return;
+                }
+                resolve(response);
+            }
+        );
+    });
+}
+
+/**
+ * Get current rate limit status from background script
+ * @returns {Promise<{failedAttempts: number, isLockedOut: boolean, lockoutRemaining: number, waitRemaining: number}>}
+ */
+function getRateLimitStatus() {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage(
+            { action: "getRateLimitStatus" },
+            (response) => {
+                if (chrome.runtime.lastError) {
+                    resolve({ failedAttempts: 0, isLockedOut: false, lockoutRemaining: 0, waitRemaining: 0 });
+                    return;
+                }
+                resolve(response);
+            }
+        );
+    });
+}
+
+// ============================================================================
+// STATE AND INITIALIZATION
+// ============================================================================
+
 let currentTabId = null;
 let countdownInterval = null;
 
@@ -64,7 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tabLockData.originalUrl !== 'about:blank' &&
                 tabLockData.originalUrl !== '') {
                 // Valid data found, break out
-                console.log('Lock data loaded successfully:', tabLockData.originalUrl);
                 break;
             }
 
@@ -257,7 +306,7 @@ async function unlockWithPassword() {
                     passwordInput.value = ''; // Clear password for security
 
                     // Get actual remaining time from rate limit status
-                    const status = getRateLimitStatus();
+                    const status = await getRateLimitStatus();
                     const waitTime = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
                     if (waitTime > 0) {
@@ -305,7 +354,7 @@ function startCountdown(seconds) {
 
     let remaining = seconds + 1; // Add 1 second buffer like old implementation
 
-    countdownInterval = setInterval(() => {
+    countdownInterval = setInterval(async () => {
         remaining--;
 
         if (remaining > 0) {
@@ -322,7 +371,7 @@ function startCountdown(seconds) {
             countdownInterval = null;
 
             // Verify rate limit is actually cleared
-            const status = getRateLimitStatus();
+            const status = await getRateLimitStatus();
             const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
             if (totalWait === 0) {
@@ -529,7 +578,6 @@ async function unlockWithScope(scope) {
         // SUCCESS: Background script has already navigated the tab
         // Just wait for the navigation to complete - don't navigate from here
         // The background script's chrome.tabs.update() is more reliable across browsers
-        console.log('Tab unlocked successfully, waiting for navigation...');
 
         // The background script will handle navigation
         // This page will be replaced automatically when the navigation completes

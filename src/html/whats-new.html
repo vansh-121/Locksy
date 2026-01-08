@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New in Locksy</title>
+    <link rel="stylesheet" href="../css/popup.css">
+</head>
+
+<body style="padding: 0; margin: 0; min-width: 320px;">
+    <div class="whats-new-overlay" style="display: block;">
+        <div class="whats-new-container">
+            <div class="whats-new-header">
+                <div class="update-badge">✨</div>
+                <h2>What's New in Locksy</h2>
+                <div class="version-badge" id="whatsNewVersion">v2.0.0</div>
+            </div>
+
+            <div class="whats-new-content">
+                <div class="feature-highlight">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Your Tabs Are Now Ultra-Secure</h3>
+                    <p>PBKDF2 protection that would take hackers 120+ years to crack!</p>
+                </div>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <span class="check-icon">🛡️</span>
+                        <span>Blocks password guessing attacks</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">🚀</span>
+                        <span>Faster and smoother performance</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">🐛</span>
+                        <span>Fixed important security issues</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">✨</span>
+                        <span>Cleaner, easier-to-use interface</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">🔒</span>
+                        <span>Your data never leaves your device</span>
+                    </div>
+                </div>
+
+                <div class="whats-new-footer">
+                    <p class="privacy-note">🔒 100% offline • Zero data collection • Complete privacy</p>
+                    <button id="dismissWhatsNew" class="btn-primary">Got it, Let's Start!</button>
+                    <a href="https://github.com/vansh-121/Locksy/blob/main/docs/CHANGELOG.md" target="_blank"
+                        class="changelog-link">View Full Changelog →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/browser-polyfill.min.js"></script>
+    <script src="../js/whats-new.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build extension
+        run: npm run build
+        
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum locksy-chrome.zip > checksums.txt
+          sha256sum locksy-firefox.zip >> checksums.txt
+          cat checksums.txt
+          
+      - name: Create or update tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Delete tag if exists (locally and remotely)
+          git tag -d "${{ steps.version.outputs.tag }}" 2>/dev/null || true
+          git push origin --delete "${{ steps.version.outputs.tag }}" 2>/dev/null || true
+          
+          # Create new tag
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+          
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Locksy ${{ steps.version.outputs.tag }}
+          files: |
+            dist/locksy-chrome.zip
+            dist/locksy-firefox.zip
+            dist/checksums.txt
+          body: |
+            ## 🔒 Locksy ${{ steps.version.outputs.tag }}
+            
+            ### 🎉 What's New
+            Check the [changelog](https://github.com/vansh-121/Locksy/blob/main/docs/CHANGELOG.md) for details.
+            
+            ### 📦 Installation
+            - **Chrome/Edge**: Download `locksy-chrome.zip`
+            - **Firefox**: Download `locksy-firefox.zip`
+            
+            ### ✅ Verify Your Download
+            **SHA-256 Checksums:**
+            ```
+            $(cat dist/checksums.txt)
+            ```
+            
+            ### 🔍 Source Code
+            Built from commit: ${{ github.sha }}
+            
+            **Trust & Transparency:**
+            - Automated build via GitHub Actions
+            - 100% open source
+            - Verifiable builds
+            
+            ---
+            *Last updated: $(date -u)*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Success message
+        run: |
+          if [ "${{ steps.check_tag.outputs.exists }}" == "true" ]; then
+            echo "✅ Release ${{ steps.version.outputs.tag }} updated successfully!"
+          else
+            echo "✅ Release ${{ steps.version.outputs.tag }} created successfully!"
+          fi

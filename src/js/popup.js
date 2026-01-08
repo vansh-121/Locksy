@@ -1,5 +1,55 @@
 // SECURE Popup Script - VERSION 4.0 - ULTIMATE SECURITY WITH EXTENSION ACCESS CONTROL
 
+// ============================================================================
+// CENTRALIZED RATE LIMITING - Background Script Communication
+// ============================================================================
+// These functions communicate with the background script for password verification
+// to ensure a single, shared rate limiting state across the entire extension.
+
+/**
+ * Verify password with rate limiting via background script
+ * @param {string} password - The plain text password to verify
+ * @param {string} storedHash - The stored hash (not used, background script handles this)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+async function verifyPasswordWithRateLimit(password, storedHash) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      { action: "verifyPassword", password: password },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          resolve({ success: false, error: 'Failed to verify password' });
+          return;
+        }
+        resolve(response);
+      }
+    );
+  });
+}
+
+/**
+ * Get current rate limit status from background script
+ * @returns {Promise<{failedAttempts: number, isLockedOut: boolean, lockoutRemaining: number, waitRemaining: number}>}
+ */
+function getRateLimitStatus() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      { action: "getRateLimitStatus" },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          resolve({ failedAttempts: 0, isLockedOut: false, lockoutRemaining: 0, waitRemaining: 0 });
+          return;
+        }
+        resolve(response);
+      }
+    );
+  });
+}
+
+// ============================================================================
+// STATE MANAGEMENT
+// ============================================================================
+
 // State management
 let isExtensionActive = false;
 let hasExistingPassword = false;
@@ -38,34 +88,39 @@ function initializeExtension() {
       return;
     }
 
-    // SECURITY: Check for lockout first
-    chrome.storage.local.get(["failedAttempts", "lockoutUntil"], (data) => {
-      const now = Date.now();
-      failedAttempts = data.failedAttempts || 0;
-      lockoutUntil = data.lockoutUntil || 0;
-
-      if (lockoutUntil > now) {
-        showLockoutScreen(lockoutUntil - now);
-        return;
-      }
-
-      // Check if password exists and require authentication
-      chrome.storage.local.get(["lockPassword"], (passwordData) => {
-        hasExistingPassword = !!passwordData.lockPassword;
-
-        if (hasExistingPassword) {
-          showAuthenticationScreen();
-        } else {
-          // First time setup - proceed directly
-          isAuthenticated = true; // No auth needed for first setup
-          initializeMainUI();
-        }
-      });
-    });
+    // Continue with normal initialization
+    proceedWithNormalInitialization();
 
   } catch (error) {
     // Critical error during initialization
   }
+}
+
+function proceedWithNormalInitialization() {
+  // SECURITY: Check for lockout first
+  chrome.storage.local.get(["failedAttempts", "lockoutUntil"], (data) => {
+    const now = Date.now();
+    failedAttempts = data.failedAttempts || 0;
+    lockoutUntil = data.lockoutUntil || 0;
+
+    if (lockoutUntil > now) {
+      showLockoutScreen(lockoutUntil - now);
+      return;
+    }
+
+    // Check if password exists and require authentication
+    chrome.storage.local.get(["lockPassword"], (passwordData) => {
+      hasExistingPassword = !!passwordData.lockPassword;
+
+      if (hasExistingPassword) {
+        showAuthenticationScreen();
+      } else {
+        // First time setup - proceed directly
+        isAuthenticated = true; // No auth needed for first setup
+        initializeMainUI();
+      }
+    });
+  });
 }
 
 // SECURITY: Show lockout screen after too many failed attempts
@@ -258,7 +313,7 @@ function showAuthenticationScreen() {
             authPasswordInput.style.opacity = '0.5';
 
             // Get actual remaining time from rate limit status
-            const status = getRateLimitStatus();
+            const status = await getRateLimitStatus();
             const waitTime = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
             if (waitTime > 0) {
@@ -277,7 +332,7 @@ function showAuthenticationScreen() {
 
   function startRateLimitCountdown(seconds) {
     let remaining = seconds + 1; // Add 1 second buffer
-    const countdownInterval = setInterval(() => {
+    const countdownInterval = setInterval(async () => {
       remaining--;
       if (remaining > 0) {
         const mins = Math.floor(remaining / 60);
@@ -286,7 +341,7 @@ function showAuthenticationScreen() {
       } else {
         clearInterval(countdownInterval);
         // Verify rate limit is actually cleared
-        const status = getRateLimitStatus();
+        const status = await getRateLimitStatus();
         const totalWait = status.isLockedOut ? status.lockoutRemaining : status.waitRemaining;
 
         if (totalWait === 0) {
@@ -1030,5 +1085,48 @@ function initializeDeveloperInfo() {
     developerInfoInitialized = true;
   } catch (error) {
     // Silently handle initialization errors
+  }
+}
+
+// ============================================================================
+// WHAT'S NEW OVERLAY FUNCTIONALITY
+// ============================================================================
+
+function showWhatsNewOverlay(version) {
+  const overlay = document.getElementById('whatsNewOverlay');
+  const versionBadge = document.getElementById('whatsNewVersion');
+  const dismissBtn = document.getElementById('dismissWhatsNew');
+
+  if (!overlay) return;
+
+  // Set version
+  if (versionBadge && version) {
+    versionBadge.textContent = 'v' + version;
+  }
+
+  // Show overlay
+  overlay.style.display = 'block';
+
+  // Handle dismiss button
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => {
+      // Hide overlay
+      overlay.style.display = 'none';
+
+      // Mark as seen
+      chrome.storage.local.set({ showWhatsNew: false }, () => {
+        // Continue with normal initialization
+        proceedWithNormalInitialization();
+      });
+    });
+  }
+
+  // Handle external changelog link (allow default behavior)
+  const changelogLink = overlay.querySelector('.changelog-link');
+  if (changelogLink) {
+    changelogLink.addEventListener('click', (e) => {
+      // Let it open in new tab (default behavior for target="_blank")
+      // After opening, user can still dismiss the overlay to continue
+    });
   }
 }

@@ -12,6 +12,7 @@ body {
   color: #333;
   min-width: 320px;
   padding: 0 0 16px 0;
+  position: relative;
 }
 
 .container {
@@ -664,4 +665,197 @@ button:disabled {
 
 .btn-unlock-domain:active {
   transform: translateY(0);
+}
+
+/* What's New Overlay Styles */
+.whats-new-overlay {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.whats-new-container {
+  padding: 20px;
+  max-width: 100%;
+  animation: slideUpFade 0.5s ease-out;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.whats-new-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.whats-new-header .update-badge {
+  font-size: 36px;
+  margin-bottom: 8px;
+  animation: pulseRotate 2s ease-in-out infinite;
+}
+
+@keyframes pulseRotate {
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.1) rotate(15deg);
+  }
+}
+
+.whats-new-header h2 {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.whats-new-header .version-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.whats-new-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.feature-highlight {
+  text-align: center;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.feature-highlight .feature-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.feature-highlight h3 {
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.feature-highlight p {
+  color: #6c757d;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.feature-list {
+  margin: 16px 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.feature-item:hover {
+  background: white;
+  border-left-color: #667eea;
+  transform: translateX(4px);
+}
+
+.feature-item .check-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.feature-item span:last-child {
+  color: #2c3e50;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.whats-new-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.privacy-note {
+  color: #28a745;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  padding: 8px;
+  background: #d4edda;
+  border-radius: 8px;
+}
+
+.whats-new-footer .btn-primary {
+  margin: 0 0 12px 0;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.whats-new-footer .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.changelog-link {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.changelog-link:hover {
+  color: #764ba2;
+  text-decoration: underline;
 }

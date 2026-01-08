@@ -2,6 +2,134 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.1.0] - 2026-01-06
+
+### 🚀 Automation & User Experience
+
+#### New Features
+- **What's New Overlay**: Beautiful update notification displayed to users after extension updates
+  - Shows version changes and key features
+  - Highlights security and privacy benefits
+  - Links to full changelog
+  - Dismissible with smooth animations
+  
+- **Automated GitHub Releases**: Complete CI/CD pipeline using GitHub Actions
+  - Automatic builds on push to main branch
+  - SHA-256 checksums for all releases
+  - Tagged releases with detailed release notes
+  - Automated artifact uploads
+  
+- **Build Verification Workflow**: Additional GitHub Actions workflow for pull requests
+  - Runs on all PR branches (main, feat/*, fixes/*)
+  - Generates build artifacts for verification
+  - Provides build summaries in GitHub UI
+
+#### 🔐 Security Enhancements
+- **Centralized Rate Limiting**: Moved password verification and rate limiting to background script
+  - Prevents bypass attacks via multiple tabs or popup windows
+  - Single shared rate limit state across entire extension
+  - More robust against circumvention attempts
+  - Popup and locked pages now communicate with background script for password verification
+  
+- **Removed `scripting` Permission**: Cleaned up Firefox manifest to remove unused permission
+
+#### � Documentation Improvements
+- **BUILD_GUIDE.md**: Comprehensive 296-line guide for building from source
+  - Step-by-step build instructions
+  - Verification procedures
+  - Troubleshooting section
+  - Security best practices
+  
+- **SECURITY.md**: Detailed 316-line security documentation
+  - Explains `<all_urls>` permission in detail
+  - Provides technical proof of offline operation
+  - Verification checklists
+  - Community security review guidelines
+  
+- **VERIFY.md**: Quick 241-line verification guide
+  - 5-minute trust verification steps
+  - Network activity checks
+  - Offline functionality tests
+  - Source code comparison methods
+  
+- **Enhanced README.md**: Added trust and verification section
+  - Trust & Transparency badges
+  - Quick verification guide
+  - Three verification methods (releases, build from source, inspect installation)
+  - Detailed permission explanations
+  
+- **Enhanced PRIVACY.md**: Added detailed explanation of `<all_urls>` permission
+  - Clear explanation of why permission is needed
+  - What the extension does vs. doesn't do
+  - Technical proof of no data collection
+
+#### 🎨 UI Improvements
+- **What's New Page Styling**: Beautiful gradient design matching Locksy's brand
+  - Responsive layout
+  - Smooth animations
+  - Feature highlights with icons
+  - Privacy guarantees prominently displayed
+  
+- **Popup Integration**: What's New overlay can be displayed within popup
+  - Seamless integration with existing popup design
+  - Full CSS styling included in popup.css
+
+#### 🏗️ Build Process Improvements
+- **Screenshot Exclusion**: Screenshots now excluded from extension packages
+  - Reduces package size
+  - Only includes necessary assets
+  
+- **Removed README from Packages**: README.md no longer bundled in extension packages
+  - Available on GitHub and web stores
+  - Reduces package size
+
+#### 🔧 Technical Improvements
+- **Manifest Optimization**: Firefox manifest now imports crypto-utils.js in background scripts
+  - Proper script loading order
+  - Better error handling
+  
+- **Background Script Communication**: Enhanced message passing architecture
+  - `verifyPassword` action for centralized password verification
+  - `getRateLimitStatus` action for checking rate limit state
+  - Better error handling and timeout management
+  
+- **Cleaner Console Output**: Removed excessive debug logging
+  - Production-ready logging
+  - Only critical errors logged
+
+### 📊 Impact
+
+**Security**: Centralized rate limiting makes bypass attacks significantly harder
+**Trust**: Comprehensive documentation helps users verify extension integrity
+**Transparency**: Automated builds with checksums provide verifiable releases
+**User Experience**: What's New overlay keeps users informed about updates
+
+### 🔗 Related Files
+
+**New Files**:
+- `.github/workflows/auto-release.yml` - Automated release workflow
+- `.github/workflows/build.yml` - Build verification workflow  
+- `src/html/whats-new.html` - What's New overlay page
+- `src/css/whats-new.css` - What's New styling
+- `src/js/whats-new.js` - What's New functionality
+- `docs/BUILD_GUIDE.md` - Build from source guide
+- `docs/SECURITY.md` - Security documentation
+- `docs/VERIFY.md` - Quick verification guide
+
+**Modified Files**:
+- `src/js/background.js` - Added centralized rate limiting
+- `src/js/popup.js` - Updated to use background script for password verification
+- `src/js/locked.js` - Updated to use background script for password verification
+- `src/js/crypto-utils.js` - Removed local rate limiting (moved to background)
+- `src/css/popup.css` - Added What's New overlay styling
+- `build.js` - Exclude screenshots from packages
+- `manifest.json` - Version bump to 2.1.0
+- `manifest.firefox.json` - Version bump, removed `scripting` permission
+- `README.md` - Added trust & verification section
+- `docs/PRIVACY.md` - Added `<all_urls>` explanation
+
+---
+
 ## [2.0.0] - 2025-12-27
 
 ### 🔐 MAJOR SECURITY OVERHAUL - ENTERPRISE-GRADE CRYPTOGRAPHY

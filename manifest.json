@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Locksy - Tab Locker & Password Protection",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Password-protect your tabs with military-grade PBKDF2 encryption. Instant locking, offline security, 100% private.",
   "minimum_chrome_version": "88",
   "incognito": "spanning",
