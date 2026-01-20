@@ -25,15 +25,26 @@
     console.log('[Activity Tracker] Reporting activity to background');
 
     // Send activity signal to background script
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
-      chrome.runtime.sendMessage({ 
-        action: 'userActivity',
-        source: 'content-script',
-        timestamp: now
-      }).catch((error) => {
-        // Log error for debugging
-        console.log('[Activity Tracker] Error sending message:', error);
-      });
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+      try {
+        chrome.runtime.sendMessage({ 
+          action: 'userActivity',
+          source: 'content-script',
+          timestamp: now
+        }).catch((error) => {
+          // Silently handle extension context invalidation (happens on reload)
+          if (error.message && error.message.includes('Extension context invalidated')) {
+            // Extension was reloaded, this is expected - stop trying to send messages
+            return;
+          }
+          console.log('[Activity Tracker] Error sending message:', error);
+        });
+      } catch (error) {
+        // Extension context no longer valid, silently fail
+        if (error.message && !error.message.includes('Extension context invalidated')) {
+          console.log('[Activity Tracker] Error:', error);
+        }
+      }
     }
   }
 

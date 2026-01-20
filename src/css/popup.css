@@ -976,6 +976,41 @@ button:disabled {
   margin-bottom: 8px;
 }
 
+.lock-scope-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.scope-btn {
+  padding: 10px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.scope-btn:hover {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.scope-btn.active {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-color: #28a745;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
 .duration-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

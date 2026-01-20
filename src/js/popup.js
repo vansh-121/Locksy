@@ -490,10 +490,16 @@ function initializeMainUI() {
                 <div class="toggle-slider-small"></div>
               </div>
             </div>
-            <p class="timer-description">Automatically lock all tabs after period of inactivity</p>
+            <p class="timer-description">Automatically lock tabs after period of inactivity</p>
             
             <div id="autoLockOptions" style="display: none;">
-              <label class="timer-label">Lock after inactivity:</label>
+              <label class="timer-label">What to lock:</label>
+              <div class="lock-scope-buttons">
+                <button class="scope-btn active" data-scope="all">🔐 All Tabs</button>
+                <button class="scope-btn" data-scope="current">🔒 Active Tab Only</button>
+              </div>
+              
+              <label class="timer-label" style="margin-top: 12px;">Lock after inactivity:</label>
               <div class="duration-buttons">
                 <button class="duration-btn" data-duration="300000">5 min</button>
                 <button class="duration-btn" data-duration="900000">15 min</button>
@@ -1224,6 +1230,15 @@ function initializeTimerSettings() {
         }
       });
 
+      // Set active scope button
+      const scopeButtons = document.querySelectorAll('.scope-btn');
+      scopeButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.scope === response.scope) {
+          btn.classList.add('active');
+        }
+      });
+
       updateAutoLockStatus(response.enabled, response.duration);
     }
   });
@@ -1399,6 +1414,34 @@ function initializeTimerSettings() {
           if (scheduledLockToggle) scheduledLockToggle.classList.add('active');
           if (scheduledOptions) scheduledOptions.style.display = 'block';
           showScheduledStatus('Preset applied!', 'success');
+        }
+      });
+    });
+  });
+
+  // Scope buttons
+  const scopeButtons = document.querySelectorAll('.scope-btn');
+  scopeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      scopeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const scope = btn.dataset.scope;
+      
+      // Get current settings
+      const activeBtn = document.querySelector('.duration-btn.active');
+      const duration = activeBtn ? parseInt(activeBtn.dataset.duration) : 1800000; // Default 30 min
+      const isEnabled = autoLockToggle ? autoLockToggle.classList.contains('active') : false;
+
+      chrome.runtime.sendMessage({
+        action: 'setAutoLock',
+        enabled: isEnabled,
+        duration: duration,
+        scope: scope
+      }, (response) => {
+        if (response && response.success) {
+          const scopeText = scope === 'all' ? 'all tabs' : 'active tab only';
+          showAutoLockStatus(`Lock scope set to ${scopeText}`, 'success');
         }
       });
     });

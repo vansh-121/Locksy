@@ -22,6 +22,7 @@ let restorationPromise = null; // Promise for ongoing restoration
 let autoLockTimer = null; // Timer for auto-lock after inactivity
 let autoLockEnabled = false; // Whether auto-lock is enabled
 let autoLockDuration = 15 * 60 * 1000; // Default: 15 minutes in milliseconds
+let autoLockScope = 'all'; // What to lock: 'all' or 'current'
 let lastActivityTime = Date.now(); // Track last user activity
 let scheduledLockEnabled = false; // Whether scheduled locking is enabled
 let scheduledLockStart = '09:00'; // Default start time (24h format)
@@ -76,58 +77,106 @@ function resetAutoLockTimer() {
 }
 
 /**
- * Perform auto-lock: lock all tabs
+ * Perform auto-lock: lock tabs based on scope setting
  */
 function performAutoLock() {
-  console.log('[Auto-Lock] Timer expired, locking all tabs');
-  chrome.storage.local.get(["lockPassword", "extensionActive"], (data) => {
-    if (!data.lockPassword || !data.extensionActive) {
-      console.log('[Auto-Lock] Skipping - no password or extension inactive');
-      return;
+  console.log(`[Auto-Lock] Timer expired, locking ${autoLockScope === 'all' ? 'all tabs' : 'active tab only'}`);
+  chrome.storage.local.get(["lockPassword"], (data) => {
+    if (!data.lockPassword) {
+      console.log('[Auto-Lock] Skipping - no password set');
       return;
     }
 
-    // Lock all open tabs
-    chrome.tabs.query({}, (tabs) => {
-      let lockedCount = 0;
+    console.log('[Auto-Lock] Password verified, proceeding with lock');
 
-      tabs.forEach(tab => {
-        // Skip if already locked
-        if (lockedTabs.has(tab.id)) {
-          return;
+    if (autoLockScope === 'current') {
+      // Lock only the currently active tab
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        console.log('[Auto-Lock] Found active tab:', tabs[0]?.url);
+        if (tabs[0]) {
+          const tab = tabs[0];
+          
+          // Skip if no URL (new tab, loading, etc.)
+          if (!tab.url) {
+            console.log('[Auto-Lock] No URL, skipping (new tab or loading)');
+            return;
+          }
+          
+          // Skip if already locked
+          if (lockedTabs.has(tab.id)) {
+            console.log('[Auto-Lock] Tab already locked, skipping');
+            return;
+          }
+          
+          // Skip system pages
+          if (tab.url.startsWith('chrome://') ||
+              tab.url.startsWith('chrome-extension://') ||
+              tab.url.startsWith('edge://') ||
+              tab.url.startsWith('about:') ||
+              tab.url.startsWith('file://')) {
+            console.log('[Auto-Lock] System page, skipping:', tab.url);
+            return;
+          }
+
+          // Lock the active tab
+          console.log('[Auto-Lock] Locking tab ID:', tab.id, 'URL:', tab.url);
+          lockedTabs.add(tab.id);
+          lockTab(tab.id);
+          chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+          updateBadge();
+
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '🔒 Auto-Lock Activated',
+            message: `Active tab locked due to inactivity`,
+            priority: 1
+          });
         }
-
-        // Skip system pages
-        if (tab.url &&
-          (tab.url.startsWith('chrome://') ||
-            tab.url.startsWith('chrome-extension://') ||
-            tab.url.startsWith('edge://') ||
-            tab.url.startsWith('about:') ||
-            tab.url.startsWith('file://'))) {
-          return;
-        }
-
-        // Lock the tab
-        lockedTabs.add(tab.id);
-        lockTab(tab.id);
-        lockedCount++;
       });
+    } else {
+      // Lock all open tabs (default behavior)
+      chrome.tabs.query({}, (tabs) => {
+        let lockedCount = 0;
 
-      // Update storage and badge
-      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
-      updateBadge();
+        tabs.forEach(tab => {
+          // Skip if already locked
+          if (lockedTabs.has(tab.id)) {
+            return;
+          }
 
-      // Show notification
-      if (lockedCount > 0) {
-        chrome.notifications.create({
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-          title: '🔒 Auto-Lock Activated',
-          message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked due to inactivity`,
-          priority: 1
+          // Skip system pages
+          if (tab.url &&
+            (tab.url.startsWith('chrome://') ||
+              tab.url.startsWith('chrome-extension://') ||
+              tab.url.startsWith('edge://') ||
+              tab.url.startsWith('about:') ||
+              tab.url.startsWith('file://'))) {
+            return;
+          }
+
+          // Lock the tab
+          lockedTabs.add(tab.id);
+          lockTab(tab.id);
+          lockedCount++;
         });
-      }
-    });
+
+        // Update storage and badge
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        updateBadge();
+
+        // Show notification
+        if (lockedCount > 0) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '🔒 Auto-Lock Activated',
+            message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked due to inactivity`,
+            priority: 1
+          });
+        }
+      });
+    }
   });
 }
 
@@ -352,6 +401,7 @@ async function restoreLockedTabs() {
       "temporarilyUnlockedTabIds",
       "autoLockEnabled",
       "autoLockDuration",
+      "autoLockScope",
       "scheduledLockEnabled",
       "scheduledLockStart",
       "scheduledLockEnd"
@@ -375,6 +425,9 @@ async function restoreLockedTabs() {
       }
       if (data.autoLockDuration !== undefined) {
         autoLockDuration = data.autoLockDuration;
+      }
+      if (data.autoLockScope !== undefined) {
+        autoLockScope = data.autoLockScope;
       }
       if (data.scheduledLockEnabled !== undefined) {
         scheduledLockEnabled = data.scheduledLockEnabled;
@@ -982,17 +1035,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   } else if (message.action === "setAutoLock") {
     // Update auto-lock settings
-    const { enabled, duration } = message;
+    const { enabled, duration, scope } = message;
     autoLockEnabled = enabled;
     if (duration !== undefined) {
       autoLockDuration = duration;
     }
+    if (scope !== undefined) {
+      autoLockScope = scope;
+    }
 
-    console.log(`[Auto-Lock] Settings updated - Enabled: ${enabled}, Duration: ${autoLockDuration}ms (${autoLockDuration / 60000} min)`);
+    console.log(`[Auto-Lock] Settings updated - Enabled: ${enabled}, Duration: ${autoLockDuration}ms (${autoLockDuration / 60000} min), Scope: ${autoLockScope}`);
 
     chrome.storage.local.set({
       autoLockEnabled: enabled,
-      autoLockDuration: autoLockDuration
+      autoLockDuration: autoLockDuration,
+      autoLockScope: autoLockScope
     });
 
     if (enabled) {
@@ -1010,6 +1067,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({
       enabled: autoLockEnabled,
       duration: autoLockDuration,
+      scope: autoLockScope,
       lastActivity: lastActivityTime
     });
     return true;
