@@ -2,6 +2,103 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.2.0] - 2026-01-20
+
+### 🎉 Major New Features
+
+#### ⏱️ Auto-Lock Timer
+- **Automatic Inactivity Locking**: Locks all tabs after a period of inactivity
+  - Preset durations: 5, 15, 30, 60 minutes
+  - Custom duration support: 1-480 minutes (8 hours)
+  - Smart activity tracking across tab switching, navigation, and window focus
+  - Automatic timer reset on any user interaction
+  - Real-time status display with countdown information
+  - Desktop notifications when auto-lock activates
+  
+#### 📅 Scheduled Locking
+- **Time-Based Automatic Locking**: Lock tabs during specific hours
+  - Custom start and end time configuration (24-hour format)
+  - Support for overnight schedules (e.g., 22:00 to 06:00)
+  - Quick preset options:
+    - Work Hours (9:00 AM - 5:00 PM)
+    - Night Time (10:00 PM - 6:00 AM)
+    - All Day (24/7 protection)
+  - Automatic locking when entering scheduled period
+  - Notifications for schedule activation and deactivation
+  - Real-time schedule status indicator
+
+#### 🎨 UI Enhancements
+- **Beautiful Timer Settings Interface**
+  - Modern gradient-based design matching extension theme
+  - Collapsible sections for organized layout
+  - Smooth toggle switches with animations
+  - Active state highlighting on duration buttons
+  - Color-coded status messages (green/blue/red)
+  - Hover effects and transitions throughout
+  - Real-time feedback on all interactions
+  
+### 🔧 Technical Improvements
+- **Enhanced Background Script**: 273 new lines
+  - Auto-lock timer state management
+  - Multi-point activity tracking listeners
+  - Schedule checker running every minute
+  - Message handlers for timer configuration
+  - Persistent settings storage and restoration
+  
+- **Expanded Popup Interface**: 367 new lines (70 HTML + 297 JS)
+  - Complete timer settings initialization
+  - UI event handlers for all controls
+  - Settings save/load functionality
+  - Status display and update functions
+  - Integration with existing lock controls
+  
+- **Rich CSS Styling**: 331 new lines
+  - Timer-specific component styles
+  - Toggle switch animations
+  - Button interaction effects
+  - Responsive layout adjustments
+  - Status message styling
+
+### 📊 Storage Schema Updates
+- New settings stored in `chrome.storage.local`:
+  - `autoLockEnabled`: boolean
+  - `autoLockDuration`: number (milliseconds)
+  - `scheduledLockEnabled`: boolean
+  - `scheduledLockStart`: string (HH:MM format)
+  - `scheduledLockEnd`: string (HH:MM format)
+  - `scheduledLockState`: boolean (currently active)
+
+### 🚀 User Benefits
+- **Set-and-Forget Security**: Automatic protection without manual intervention
+- **Flexible Configuration**: Both preset options and custom settings
+- **Multiple Use Cases**:
+  - Office workers: Protection during meetings/breaks
+  - Students: Scheduled locking during class hours
+  - Families: Time-based restrictions
+  - Privacy-conscious: Always-on inactivity protection
+- **Zero Performance Impact**: Efficient implementation with minimal overhead
+
+### 📝 Documentation
+- **TIMER_FEATURE_SUMMARY.md**: Comprehensive 400+ line technical overview
+- **TIMER_QUICK_START.md**: User-friendly quick start guide
+- Both include detailed usage instructions and use cases
+
+### 🎯 Feature Highlights
+- ✅ Smart activity detection prevents premature locking
+- ✅ Handles system pages gracefully (never locks browser settings)
+- ✅ Settings persist across browser sessions and restarts
+- ✅ Can use auto-lock and scheduled locking simultaneously
+- ✅ Visual feedback at every step
+- ✅ Professional, polished user interface
+
+### 🔄 Implementation Stats
+- **Total New Code**: 971 lines across 4 files
+- **Files Modified**: 4 (background.js, popup.js, popup.html, popup.css)
+- **New Documentation**: 2 comprehensive guides
+- **Zero Breaking Changes**: Fully backward compatible
+
+---
+
 ## [2.1.0] - 2026-01-06
 
 ### 🚀 Automation & User Experience

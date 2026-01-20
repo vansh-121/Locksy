@@ -476,6 +476,75 @@ function initializeMainUI() {
         </div>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
+        
+        <!-- Timer Settings Section -->
+        <div class="timer-settings" id="timerSettings" style="display: block; margin-top: 16px;">
+          <div class="timer-header">
+            <h3>⏱️ Auto-Lock Timer</h3>
+            <button class="collapse-btn" id="collapseAutoLock">−</button>
+          </div>
+          <div class="timer-content" id="autoLockContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Auto-Lock</span>
+              <div id="autoLockToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Automatically lock all tabs after period of inactivity</p>
+            
+            <div id="autoLockOptions" style="display: none;">
+              <label class="timer-label">Lock after inactivity:</label>
+              <div class="duration-buttons">
+                <button class="duration-btn" data-duration="300000">5 min</button>
+                <button class="duration-btn" data-duration="900000">15 min</button>
+                <button class="duration-btn active" data-duration="1800000">30 min</button>
+                <button class="duration-btn" data-duration="3600000">60 min</button>
+              </div>
+              <div class="custom-duration">
+                <label class="timer-label">Custom (minutes):</label>
+                <input type="number" id="customDuration" min="1" max="480" placeholder="Custom" />
+                <button id="setCustomDuration" class="btn-custom-duration">Set</button>
+              </div>
+              <div id="autoLockStatus" class="status-message"></div>
+            </div>
+          </div>
+
+          <div class="timer-header" style="margin-top: 16px;">
+            <h3>📅 Scheduled Locking</h3>
+            <button class="collapse-btn" id="collapseScheduled">−</button>
+          </div>
+          <div class="timer-content" id="scheduledContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Schedule</span>
+              <div id="scheduledLockToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Automatically lock tabs during specific hours</p>
+            
+            <div id="scheduledOptions" style="display: none;">
+              <div class="time-input-group">
+                <div class="time-input">
+                  <label class="timer-label">Start Time:</label>
+                  <input type="time" id="scheduleStart" value="09:00" />
+                </div>
+                <div class="time-input">
+                  <label class="timer-label">End Time:</label>
+                  <input type="time" id="scheduleEnd" value="17:00" />
+                </div>
+              </div>
+              <button id="setSchedule" class="btn-set-schedule">Save Schedule</button>
+              <div id="scheduledStatus" class="status-message"></div>
+              
+              <div class="schedule-presets">
+                <label class="timer-label">Quick Presets:</label>
+                <button class="preset-btn" data-start="09:00" data-end="17:00">Work Hours (9-5)</button>
+                <button class="preset-btn" data-start="22:00" data-end="06:00">Night (10pm-6am)</button>
+                <button class="preset-btn" data-start="00:00" data-end="23:59">All Day</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="lockTip" style="display: none; margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
@@ -956,6 +1025,9 @@ function initializeMainUI() {
 
   // Initialize developer info after main UI is set up
   initializeDeveloperInfo();
+
+  // Initialize timer settings
+  initializeTimerSettings();
 }
 
 function showNotification(message, type = "info") {
@@ -1085,6 +1157,288 @@ function initializeDeveloperInfo() {
     developerInfoInitialized = true;
   } catch (error) {
     // Silently handle initialization errors
+  }
+}
+
+// ============================================================================
+// TIMER SETTINGS FUNCTIONALITY
+// ============================================================================
+
+// Initialize timer settings
+function initializeTimerSettings() {
+  const timerSettings = document.getElementById('timerSettings');
+  const autoLockToggle = document.getElementById('autoLockToggle');
+  const scheduledLockToggle = document.getElementById('scheduledLockToggle');
+  const autoLockOptions = document.getElementById('autoLockOptions');
+  const scheduledOptions = document.getElementById('scheduledOptions');
+  const collapseAutoLock = document.getElementById('collapseAutoLock');
+  const collapseScheduled = document.getElementById('collapseScheduled');
+  const autoLockContent = document.getElementById('autoLockContent');
+  const scheduledContent = document.getElementById('scheduledContent');
+  
+  if (!timerSettings) return;
+
+  // Show timer settings (it will be hidden if password is not set via parent lockControls)
+  timerSettings.style.display = 'block';
+
+  // Collapse/Expand functionality
+  if (collapseAutoLock && autoLockContent) {
+    collapseAutoLock.addEventListener('click', () => {
+      if (autoLockContent.style.display === 'none') {
+        autoLockContent.style.display = 'block';
+        collapseAutoLock.textContent = '−';
+      } else {
+        autoLockContent.style.display = 'none';
+        collapseAutoLock.textContent = '+';
+      }
+    });
+  }
+
+  if (collapseScheduled && scheduledContent) {
+    collapseScheduled.addEventListener('click', () => {
+      if (scheduledContent.style.display === 'none') {
+        scheduledContent.style.display = 'block';
+        collapseScheduled.textContent = '−';
+      } else {
+        scheduledContent.style.display = 'none';
+        collapseScheduled.textContent = '+';
+      }
+    });
+  }
+
+  // Load current settings
+  chrome.runtime.sendMessage({ action: 'getAutoLockSettings' }, (response) => {
+    if (response && autoLockToggle) {
+      const isActive = response.enabled;
+      autoLockToggle.classList.toggle('active', isActive);
+      if (autoLockOptions) {
+        autoLockOptions.style.display = isActive ? 'block' : 'none';
+      }
+
+      // Set active duration button
+      const durationButtons = document.querySelectorAll('.duration-btn');
+      durationButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.dataset.duration) === response.duration) {
+          btn.classList.add('active');
+        }
+      });
+
+      updateAutoLockStatus(response.enabled, response.duration);
+    }
+  });
+
+  chrome.runtime.sendMessage({ action: 'getScheduledLockSettings' }, (response) => {
+    if (response && scheduledLockToggle) {
+      const isActive = response.enabled;
+      scheduledLockToggle.classList.toggle('active', isActive);
+      if (scheduledOptions) {
+        scheduledOptions.style.display = isActive ? 'block' : 'none';
+      }
+
+      // Set time inputs
+      const scheduleStart = document.getElementById('scheduleStart');
+      const scheduleEnd = document.getElementById('scheduleEnd');
+      if (scheduleStart) scheduleStart.value = response.startTime;
+      if (scheduleEnd) scheduleEnd.value = response.endTime;
+
+      updateScheduledStatus(response.enabled, response.startTime, response.endTime, response.currentlyActive);
+    }
+  });
+
+  // Auto-lock toggle
+  if (autoLockToggle) {
+    autoLockToggle.addEventListener('click', () => {
+      const isActive = !autoLockToggle.classList.contains('active');
+      autoLockToggle.classList.toggle('active', isActive);
+      
+      if (autoLockOptions) {
+        autoLockOptions.style.display = isActive ? 'block' : 'none';
+      }
+
+      // Get current duration
+      const activeBtn = document.querySelector('.duration-btn.active');
+      const duration = activeBtn ? parseInt(activeBtn.dataset.duration) : 1800000; // Default 30 min
+
+      chrome.runtime.sendMessage({
+        action: 'setAutoLock',
+        enabled: isActive,
+        duration: duration
+      }, (response) => {
+        if (response && response.success) {
+          updateAutoLockStatus(isActive, duration);
+        }
+      });
+    });
+  }
+
+  // Duration buttons
+  const durationButtons = document.querySelectorAll('.duration-btn');
+  durationButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      durationButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const duration = parseInt(btn.dataset.duration);
+      chrome.runtime.sendMessage({
+        action: 'setAutoLock',
+        enabled: true,
+        duration: duration
+      }, (response) => {
+        if (response && response.success) {
+          updateAutoLockStatus(true, duration);
+          if (autoLockToggle) autoLockToggle.classList.add('active');
+          if (autoLockOptions) autoLockOptions.style.display = 'block';
+        }
+      });
+    });
+  });
+
+  // Custom duration
+  const setCustomDuration = document.getElementById('setCustomDuration');
+  const customDuration = document.getElementById('customDuration');
+  if (setCustomDuration && customDuration) {
+    setCustomDuration.addEventListener('click', () => {
+      const minutes = parseInt(customDuration.value);
+      if (minutes && minutes > 0 && minutes <= 480) {
+        const duration = minutes * 60 * 1000;
+        
+        // Clear active state from preset buttons
+        durationButtons.forEach(b => b.classList.remove('active'));
+
+        chrome.runtime.sendMessage({
+          action: 'setAutoLock',
+          enabled: true,
+          duration: duration
+        }, (response) => {
+          if (response && response.success) {
+            updateAutoLockStatus(true, duration);
+            if (autoLockToggle) autoLockToggle.classList.add('active');
+            if (autoLockOptions) autoLockOptions.style.display = 'block';
+            customDuration.value = '';
+          }
+        });
+      } else {
+        showAutoLockStatus('Please enter 1-480 minutes', 'error');
+      }
+    });
+  }
+
+  // Scheduled lock toggle
+  if (scheduledLockToggle) {
+    scheduledLockToggle.addEventListener('click', () => {
+      const isActive = !scheduledLockToggle.classList.contains('active');
+      scheduledLockToggle.classList.toggle('active', isActive);
+      
+      if (scheduledOptions) {
+        scheduledOptions.style.display = isActive ? 'block' : 'none';
+      }
+
+      const scheduleStart = document.getElementById('scheduleStart');
+      const scheduleEnd = document.getElementById('scheduleEnd');
+
+      chrome.runtime.sendMessage({
+        action: 'setScheduledLock',
+        enabled: isActive,
+        startTime: scheduleStart ? scheduleStart.value : '09:00',
+        endTime: scheduleEnd ? scheduleEnd.value : '17:00'
+      }, (response) => {
+        if (response && response.success) {
+          updateScheduledStatus(isActive, scheduleStart.value, scheduleEnd.value, false);
+        }
+      });
+    });
+  }
+
+  // Set schedule button
+  const setSchedule = document.getElementById('setSchedule');
+  if (setSchedule) {
+    setSchedule.addEventListener('click', () => {
+      const scheduleStart = document.getElementById('scheduleStart');
+      const scheduleEnd = document.getElementById('scheduleEnd');
+
+      if (scheduleStart && scheduleEnd) {
+        chrome.runtime.sendMessage({
+          action: 'setScheduledLock',
+          enabled: true,
+          startTime: scheduleStart.value,
+          endTime: scheduleEnd.value
+        }, (response) => {
+          if (response && response.success) {
+            updateScheduledStatus(true, scheduleStart.value, scheduleEnd.value, false);
+            if (scheduledLockToggle) scheduledLockToggle.classList.add('active');
+            if (scheduledOptions) scheduledOptions.style.display = 'block';
+            showScheduledStatus('Schedule saved successfully!', 'success');
+          }
+        });
+      }
+    });
+  }
+
+  // Preset buttons
+  const presetButtons = document.querySelectorAll('.preset-btn');
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const startTime = btn.dataset.start;
+      const endTime = btn.dataset.end;
+      
+      const scheduleStart = document.getElementById('scheduleStart');
+      const scheduleEnd = document.getElementById('scheduleEnd');
+      
+      if (scheduleStart) scheduleStart.value = startTime;
+      if (scheduleEnd) scheduleEnd.value = endTime;
+
+      chrome.runtime.sendMessage({
+        action: 'setScheduledLock',
+        enabled: true,
+        startTime: startTime,
+        endTime: endTime
+      }, (response) => {
+        if (response && response.success) {
+          updateScheduledStatus(true, startTime, endTime, false);
+          if (scheduledLockToggle) scheduledLockToggle.classList.add('active');
+          if (scheduledOptions) scheduledOptions.style.display = 'block';
+          showScheduledStatus('Preset applied!', 'success');
+        }
+      });
+    });
+  });
+}
+
+function updateAutoLockStatus(enabled, duration) {
+  const minutes = Math.floor(duration / 60000);
+  const statusText = enabled ? `🟢 Active - Locks after ${minutes} min of inactivity` : '⚪ Inactive';
+  showAutoLockStatus(statusText, enabled ? 'success' : 'info');
+}
+
+function showAutoLockStatus(message, type) {
+  const statusDiv = document.getElementById('autoLockStatus');
+  if (statusDiv) {
+    statusDiv.textContent = message;
+    statusDiv.className = 'status-message ' + type;
+    statusDiv.style.display = 'block';
+    setTimeout(() => {
+      statusDiv.style.display = 'none';
+    }, 3000);
+  }
+}
+
+function updateScheduledStatus(enabled, startTime, endTime, currentlyActive) {
+  const statusText = enabled 
+    ? `🟢 Active - Locks from ${startTime} to ${endTime}${currentlyActive ? ' (Active now)' : ''}` 
+    : '⚪ Inactive';
+  showScheduledStatus(statusText, enabled ? 'success' : 'info');
+}
+
+function showScheduledStatus(message, type) {
+  const statusDiv = document.getElementById('scheduledStatus');
+  if (statusDiv) {
+    statusDiv.textContent = message;
+    statusDiv.className = 'status-message ' + type;
+    statusDiv.style.display = 'block';
+    setTimeout(() => {
+      statusDiv.style.display = 'none';
+    }, 3000);
   }
 }
 

@@ -78,6 +78,75 @@
         </div>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts">⌨️ Keyboard Shortcuts</button>
+        
+        <!-- Timer Settings Section -->
+        <div class="timer-settings" id="timerSettings" style="display: none;">
+          <div class="timer-header">
+            <h3>⏱️ Auto-Lock Timer</h3>
+            <button class="collapse-btn" id="collapseAutoLock">−</button>
+          </div>
+          <div class="timer-content" id="autoLockContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Auto-Lock</span>
+              <div id="autoLockToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Automatically lock all tabs after period of inactivity</p>
+            
+            <div id="autoLockOptions" style="display: none;">
+              <label class="timer-label">Lock after inactivity:</label>
+              <div class="duration-buttons">
+                <button class="duration-btn" data-duration="300000">5 min</button>
+                <button class="duration-btn" data-duration="900000">15 min</button>
+                <button class="duration-btn active" data-duration="1800000">30 min</button>
+                <button class="duration-btn" data-duration="3600000">60 min</button>
+              </div>
+              <div class="custom-duration">
+                <label class="timer-label">Custom (minutes):</label>
+                <input type="number" id="customDuration" min="1" max="480" placeholder="Custom" />
+                <button id="setCustomDuration" class="btn-custom-duration">Set</button>
+              </div>
+              <div id="autoLockStatus" class="status-message"></div>
+            </div>
+          </div>
+
+          <div class="timer-header" style="margin-top: 16px;">
+            <h3>📅 Scheduled Locking</h3>
+            <button class="collapse-btn" id="collapseScheduled">−</button>
+          </div>
+          <div class="timer-content" id="scheduledContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Schedule</span>
+              <div id="scheduledLockToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Automatically lock tabs during specific hours</p>
+            
+            <div id="scheduledOptions" style="display: none;">
+              <div class="time-input-group">
+                <div class="time-input">
+                  <label class="timer-label">Start Time:</label>
+                  <input type="time" id="scheduleStart" value="09:00" />
+                </div>
+                <div class="time-input">
+                  <label class="timer-label">End Time:</label>
+                  <input type="time" id="scheduleEnd" value="17:00" />
+                </div>
+              </div>
+              <button id="setSchedule" class="btn-set-schedule">Save Schedule</button>
+              <div id="scheduledStatus" class="status-message"></div>
+              
+              <div class="schedule-presets">
+                <label class="timer-label">Quick Presets:</label>
+                <button class="preset-btn" data-start="09:00" data-end="17:00">Work Hours (9-5)</button>
+                <button class="preset-btn" data-start="22:00" data-end="06:00">Night (10pm-6am)</button>
+                <button class="preset-btn" data-start="00:00" data-end="23:59">All Day</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="lockTip"
