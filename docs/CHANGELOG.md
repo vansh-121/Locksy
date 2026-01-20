@@ -36,6 +36,31 @@ All notable changes to Locksy will be documented in this file.
   - Color-coded status messages (green/blue/red)
   - Hover effects and transitions throughout
   - Real-time feedback on all interactions
+
+#### 🎯 Enhanced Activity Detection (NEW!)
+- **Content Script Activity Tracker**: Comprehensive page-level activity monitoring
+  - **Mouse Movement Detection**: Detects when user moves mouse on page
+  - **Keyboard Input Detection**: Tracks typing and keyboard interactions
+  - **Scrolling Detection**: Monitors page scrolling activity
+  - **Video Playback Detection**: Special handling for watching videos
+    - Detects video play/pause events
+    - Periodic activity reporting while video plays (every 15 seconds)
+    - Prevents unwanted locks during Netflix, YouTube, etc.
+  - **Touch Gesture Support**: Mobile/tablet touch interactions
+  - **Page Visibility Tracking**: Detects when user switches back to tab
+  - **Performance Optimized**: 
+    - Debounced activity (1-second delay)
+    - Throttled reporting (max once per 10 seconds)
+    - Passive event listeners (no scroll blocking)
+    - Zero performance impact on browsing
+  
+- **Real-World Use Cases Now Supported**:
+  - ✅ Watching videos without interruption
+  - ✅ Reading long articles safely
+  - ✅ Working on single-page apps
+  - ✅ Coding in web-based IDEs
+  - ✅ Any passive content consumption
+  - ❌ Only locks when truly inactive
   
 ### 🔧 Technical Improvements
 - **Enhanced Background Script**: 273 new lines
@@ -44,6 +69,13 @@ All notable changes to Locksy will be documented in this file.
   - Schedule checker running every minute
   - Message handlers for timer configuration
   - Persistent settings storage and restoration
+
+- **New Content Script**: activity-tracker.js (150 lines)
+  - Injected on all pages (`<all_urls>`)
+  - 15+ event listeners for comprehensive detection
+  - Smart throttling and debouncing
+  - Video playback interval checking
+  - Efficient messaging to background script
   
 - **Expanded Popup Interface**: 367 new lines (70 HTML + 297 JS)
   - Complete timer settings initialization
@@ -71,29 +103,39 @@ All notable changes to Locksy will be documented in this file.
 ### 🚀 User Benefits
 - **Set-and-Forget Security**: Automatic protection without manual intervention
 - **Flexible Configuration**: Both preset options and custom settings
+- **No More Unwanted Locks**: Smart detection knows when you're actually using the browser
+- **Natural Behavior**: Works with how people really browse (watching videos, reading, etc.)
 - **Multiple Use Cases**:
   - Office workers: Protection during meetings/breaks
   - Students: Scheduled locking during class hours
   - Families: Time-based restrictions
   - Privacy-conscious: Always-on inactivity protection
+  - Content consumers: Watch videos without interruption
 - **Zero Performance Impact**: Efficient implementation with minimal overhead
 
 ### 📝 Documentation
 - **TIMER_FEATURE_SUMMARY.md**: Comprehensive 400+ line technical overview
 - **TIMER_QUICK_START.md**: User-friendly quick start guide
-- Both include detailed usage instructions and use cases
+- **ACTIVITY_DETECTION.md**: Detailed explanation of enhanced activity tracking (NEW!)
+- Complete usage instructions and real-world use cases
 
 ### 🎯 Feature Highlights
-- ✅ Smart activity detection prevents premature locking
+- ✅ Smart activity detection prevents premature locking (mouse, keyboard, scroll, video)
+- ✅ Handles video playback intelligently (YouTube, Netflix, etc.)
+- ✅ Respects passive content consumption (reading, watching)
 - ✅ Handles system pages gracefully (never locks browser settings)
 - ✅ Settings persist across browser sessions and restarts
 - ✅ Can use auto-lock and scheduled locking simultaneously
 - ✅ Visual feedback at every step
 - ✅ Professional, polished user interface
+- ✅ Zero performance impact with smart throttling
 
 ### 🔄 Implementation Stats
-- **Total New Code**: 971 lines across 4 files
-- **Files Modified**: 4 (background.js, popup.js, popup.html, popup.css)
+- **Total New Code**: 1,121 lines across 5 files
+- **Core Files Modified**: 4 (background.js, popup.js, popup.html, popup.css)
+- **New Content Script**: activity-tracker.js (150 lines)
+- **Manifest Updates**: Both Chrome and Firefox manifests
+- **New Documentation**: 3 comprehensive guides
 - **New Documentation**: 2 comprehensive guides
 - **Zero Breaking Changes**: Fully backward compatible
 

@@ -1019,13 +1019,15 @@ button:disabled {
 
 .custom-duration input {
   flex: 1;
-  padding: 10px;
+  padding: 12px 14px;
   border: 2px solid #e9ecef;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   background: white;
   color: #2c3e50;
   font-weight: 600;
+  min-height: 44px;
+  min-width: 80px;
 }
 
 .custom-duration input:focus {
@@ -1034,17 +1036,24 @@ button:disabled {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.custom-duration input::placeholder {
+  color: #6c757d;
+  font-size: 13px;
+}
+
 .btn-custom-duration {
-  padding: 10px 16px;
+  padding: 12px 18px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  min-height: 44px;
+  white-space: nowrap;
 }
 
 .btn-custom-duration:hover {

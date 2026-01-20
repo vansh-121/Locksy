@@ -57,6 +57,8 @@ function startAutoLockTimer() {
   // Update last activity time
   lastActivityTime = Date.now();
 
+  console.log(`[Auto-Lock] Timer started. Will lock in ${autoLockDuration / 1000} seconds`);
+
   // Set new timer
   autoLockTimer = setTimeout(() => {
     performAutoLock();
@@ -68,6 +70,7 @@ function startAutoLockTimer() {
  */
 function resetAutoLockTimer() {
   if (autoLockEnabled) {
+    console.log('[Auto-Lock] Activity detected, resetting timer');
     startAutoLockTimer();
   }
 }
@@ -76,8 +79,11 @@ function resetAutoLockTimer() {
  * Perform auto-lock: lock all tabs
  */
 function performAutoLock() {
+  console.log('[Auto-Lock] Timer expired, locking all tabs');
   chrome.storage.local.get(["lockPassword", "extensionActive"], (data) => {
     if (!data.lockPassword || !data.extensionActive) {
+      console.log('[Auto-Lock] Skipping - no password or extension inactive');
+      return;
       return;
     }
 
@@ -982,14 +988,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       autoLockDuration = duration;
     }
 
+    console.log(`[Auto-Lock] Settings updated - Enabled: ${enabled}, Duration: ${autoLockDuration}ms (${autoLockDuration / 60000} min)`);
+
     chrome.storage.local.set({
       autoLockEnabled: enabled,
       autoLockDuration: autoLockDuration
     });
 
     if (enabled) {
+      console.log('[Auto-Lock] Starting timer now');
       startAutoLockTimer();
     } else {
+      console.log('[Auto-Lock] Stopping timer');
       stopAutoLockTimer();
     }
 
