@@ -89,50 +89,75 @@ function performAutoLock() {
 
     console.log('[Auto-Lock] Password verified, proceeding with lock');
 
+    // Helper function to lock a single active tab
+    function lockActiveTab(tab) {
+      // Skip if no URL (new tab, loading, etc.)
+      if (!tab.url) {
+        console.log('[Auto-Lock] No URL, skipping (new tab or loading)');
+        return;
+      }
+
+      // Skip if already locked
+      if (lockedTabs.has(tab.id)) {
+        console.log('[Auto-Lock] Tab already locked, skipping');
+        return;
+      }
+
+      // Skip system pages
+      if (tab.url.startsWith('chrome://') ||
+          tab.url.startsWith('chrome-extension://') ||
+          tab.url.startsWith('edge://') ||
+          tab.url.startsWith('about:') ||
+          tab.url.startsWith('file://')) {
+        console.log('[Auto-Lock] System page, skipping:', tab.url);
+        return;
+      }
+
+      console.log('[Auto-Lock] Locking tab ID:', tab.id, 'URL:', tab.url);
+      lockedTabs.add(tab.id);
+      lockTab(tab.id);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+        title: '🔒 Auto-Lock Activated',
+        message: `Active tab locked due to inactivity`,
+        priority: 1
+      });
+    }
+
     if (autoLockScope === 'current') {
-      // Lock only the currently active tab
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        console.log('[Auto-Lock] Found active tab:', tabs[0]?.url);
-        if (tabs[0]) {
-          const tab = tabs[0];
-          
-          // Skip if no URL (new tab, loading, etc.)
-          if (!tab.url) {
-            console.log('[Auto-Lock] No URL, skipping (new tab or loading)');
-            return;
-          }
-          
-          // Skip if already locked
-          if (lockedTabs.has(tab.id)) {
-            console.log('[Auto-Lock] Tab already locked, skipping');
-            return;
-          }
-          
-          // Skip system pages
-          if (tab.url.startsWith('chrome://') ||
-              tab.url.startsWith('chrome-extension://') ||
-              tab.url.startsWith('edge://') ||
-              tab.url.startsWith('about:') ||
-              tab.url.startsWith('file://')) {
-            console.log('[Auto-Lock] System page, skipping:', tab.url);
-            return;
-          }
-
-          // Lock the active tab
-          console.log('[Auto-Lock] Locking tab ID:', tab.id, 'URL:', tab.url);
-          lockedTabs.add(tab.id);
-          lockTab(tab.id);
-          chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
-          updateBadge();
-
-          chrome.notifications.create({
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-            title: '🔒 Auto-Lock Activated',
-            message: `Active tab locked due to inactivity`,
-            priority: 1
+      // Lock only the currently active tab in a normal browser window (not DevTools/popup)
+      chrome.windows.getLastFocused({ populate: true }, (window) => {
+        if (!window || window.type !== 'normal') {
+          console.log('[Auto-Lock] Last focused window is not a normal browser window, finding first normal window');
+          // Find first normal window with an active tab
+          chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }, (windows) => {
+            const firstWindow = windows.find(w => w.focused || w.tabs.some(t => t.active));
+            if (!firstWindow) {
+              console.log('[Auto-Lock] No normal browser window found');
+              return;
+            }
+            const activeTab = firstWindow.tabs.find(t => t.active);
+            if (activeTab) {
+              lockActiveTab(activeTab);
+            }
           });
+          return;
         }
+
+        // Get active tab from the last focused normal window
+        const activeTab = window.tabs.find(t => t.active);
+        console.log('[Auto-Lock] Active tab in last focused window:', activeTab?.url);
+        
+        if (!activeTab) {
+          console.log('[Auto-Lock] No active tab found in window');
+          return;
+        }
+
+        lockActiveTab(activeTab);
       });
     } else {
       // Lock all open tabs (default behavior)
