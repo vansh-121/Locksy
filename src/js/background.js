@@ -27,6 +27,7 @@ let lastActivityTime = Date.now(); // Track last user activity
 let scheduledLockEnabled = false; // Whether scheduled locking is enabled
 let scheduledLockStart = '09:00'; // Default start time (24h format)
 let scheduledLockEnd = '17:00'; // Default end time (24h format)
+let scheduledLockScope = 'all'; // What to lock: 'all' or 'current'
 // Using Chrome Alarms API instead of setInterval for persistent scheduling
 
 // Function to update extension badge with locked tabs count
@@ -257,7 +258,7 @@ function startScheduleChecker() {
   chrome.alarms.create('scheduledLockCheck', {
     periodInMinutes: 1
   });
-  
+
   console.log('[Scheduled Lock] Alarm created - checking every minute');
 }
 
@@ -283,51 +284,125 @@ function checkScheduleAndAct() {
     console.log('[Scheduled Lock] Previous state:', previousState, '| Current state:', shouldBeLocked);
 
     if (shouldBeLocked && !previousState) {
-      // Entering scheduled lock period - lock all tabs
-      console.log('[Scheduled Lock] ⏰ ENTERING SCHEDULED LOCK PERIOD - Locking all tabs');
-      chrome.tabs.query({}, (tabs) => {
-        let lockedCount = 0;
+      // Entering scheduled lock period - lock tabs based on scope
+      console.log(`[Scheduled Lock] ⏰ ENTERING SCHEDULED LOCK PERIOD - Locking ${scheduledLockScope === 'all' ? 'all tabs' : 'active tab only'}`);
 
-        tabs.forEach(tab => {
-          // Skip if already locked
-          if (lockedTabs.has(tab.id)) {
+      if (scheduledLockScope === 'current') {
+        // Lock only the currently active tab
+        chrome.windows.getLastFocused({ populate: true }, (window) => {
+          if (!window || window.type !== 'normal') {
+            console.log('[Scheduled Lock] Last focused window is not a normal browser window, finding first normal window');
+            chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }, (windows) => {
+              const firstWindow = windows.find(w => w.focused || w.tabs.some(t => t.active));
+              if (!firstWindow) {
+                console.log('[Scheduled Lock] No normal browser window found');
+                return;
+              }
+              const activeTab = firstWindow.tabs.find(t => t.active);
+              if (activeTab && !lockedTabs.has(activeTab.id)) {
+                const shouldLock = activeTab.url &&
+                  !activeTab.url.startsWith('chrome://') &&
+                  !activeTab.url.startsWith('chrome-extension://') &&
+                  !activeTab.url.startsWith('edge://') &&
+                  !activeTab.url.startsWith('about:') &&
+                  !activeTab.url.startsWith('file://');
+
+                if (shouldLock) {
+                  lockedTabs.add(activeTab.id);
+                  lockTab(activeTab.id);
+                  chrome.storage.local.set({
+                    lockedTabIds: Array.from(lockedTabs),
+                    scheduledLockState: true
+                  });
+                  updateBadge();
+
+                  chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                    title: '⏰ Scheduled Lock Activated',
+                    message: 'Active tab locked per schedule',
+                    priority: 1
+                  });
+                }
+              }
+            });
             return;
           }
 
-          // Skip system pages
-          if (tab.url &&
-            (tab.url.startsWith('chrome://') ||
-              tab.url.startsWith('chrome-extension://') ||
-              tab.url.startsWith('edge://') ||
-              tab.url.startsWith('about:') ||
-              tab.url.startsWith('file://'))) {
-            return;
+          const activeTab = window.tabs.find(t => t.active);
+          if (activeTab && !lockedTabs.has(activeTab.id)) {
+            const shouldLock = activeTab.url &&
+              !activeTab.url.startsWith('chrome://') &&
+              !activeTab.url.startsWith('chrome-extension://') &&
+              !activeTab.url.startsWith('edge://') &&
+              !activeTab.url.startsWith('about:') &&
+              !activeTab.url.startsWith('file://');
+
+            if (shouldLock) {
+              lockedTabs.add(activeTab.id);
+              lockTab(activeTab.id);
+              chrome.storage.local.set({
+                lockedTabIds: Array.from(lockedTabs),
+                scheduledLockState: true
+              });
+              updateBadge();
+
+              chrome.notifications.create({
+                type: 'basic',
+                iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                title: '⏰ Scheduled Lock Activated',
+                message: 'Active tab locked per schedule',
+                priority: 1
+              });
+            }
           }
-
-          // Lock the tab
-          lockedTabs.add(tab.id);
-          lockTab(tab.id);
-          lockedCount++;
         });
+      } else {
+        // Lock all tabs
+        chrome.tabs.query({}, (tabs) => {
+          let lockedCount = 0;
 
-        // Update storage and badge
-        chrome.storage.local.set({
-          lockedTabIds: Array.from(lockedTabs),
-          scheduledLockState: true
-        });
-        updateBadge();
+          tabs.forEach(tab => {
+            // Skip if already locked
+            if (lockedTabs.has(tab.id)) {
+              return;
+            }
 
-        // Show notification
-        if (lockedCount > 0) {
-          chrome.notifications.create({
-            type: 'basic',
-            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-            title: '⏰ Scheduled Lock Activated',
-            message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked per schedule`,
-            priority: 1
+            // Skip system pages
+            if (tab.url &&
+              (tab.url.startsWith('chrome://') ||
+                tab.url.startsWith('chrome-extension://') ||
+                tab.url.startsWith('edge://') ||
+                tab.url.startsWith('about:') ||
+                tab.url.startsWith('file://'))) {
+              return;
+            }
+
+            // Lock the tab
+            lockedTabs.add(tab.id);
+            lockTab(tab.id);
+            lockedCount++;
           });
-        }
-      });
+
+          // Update storage and badge
+          chrome.storage.local.set({
+            lockedTabIds: Array.from(lockedTabs),
+            scheduledLockState: true
+          });
+          updateBadge();
+
+          // Show notification
+          if (lockedCount > 0) {
+            chrome.notifications.create({
+              type: 'basic',
+              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+              title: '⏰ Scheduled Lock Activated',
+              message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked per schedule`,
+              priority: 1
+            });
+          }
+        });
+      }
     } else if (!shouldBeLocked && previousState) {
       // Exiting scheduled lock period - unlock all locked tabs
       chrome.tabs.query({}, async (tabs) => {
@@ -457,7 +532,8 @@ async function restoreLockedTabs() {
       "autoLockScope",
       "scheduledLockEnabled",
       "scheduledLockStart",
-      "scheduledLockEnd"
+      "scheduledLockEnd",
+      "scheduledLockScope"
     ], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
@@ -490,6 +566,9 @@ async function restoreLockedTabs() {
       }
       if (data.scheduledLockEnd !== undefined) {
         scheduledLockEnd = data.scheduledLockEnd;
+      }
+      if (data.scheduledLockScope !== undefined) {
+        scheduledLockScope = data.scheduledLockScope;
       }
 
       // Start timers if enabled
@@ -1126,7 +1205,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   } else if (message.action === "setScheduledLock") {
     // Update scheduled lock settings
-    const { enabled, startTime, endTime } = message;
+    const { enabled, startTime, endTime, scope } = message;
     scheduledLockEnabled = enabled;
     if (startTime !== undefined) {
       scheduledLockStart = startTime;
@@ -1134,11 +1213,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (endTime !== undefined) {
       scheduledLockEnd = endTime;
     }
+    if (scope !== undefined) {
+      scheduledLockScope = scope;
+    }
 
     chrome.storage.local.set({
       scheduledLockEnabled: enabled,
       scheduledLockStart: scheduledLockStart,
-      scheduledLockEnd: scheduledLockEnd
+      scheduledLockEnd: scheduledLockEnd,
+      scheduledLockScope: scheduledLockScope
     });
 
     if (enabled) {
@@ -1155,6 +1238,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       enabled: scheduledLockEnabled,
       startTime: scheduledLockStart,
       endTime: scheduledLockEnd,
+      scope: scheduledLockScope,
       currentlyActive: isWithinScheduledHours()
     });
     return true;

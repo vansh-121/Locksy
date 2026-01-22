@@ -529,7 +529,13 @@ function initializeMainUI() {
             <p class="timer-description">Automatically lock tabs during specific hours</p>
             
             <div id="scheduledOptions" style="display: none;">
-              <div class="time-input-group">
+              <label class="timer-label">What to lock:</label>
+              <div class="lock-scope-buttons schedule-scope-buttons">
+                <button class="scope-btn active" data-scope="all">🔐 All Tabs</button>
+                <button class="scope-btn" data-scope="current">🔒 Active Tab Only</button>
+              </div>
+              
+              <div class="time-input-group" style="margin-top: 12px;">
                 <div class="time-input">
                   <label class="timer-label">Start Time:</label>
                   <input type="time" id="scheduleStart" value="09:00" />
@@ -1181,7 +1187,7 @@ function initializeTimerSettings() {
   const collapseScheduled = document.getElementById('collapseScheduled');
   const autoLockContent = document.getElementById('autoLockContent');
   const scheduledContent = document.getElementById('scheduledContent');
-  
+
   if (!timerSettings) return;
 
   // Show timer settings (it will be hidden if password is not set via parent lockControls)
@@ -1257,6 +1263,15 @@ function initializeTimerSettings() {
       if (scheduleStart) scheduleStart.value = response.startTime;
       if (scheduleEnd) scheduleEnd.value = response.endTime;
 
+      // Set active scope button for scheduled lock
+      const scheduleScopeButtons = document.querySelectorAll('.schedule-scope-buttons .scope-btn');
+      scheduleScopeButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.scope === response.scope) {
+          btn.classList.add('active');
+        }
+      });
+
       updateScheduledStatus(response.enabled, response.startTime, response.endTime, response.currentlyActive);
     }
   });
@@ -1266,7 +1281,7 @@ function initializeTimerSettings() {
     autoLockToggle.addEventListener('click', () => {
       const isActive = !autoLockToggle.classList.contains('active');
       autoLockToggle.classList.toggle('active', isActive);
-      
+
       if (autoLockOptions) {
         autoLockOptions.style.display = isActive ? 'block' : 'none';
       }
@@ -1317,7 +1332,7 @@ function initializeTimerSettings() {
       const minutes = parseInt(customDuration.value);
       if (minutes && minutes > 0 && minutes <= 480) {
         const duration = minutes * 60 * 1000;
-        
+
         // Clear active state from preset buttons
         durationButtons.forEach(b => b.classList.remove('active'));
 
@@ -1344,7 +1359,7 @@ function initializeTimerSettings() {
     scheduledLockToggle.addEventListener('click', () => {
       const isActive = !scheduledLockToggle.classList.contains('active');
       scheduledLockToggle.classList.toggle('active', isActive);
-      
+
       if (scheduledOptions) {
         scheduledOptions.style.display = isActive ? 'block' : 'none';
       }
@@ -1371,13 +1386,16 @@ function initializeTimerSettings() {
     setSchedule.addEventListener('click', () => {
       const scheduleStart = document.getElementById('scheduleStart');
       const scheduleEnd = document.getElementById('scheduleEnd');
+      const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
+      const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
 
       if (scheduleStart && scheduleEnd) {
         chrome.runtime.sendMessage({
           action: 'setScheduledLock',
           enabled: true,
           startTime: scheduleStart.value,
-          endTime: scheduleEnd.value
+          endTime: scheduleEnd.value,
+          scope: scope
         }, (response) => {
           if (response && response.success) {
             updateScheduledStatus(true, scheduleStart.value, scheduleEnd.value, false);
@@ -1396,10 +1414,12 @@ function initializeTimerSettings() {
     btn.addEventListener('click', () => {
       const startTime = btn.dataset.start;
       const endTime = btn.dataset.end;
-      
+
       const scheduleStart = document.getElementById('scheduleStart');
       const scheduleEnd = document.getElementById('scheduleEnd');
-      
+      const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
+      const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
+
       if (scheduleStart) scheduleStart.value = startTime;
       if (scheduleEnd) scheduleEnd.value = endTime;
 
@@ -1407,7 +1427,8 @@ function initializeTimerSettings() {
         action: 'setScheduledLock',
         enabled: true,
         startTime: startTime,
-        endTime: endTime
+        endTime: endTime,
+        scope: scope
       }, (response) => {
         if (response && response.success) {
           updateScheduledStatus(true, startTime, endTime, false);
@@ -1419,7 +1440,36 @@ function initializeTimerSettings() {
     });
   });
 
-  // Scope buttons
+  // Scheduled lock scope buttons
+  const scheduleScopeButtons = document.querySelectorAll('.schedule-scope-buttons .scope-btn');
+  scheduleScopeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      scheduleScopeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const scope = btn.dataset.scope;
+
+      // Get current settings
+      const scheduleStart = document.getElementById('scheduleStart');
+      const scheduleEnd = document.getElementById('scheduleEnd');
+      const isEnabled = scheduledLockToggle ? scheduledLockToggle.classList.contains('active') : false;
+
+      chrome.runtime.sendMessage({
+        action: 'setScheduledLock',
+        enabled: isEnabled,
+        startTime: scheduleStart ? scheduleStart.value : '09:00',
+        endTime: scheduleEnd ? scheduleEnd.value : '17:00',
+        scope: scope
+      }, (response) => {
+        if (response && response.success) {
+          const scopeText = scope === 'all' ? 'all tabs' : 'active tab only';
+          showScheduledStatus(`Lock scope set to ${scopeText}`, 'success');
+        }
+      });
+    });
+  });
+
+  // Scope buttons (auto-lock)
   const scopeButtons = document.querySelectorAll('.scope-btn');
   scopeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1427,7 +1477,7 @@ function initializeTimerSettings() {
       btn.classList.add('active');
 
       const scope = btn.dataset.scope;
-      
+
       // Get current settings
       const activeBtn = document.querySelector('.duration-btn.active');
       const duration = activeBtn ? parseInt(activeBtn.dataset.duration) : 1800000; // Default 30 min
@@ -1467,8 +1517,8 @@ function showAutoLockStatus(message, type) {
 }
 
 function updateScheduledStatus(enabled, startTime, endTime, currentlyActive) {
-  const statusText = enabled 
-    ? `🟢 Active - Locks from ${startTime} to ${endTime}${currentlyActive ? ' (Active now)' : ''}` 
+  const statusText = enabled
+    ? `🟢 Active - Locks from ${startTime} to ${endTime}${currentlyActive ? ' (Active now)' : ''}`
     : '⚪ Inactive';
   showScheduledStatus(statusText, enabled ? 'success' : 'info');
 }
