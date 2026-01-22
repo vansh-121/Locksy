@@ -1,7 +1,7 @@
 // Activity Tracker Content Script
 // Monitors user activity on web pages and reports to background script
 
-(function() {
+(function () {
   'use strict';
 
   let activityTimeout = null;
@@ -14,7 +14,7 @@
    */
   function reportActivity() {
     const now = Date.now();
-    
+
     // Throttle: only report if 10 seconds have passed since last report
     if (now - lastActivityReport < ACTIVITY_THROTTLE) {
       return;
@@ -27,7 +27,7 @@
     // Send activity signal to background script
     if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
       try {
-        chrome.runtime.sendMessage({ 
+        chrome.runtime.sendMessage({
           action: 'userActivity',
           source: 'content-script',
           timestamp: now
@@ -60,35 +60,24 @@
   // ============================================================================
   // EVENT LISTENERS FOR USER ACTIVITY
   // ============================================================================
+  // Only track DIRECT user interactions to avoid false positives from page animations
 
-  // Mouse movement
-  document.addEventListener('mousemove', handleActivity, { passive: true });
-
-  // Mouse clicks
+  // Mouse clicks (strong indicator of user presence)
   document.addEventListener('mousedown', reportActivity, { passive: true });
-  document.addEventListener('mouseup', reportActivity, { passive: true });
   document.addEventListener('click', reportActivity, { passive: true });
 
-  // Keyboard activity
+  // Keyboard activity (strong indicator)
   document.addEventListener('keydown', reportActivity, { passive: true });
-  document.addEventListener('keypress', reportActivity, { passive: true });
-  document.addEventListener('keyup', reportActivity, { passive: true });
 
-  // Scrolling
-  document.addEventListener('scroll', handleActivity, { passive: true });
-  window.addEventListener('scroll', handleActivity, { passive: true });
+  // Mouse wheel scrolling (user-initiated only)
+  document.addEventListener('wheel', reportActivity, { passive: true });
 
   // Touch events (for tablets/mobile)
   document.addEventListener('touchstart', reportActivity, { passive: true });
-  document.addEventListener('touchmove', handleActivity, { passive: true });
-  document.addEventListener('touchend', reportActivity, { passive: true });
-
-  // Wheel events (mouse wheel scrolling)
-  document.addEventListener('wheel', handleActivity, { passive: true });
 
   // Focus events (clicking into input fields, etc.)
   document.addEventListener('focus', reportActivity, { passive: true, capture: true });
-  
+
   // Page visibility change (switching back to the tab)
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
@@ -99,7 +88,7 @@
   // Video/audio playback detection
   // When video plays, consider user active
   document.addEventListener('play', reportActivity, { passive: true, capture: true });
-  
+
   // Detect video time updates (watching video)
   let videoActivityInterval = null;
   document.addEventListener('playing', () => {
@@ -127,6 +116,6 @@
   }, { passive: true, capture: true });
 
   // Log initialization (for debugging)
-  // console.log('[Locksy Activity Tracker] Initialized on:', window.location.hostname);
+  console.log('[Locksy Activity Tracker] Initialized - monitoring direct user interactions');
 
 })();
