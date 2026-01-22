@@ -1176,6 +1176,40 @@ button:disabled {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
+/* Day Selector Styles */
+.days-selector {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.day-btn {
+  flex: 1;
+  padding: 10px 4px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 38px;
+}
+
+.day-btn:hover {
+  border-color: #667eea;
+  background: #f8f9fa;
+}
+
+.day-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
 .status-message {
   padding: 10px;
   border-radius: 8px;

@@ -28,6 +28,7 @@ let scheduledLockEnabled = false; // Whether scheduled locking is enabled
 let scheduledLockStart = '09:00'; // Default start time (24h format)
 let scheduledLockEnd = '17:00'; // Default end time (24h format)
 let scheduledLockScope = 'all'; // What to lock: 'all' or 'current'
+let scheduledLockDays = [0, 1, 2, 3, 4, 5, 6]; // Days of week: 0=Sunday, 1=Monday, etc. Default: all days
 // Using Chrome Alarms API instead of setInterval for persistent scheduling
 
 // Function to update extension badge with locked tabs count
@@ -268,6 +269,13 @@ function startScheduleChecker() {
 function checkScheduleAndAct() {
   if (!scheduledLockEnabled) {
     console.log('[Scheduled Lock] Check skipped - not enabled');
+    return;
+  }
+
+  // Check if today is in the selected days
+  const currentDay = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+  if (!scheduledLockDays.includes(currentDay)) {
+    console.log('[Scheduled Lock] Check skipped - today not in selected days');
     return;
   }
 
@@ -533,7 +541,8 @@ async function restoreLockedTabs() {
       "scheduledLockEnabled",
       "scheduledLockStart",
       "scheduledLockEnd",
-      "scheduledLockScope"
+      "scheduledLockScope",
+      "scheduledLockDays"
     ], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
@@ -569,6 +578,9 @@ async function restoreLockedTabs() {
       }
       if (data.scheduledLockScope !== undefined) {
         scheduledLockScope = data.scheduledLockScope;
+      }
+      if (data.scheduledLockDays !== undefined) {
+        scheduledLockDays = data.scheduledLockDays;
       }
 
       // Start timers if enabled
@@ -1205,7 +1217,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   } else if (message.action === "setScheduledLock") {
     // Update scheduled lock settings
-    const { enabled, startTime, endTime, scope } = message;
+    const { enabled, startTime, endTime, scope, days } = message;
     scheduledLockEnabled = enabled;
     if (startTime !== undefined) {
       scheduledLockStart = startTime;
@@ -1216,12 +1228,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (scope !== undefined) {
       scheduledLockScope = scope;
     }
+    if (days !== undefined) {
+      scheduledLockDays = days;
+    }
 
     chrome.storage.local.set({
       scheduledLockEnabled: enabled,
       scheduledLockStart: scheduledLockStart,
       scheduledLockEnd: scheduledLockEnd,
-      scheduledLockScope: scheduledLockScope
+      scheduledLockScope: scheduledLockScope,
+      scheduledLockDays: scheduledLockDays
     });
 
     if (enabled) {
@@ -1239,6 +1255,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       startTime: scheduledLockStart,
       endTime: scheduledLockEnd,
       scope: scheduledLockScope,
+      days: scheduledLockDays,
       currentlyActive: isWithinScheduledHours()
     });
     return true;

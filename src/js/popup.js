@@ -535,6 +535,17 @@ function initializeMainUI() {
                 <button class="scope-btn" data-scope="current">🔒 Active Tab Only</button>
               </div>
               
+              <label class="timer-label" style="margin-top: 12px;">Active Days:</label>
+              <div class="days-selector">
+                <button class="day-btn active" data-day="0">S</button>
+                <button class="day-btn active" data-day="1">M</button>
+                <button class="day-btn active" data-day="2">T</button>
+                <button class="day-btn active" data-day="3">W</button>
+                <button class="day-btn active" data-day="4">T</button>
+                <button class="day-btn active" data-day="5">F</button>
+                <button class="day-btn active" data-day="6">S</button>
+              </div>
+              
               <div class="time-input-group" style="margin-top: 12px;">
                 <div class="time-input">
                   <label class="timer-label">Start Time:</label>
@@ -1272,6 +1283,18 @@ function initializeTimerSettings() {
         }
       });
 
+      // Set active day buttons
+      const dayButtons = document.querySelectorAll('.day-btn');
+      const selectedDays = response.days || [0, 1, 2, 3, 4, 5, 6];
+      dayButtons.forEach(btn => {
+        const day = parseInt(btn.dataset.day);
+        if (selectedDays.includes(day)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
       updateScheduledStatus(response.enabled, response.startTime, response.endTime, response.currentlyActive);
     }
   });
@@ -1389,14 +1412,25 @@ function initializeTimerSettings() {
       const scheduleEnd = document.getElementById('scheduleEnd');
       const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
       const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
+      
+      // Get selected days
+      const activeDayButtons = document.querySelectorAll('.day-btn.active');
+      const selectedDays = Array.from(activeDayButtons).map(btn => parseInt(btn.dataset.day));
 
       if (scheduleStart && scheduleEnd) {
+        // Validate at least one day is selected
+        if (selectedDays.length === 0) {
+          showScheduledStatus('Please select at least one day', 'error');
+          return;
+        }
+        
         chrome.runtime.sendMessage({
           action: 'setScheduledLock',
           enabled: true,
           startTime: scheduleStart.value,
           endTime: scheduleEnd.value,
-          scope: scope
+          scope: scope,
+          days: selectedDays
         }, (response) => {
           if (response && response.success) {
             updateScheduledStatus(true, scheduleStart.value, scheduleEnd.value, false);
@@ -1420,16 +1454,27 @@ function initializeTimerSettings() {
       const scheduleEnd = document.getElementById('scheduleEnd');
       const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
       const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
+      
+      // Get selected days
+      const activeDayButtons = document.querySelectorAll('.day-btn.active');
+      const selectedDays = Array.from(activeDayButtons).map(btn => parseInt(btn.dataset.day));
 
       if (scheduleStart) scheduleStart.value = startTime;
       if (scheduleEnd) scheduleEnd.value = endTime;
+
+      // Validate at least one day is selected
+      if (selectedDays.length === 0) {
+        showScheduledStatus('Please select at least one day', 'error');
+        return;
+      }
 
       chrome.runtime.sendMessage({
         action: 'setScheduledLock',
         enabled: true,
         startTime: startTime,
         endTime: endTime,
-        scope: scope
+        scope: scope,
+        days: selectedDays
       }, (response) => {
         if (response && response.success) {
           updateScheduledStatus(true, startTime, endTime, false);
@@ -1438,6 +1483,24 @@ function initializeTimerSettings() {
           showScheduledStatus('Preset applied!', 'success');
         }
       });
+    });
+  });
+
+  // Day buttons - toggle selection
+  const dayButtons = document.querySelectorAll('.day-btn');
+  dayButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      
+      // Show feedback about selected days
+      const activeDayButtons = document.querySelectorAll('.day-btn.active');
+      if (activeDayButtons.length === 0) {
+        showScheduledStatus('Select at least one day', 'warning');
+      } else if (activeDayButtons.length === 7) {
+        showScheduledStatus('Active every day', 'info');
+      } else {
+        showScheduledStatus(`Active on ${activeDayButtons.length} day${activeDayButtons.length !== 1 ? 's' : ''}`, 'info');
+      }
     });
   });
 
