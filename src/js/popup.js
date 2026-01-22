@@ -1109,6 +1109,7 @@ function showNotification(message, type = "info") {
 // Developer Information - Configuration
 const DEVELOPER_INFO = {
   name: "Vansh Sethi",
+  website: "https://vanshsethi.in",
   github: "https://github.com/vansh-121",
   linkedin: "https://linkedin.com/in/vansh-sethi-vs",
   email: "vansh.sethi98760@gmail.com"
@@ -1126,6 +1127,7 @@ function initializeDeveloperInfo() {
 
   try {
     const developerName = document.getElementById("developerName");
+    const websiteLink = document.getElementById("websiteLink");
     const githubLink = document.getElementById("githubLink");
     const linkedinLink = document.getElementById("linkedinLink");
     const emailLink = document.getElementById("emailLink");
@@ -1139,6 +1141,19 @@ function initializeDeveloperInfo() {
 
     if (developerName) {
       developerName.textContent = DEVELOPER_INFO.name;
+      developerName.href = DEVELOPER_INFO.linkedin;
+      developerName.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: DEVELOPER_INFO.linkedin });
+      });
+    }
+
+    if (websiteLink) {
+      websiteLink.href = DEVELOPER_INFO.website;
+      websiteLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: DEVELOPER_INFO.website });
+      });
     }
 
     if (githubLink) {
@@ -1412,7 +1427,7 @@ function initializeTimerSettings() {
       const scheduleEnd = document.getElementById('scheduleEnd');
       const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
       const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
-      
+
       // Get selected days
       const activeDayButtons = document.querySelectorAll('.day-btn.active');
       const selectedDays = Array.from(activeDayButtons).map(btn => parseInt(btn.dataset.day));
@@ -1423,7 +1438,7 @@ function initializeTimerSettings() {
           showScheduledStatus('Please select at least one day', 'error');
           return;
         }
-        
+
         chrome.runtime.sendMessage({
           action: 'setScheduledLock',
           enabled: true,
@@ -1454,7 +1469,7 @@ function initializeTimerSettings() {
       const scheduleEnd = document.getElementById('scheduleEnd');
       const activeScopeBtn = document.querySelector('.schedule-scope-buttons .scope-btn.active');
       const scope = activeScopeBtn ? activeScopeBtn.dataset.scope : 'all';
-      
+
       // Get selected days
       const activeDayButtons = document.querySelectorAll('.day-btn.active');
       const selectedDays = Array.from(activeDayButtons).map(btn => parseInt(btn.dataset.day));
@@ -1491,7 +1506,7 @@ function initializeTimerSettings() {
   dayButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       btn.classList.toggle('active');
-      
+
       // Show feedback about selected days
       const activeDayButtons = document.querySelectorAll('.day-btn.active');
       if (activeDayButtons.length === 0) {
