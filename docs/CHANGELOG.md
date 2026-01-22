@@ -2,7 +2,7 @@
 
 All notable changes to Locksy will be documented in this file.
 
-## [2.2.0] - 2026-01-20
+## [2.2.0] - 2026-01-22
 
 ### 🎉 Major New Features
 
@@ -26,6 +26,22 @@ All notable changes to Locksy will be documented in this file.
   - Automatic locking when entering scheduled period
   - Notifications for schedule activation and deactivation
   - Real-time schedule status indicator
+  - **Day Selection**: Choose specific days of the week for scheduled locking
+    - Individual day toggles (Mon, Tue, Wed, Thu, Fri, Sat, Sun)
+    - Quick presets: Weekdays, Weekends, Every Day
+    - Visual day indicators showing active days
+  - **Scope Options**: Choose what to lock during scheduled periods
+    - Lock all tabs (system-wide protection)
+    - Lock only active tab (focused protection)
+    - Per-feature scope configuration
+
+#### ⏰ Chrome Alarms API Integration
+- **Reliable Scheduled Operations**: Chrome Alarms API ensures scheduled locks work consistently
+  - Persistent alarms survive browser restarts
+  - Minute-based checking for schedule activation
+  - Automatic unlock checks when schedule ends
+  - More reliable than setInterval for long-running tasks
+  - Works even when extension popup is closed
 
 #### 🎨 UI Enhancements
 - **Beautiful Timer Settings Interface**
@@ -36,6 +52,20 @@ All notable changes to Locksy will be documented in this file.
   - Color-coded status messages (green/blue/red)
   - Hover effects and transitions throughout
   - Real-time feedback on all interactions
+  - **Developer Information Section**: Links to creator's website and GitHub profile
+  - **Sponsor Button**: Integrated support button in popup UI with enhanced styling
+
+#### 🔄 Scope Configuration (NEW!)
+- **Flexible Locking Targets**: Choose what gets locked for each feature
+  - **Auto-Lock Scope**: 
+    - All Tabs: Lock entire browser when timer expires
+    - Active Tab Only: Lock just the tab you're viewing
+  - **Scheduled Lock Scope**:
+    - All Tabs: System-wide protection during scheduled hours
+    - Active Tab Only: Focused protection on current work
+  - Independent configuration for each feature
+  - Visual radio button selectors in settings
+  - Settings persist across sessions
 
 #### 🎯 Enhanced Activity Detection (NEW!)
 - **Content Script Activity Tracker**: Comprehensive page-level activity monitoring
@@ -95,9 +125,12 @@ All notable changes to Locksy will be documented in this file.
 - New settings stored in `chrome.storage.local`:
   - `autoLockEnabled`: boolean
   - `autoLockDuration`: number (milliseconds)
+  - `autoLockScope`: string ('all' or 'active')
   - `scheduledLockEnabled`: boolean
   - `scheduledLockStart`: string (HH:MM format)
   - `scheduledLockEnd`: string (HH:MM format)
+  - `scheduledLockDays`: array of numbers (0-6, Sunday-Saturday)
+  - `scheduledLockScope`: string ('all' or 'active')
   - `scheduledLockState`: boolean (currently active)
 
 ### 🚀 User Benefits
@@ -126,6 +159,10 @@ All notable changes to Locksy will be documented in this file.
 - ✅ Handles system pages gracefully (never locks browser settings)
 - ✅ Settings persist across browser sessions and restarts
 - ✅ Can use auto-lock and scheduled locking simultaneously
+- ✅ Day-specific scheduling for flexible work/life balance
+- ✅ Independent scope configuration (all tabs vs. active tab)
+- ✅ Chrome Alarms API for reliable scheduled operations
+- ✅ Developer information and support links integrated
 - ✅ Visual feedback at every step
 - ✅ Professional, polished user interface
 - ✅ Zero performance impact with smart throttling

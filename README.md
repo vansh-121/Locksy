@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-2.1.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-2.2.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -117,9 +117,9 @@
 
 ## 🆕 Recent Improvements
 
-**📌 About Version Numbering**: Locksy v2.1 represents continued security enhancements and user experience improvements. Following semantic versioning standards. [See full version history →](docs/CHANGELOG.md)
+**📌 About Version Numbering**: Locksy v2.2 brings powerful automation features including auto-lock timers and scheduled locking. Following semantic versioning standards. [See full version history →](docs/CHANGELOG.md)
 
-### Version 2.1.0 - Automated Releases & Enhanced Security (January 6, 2026) 🚀
+### Version 2.2.0 - Auto-Lock & Scheduled Locking (January 20, 2026) ⏱️
 
 <div align="center">
 
@@ -129,19 +129,31 @@
 
 #### 🔥 What's New
 
-- **✨ What's New Overlay**: Beautiful update notification shown to users after extension updates
-- **🤖 Automated GitHub Releases**: GitHub Actions workflow for automated builds with SHA-256 checksums
-- **📦 Verifiable Builds**: Every release includes checksums for transparent verification
-- **🔐 Centralized Rate Limiting**: Moved password rate limiting to background script (prevents bypass via multiple popups)
-- **📚 Enhanced Documentation**: Added comprehensive BUILD_GUIDE.md, SECURITY.md, and VERIFY.md
-- **🛡️ Trust & Transparency**: Added verification guides and trust badges to README
+- **⏱️ Auto-Lock Timer**: Automatically locks tabs after inactivity (5, 15, 30, 60 minutes or custom)
+  - Smart activity detection prevents unwanted locks
+  - Tracks mouse, keyboard, scrolling, and video playback
+  - Choose to lock all tabs or just the active tab
+  
+- **📅 Scheduled Locking**: Time-based automatic locking with day selection
+  - Set specific hours for automatic tab protection
+  - Select which days of the week to apply the schedule
+  - Presets: Work Hours, Night Time, All Day
+  - Lock all tabs or only the active tab
+  - Chrome Alarms API ensures reliable scheduled operations
+
+- **🎨 Enhanced UI**: 
+  - Developer information section with links to website and GitHub
+  - Sponsor button integrated into popup UI
+  - Refined settings interface with improved feedback
+  - Modern gradient-based design
 
 #### 🎯 Benefits
 
-- **Enhanced Security**: Centralized rate limiting ensures consistent protection across all entry points
-- **Build Transparency**: Automated releases with checksums allow users to verify builds
-- **Better UX**: Users are notified about updates with "What's New" overlay
-- **Complete Documentation**: Step-by-step guides for building, verifying, and understanding security
+- **Set-and-Forget Security**: Automatic protection without manual intervention
+- **Flexible Scheduling**: Custom schedules for different days of the week
+- **Smart Detection**: Won't interrupt video playback or active browsing
+- **Multiple Modes**: Use auto-lock timer, scheduled locking, or both together
+- **Zero Performance Impact**: Efficient implementation with smart throttling
 
 ---
 

@@ -33,13 +33,15 @@ Locksy Extension/
 │   │   └── popup.html              # Extension popup interface
 │   │
 │   └── js/                   # JavaScript files
+│       ├── activity-tracker.js     # Content script for activity detection
 │       ├── background.js           # Service worker (background script)
 │       ├── browser-polyfill.min.js # WebExtension API polyfill for cross-browser support
 │       ├── crypto-utils.js         # PBKDF2 cryptographic utilities
 │       ├── domain-manager.js       # Domain lock management logic
 │       ├── keyboard-shortcuts.js   # Keyboard shortcuts guide logic
 │       ├── locked.js               # Locked tab overlay logic
-│       └── popup.js                # Popup UI logic and event handlers
+│       ├── popup.js                # Popup UI logic and event handlers
+│       └── whats-new.js            # What's New overlay logic
 │
 ├── archive/                   # Archived/legacy files
 │   └── content.js.old        # Previous content script implementation
@@ -57,8 +59,10 @@ Locksy Extension/
 │
 ├── .git/                      # Git repository data
 ├── .gitignore                # Git ignore rules
+├── ACTIVITY_DETECTION.md     # Enhanced activity detection documentation
 ├── build.js                  # Build script for distribution packages
 ├── CHROME_WEB_STORE_DESCRIPTION.txt  # Chrome Web Store listing description
+├── DEBUG_AUTO_LOCK.md        # Auto-lock debugging guide
 ├── EDGE_ADDONS_DESCRIPTION.txt       # Edge Add-ons listing description
 ├── FIREFOX_ADDON_DESCRIPTION.txt     # Firefox Add-ons listing description
 ├── FIREFOX_PRIVACY_POLICY.txt        # Firefox-specific privacy policy
@@ -69,6 +73,10 @@ Locksy Extension/
 ├── package.json              # npm package configuration
 ├── package-lock.json         # npm dependency lock file
 ├── README.md                 # Main documentation and features
+├── RELEASE_NOTES_v2.0.0.txt  # Release notes for v2.0.0
+├── TIMER_DESIGN_SHOWCASE.md  # Timer feature design showcase
+├── TIMER_FEATURE_SUMMARY.md  # Comprehensive timer feature documentation
+├── TIMER_QUICK_START.md      # Quick start guide for timer features
 └── TEST_KEYBOARD_SHORTCUTS.md # Keyboard shortcuts testing guide
 
 ```
@@ -89,29 +97,38 @@ Locksy Extension/
 - **EDGE_ADDONS_DESCRIPTION.txt**: Store listing description for Edge Add-ons
 - **FIREFOX_ADDON_DESCRIPTION.txt**: Store listing description for Firefox Add-ons
 - **FIREFOX_PRIVACY_POLICY.txt**: Privacy policy formatted for Firefox submission
+- **ACTIVITY_DETECTION.md**: Documentation for enhanced activity detection system
+- **DEBUG_AUTO_LOCK.md**: Debugging guide for auto-lock functionality
+- **TIMER_DESIGN_SHOWCASE.md**: Design showcase for timer features
+- **TIMER_FEATURE_SUMMARY.md**: Comprehensive technical overview of timer and scheduling features
+- **TIMER_QUICK_START.md**: Quick start guide for auto-lock timer and scheduled locking
+- **RELEASE_NOTES_v2.0.0.txt**: Detailed release notes for version 2.0.0
 
 ### Source Files (`src/`)
 
 #### JavaScript (`src/js/`)
-- **background.js**: Service worker that manages locked tabs, domain locks, keyboard shortcut handlers, badge updates, and monitors tab events with restoration flag pattern
+- **activity-tracker.js**: Content script injected on all pages for comprehensive activity detection (mouse, keyboard, scroll, video playback) with throttled reporting to background script
+- **background.js**: Service worker that manages locked tabs, domain locks, auto-lock timers, scheduled locking with Chrome Alarms API, activity tracking, keyboard shortcut handlers, badge updates, and monitors tab events
 - **locked.js**: Locked tab overlay logic with password verification, rate limiting, and unlock functionality
 - **crypto-utils.js**: PBKDF2-SHA256 cryptographic utilities (600k iterations), secure salt generation using Web Crypto API, and constant-time comparison
 - **browser-polyfill.min.js**: Mozilla's WebExtension API polyfill for cross-browser compatibility (Chrome, Edge, Firefox)
 - **domain-manager.js**: Domain lock management UI logic, pattern handling, and unlock preferences
 - **keyboard-shortcuts.js**: Keyboard shortcuts guide page logic and navigation
-- **popup.js**: Extension popup UI logic, password management, tab locking controls, and keyboard shortcuts display
-
-#### HTML (`src/html/`)
-- **popup.html**: Main extension popup user interface
+- **popup.js**: Extension popup UI logic, password management, tab locking controls, auto-lock timer settings, scheduled locking configuration with day selection and scope options, developer information section, and sponsor button
+- **whats-new.js**: What's New overlay logic for displaying update notifications
+ with timer settings, scheduled locking, and developer information
 - **locked.html**: Locked tab overlay interface with password input
 - **domain-manager.html**: Domain Lock Manager user interface
 - **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
+- **whats-new.html**: What's New overlay for displaying update notifications
+- **domain-manager.html**: Domain Lock Manager user interface
+- **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
 
-#### CSS (`src/css/`)
-- **popup.css**: Styles for the main extension popup interface
+#### CSS (`src/css/`) with timer settings, toggle switches, and enhanced button styles
 - **locked.css**: Styles for the locked tab overlay
 - **domain-manager.css**: Styles for the Domain Lock Manager interface
 - **keyboard-shortcuts.css**: Styles for the keyboard shortcuts guide page
+- **whats-new.css**: Styles for the What's New overlayyboard shortcuts guide page
 - **popup.css**: Styles for the popup interface
 
 ### Assets (`assets/`)
@@ -128,10 +145,13 @@ Locksy Extension/
 - **performance-test.js**: Performance benchmarking for PBKDF2 operations
 - **performance-dashboard.html**: Visual dashboard for performance metrics
 - **README.md**: Testing documentation and guidelines
-
-### Archive (`archive/`)
-- **content.js.old**: Legacy content script implementation (replaced by locked.js)
-
+BUILD_GUIDE.md**: Complete guide for building and verifying the extension
+- **DESIGN_SYSTEM.md**: Design system, color palette, and styling guidelines
+- **KEYBOARD_SHORTCUTS.md**: Comprehensive keyboard shortcuts documentation
+- **PRIVACY.md**: Privacy policy explaining data handling
+- **PROJECT_STRUCTURE.md**: This file - explains project organization
+- **SECURITY.md**: Security architecture and threat model documentation
+- **VERIFY.md**: Build verification and trust establishment guide
 ### Documentation (`docs/`)
 - **CHANGELOG.md**: Version history with detailed change logs
 - **DESIGN_SYSTEM.md**: Design system, color palette, and styling guidelines
@@ -154,6 +174,16 @@ Locksy Extension/
 ### Functionality
 - Lock any browser tab with password protection
 - Lock entire domains with pattern matching (exact and wildcard)
+- **Auto-Lock Timer**: Automatic locking after inactivity (5, 15, 30, 60 minutes, or custom 1-480 minutes)
+  - Smart activity detection (mouse, keyboard, scrolling, video playback)
+  - Configurable scope: all tabs or active tab only
+  - Activity tracking via content script
+- **Scheduled Locking**: Time-based automatic locking with day selection
+  - Custom start/end times in 24-hour format
+  - Day-of-week selection (Mon-Sun)
+  - Quick presets: Work Hours, Night Time, All Day, Weekdays, Weekends
+  - Configurable scope: all tabs or active tab only
+  - Chrome Alarms API for reliable scheduling
 - Keyboard shortcuts for quick locking and bulk operations
 - Visual indicators: lock icons on tab favicons and badge counter
 - Persistent lock state across browser restarts
@@ -162,7 +192,9 @@ Locksy Extension/
 - Extension enable/disable toggle
 - Password strength indicator
 - Domain Lock Manager with unlock preferences
-- Smart notifications for keyboard shortcut actions
+- Smart notifications for keyboard shortcut actions and auto-lock events
+- Developer information section with GitHub and website links
+- Integrated sponsor support button
 
 ## Development Notes
 
