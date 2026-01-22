@@ -1364,19 +1364,20 @@ function initializeTimerSettings() {
         scheduledOptions.style.display = isActive ? 'block' : 'none';
       }
 
-      const scheduleStart = document.getElementById('scheduleStart');
-      const scheduleEnd = document.getElementById('scheduleEnd');
-
-      chrome.runtime.sendMessage({
-        action: 'setScheduledLock',
-        enabled: isActive,
-        startTime: scheduleStart ? scheduleStart.value : '09:00',
-        endTime: scheduleEnd ? scheduleEnd.value : '17:00'
-      }, (response) => {
-        if (response && response.success) {
-          updateScheduledStatus(isActive, scheduleStart.value, scheduleEnd.value, false);
-        }
-      });
+      // Only disable when toggling off, don't auto-enable with default values
+      if (!isActive) {
+        chrome.runtime.sendMessage({
+          action: 'setScheduledLock',
+          enabled: false
+        }, (response) => {
+          if (response && response.success) {
+            showScheduledStatus('Scheduled lock disabled', 'info');
+          }
+        });
+      } else {
+        // Just show the options, don't enable yet
+        showScheduledStatus('Configure your schedule and click "Save Schedule"', 'info');
+      }
     });
   }
 
@@ -1447,30 +1448,16 @@ function initializeTimerSettings() {
       scheduleScopeButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
+      // Just update the UI, don't send message yet
+      // The scope will be saved when user clicks "Save Schedule" or a preset
       const scope = btn.dataset.scope;
-
-      // Get current settings
-      const scheduleStart = document.getElementById('scheduleStart');
-      const scheduleEnd = document.getElementById('scheduleEnd');
-      const isEnabled = scheduledLockToggle ? scheduledLockToggle.classList.contains('active') : false;
-
-      chrome.runtime.sendMessage({
-        action: 'setScheduledLock',
-        enabled: isEnabled,
-        startTime: scheduleStart ? scheduleStart.value : '09:00',
-        endTime: scheduleEnd ? scheduleEnd.value : '17:00',
-        scope: scope
-      }, (response) => {
-        if (response && response.success) {
-          const scopeText = scope === 'all' ? 'all tabs' : 'active tab only';
-          showScheduledStatus(`Lock scope set to ${scopeText}`, 'success');
-        }
-      });
+      const scopeText = scope === 'all' ? 'all tabs' : 'active tab only';
+      showScheduledStatus(`Scope set to ${scopeText} (click "Save Schedule" to apply)`, 'info');
     });
   });
 
   // Scope buttons (auto-lock)
-  const scopeButtons = document.querySelectorAll('.scope-btn');
+  const scopeButtons = document.querySelectorAll('.lock-scope-buttons:not(.schedule-scope-buttons) .scope-btn');
   scopeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       scopeButtons.forEach(b => b.classList.remove('active'));
