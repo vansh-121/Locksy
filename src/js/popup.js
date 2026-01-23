@@ -504,7 +504,7 @@ function initializeMainUI() {
             <div class="inactivity-note">
               <div class="note-icon">ℹ️</div>
               <div class="note-content">
-                Note : Timer only triggers during inactivity. Active browsing (typing, clicking, scrolling) resets the countdown.
+                Note : Timer only triggers during inactivity. Active browsing resets the countdown.
               </div>
             </div>
             
