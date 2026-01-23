@@ -171,21 +171,21 @@ function showLockoutScreen(remainingTime) {
   // Create button container
   const buttonContainer = document.createElement('div');
   buttonContainer.style.cssText = 'margin-top: 30px; padding-top: 20px; border-top: 2px solid #e9ecef;';
-  
+
   const sponsorButton = document.createElement('button');
   sponsorButton.id = 'sponsorBtn';
   sponsorButton.className = 'btn-sponsor';
   sponsorButton.textContent = '💜 Sponsor';
   sponsorButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;';
   buttonContainer.appendChild(sponsorButton);
-  
+
   const devButton = document.createElement('button');
   devButton.id = 'toggleDeveloperInfo';
   devButton.className = 'btn-developer-toggle';
   devButton.textContent = '👨‍💻 Developer Info';
   devButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9; margin-top: 12px;';
   buttonContainer.appendChild(devButton);
-  
+
   wrapper.appendChild(buttonContainer);
 
   container.appendChild(wrapper);
@@ -500,6 +500,13 @@ function initializeMainUI() {
               </div>
             </div>
             <p class="timer-description">Automatically lock tabs after period of inactivity</p>
+            
+            <div class="inactivity-note">
+              <div class="note-icon">ℹ️</div>
+              <div class="note-content">
+                Note : Timer only triggers during inactivity. Active browsing (typing, clicking, scrolling) resets the countdown.
+              </div>
+            </div>
             
             <div id="autoLockOptions" style="display: none;">
               <label class="timer-label">What to lock:</label>
