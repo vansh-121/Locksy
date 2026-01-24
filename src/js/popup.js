@@ -426,9 +426,15 @@ function initializeMainUI() {
         <img src="../../assets/images/icon.png" alt="Locksy" class="header-icon" style="width: 28px; height: 28px; border-radius: 6px;">
         Locksy
       </h2>
-      <div id="statusIndicator" class="status-indicator status-inactive">
-        <span id="statusDot">•</span>
-        <span id="statusText">Inactive</span>
+      <div class="header-status-row">
+        <div id="statusIndicator" class="status-indicator status-inactive">
+          <span id="statusDot">•</span>
+          <span id="statusText">Inactive</span>
+        </div>
+        <button id="headerWhatsNewBtn" class="whats-new-link" title="See what's new in this version">
+          <span class="sparkle-icon">✨</span>
+          <span>What's New</span>
+        </button>
       </div>
     </div>
 
@@ -978,6 +984,19 @@ function initializeMainUI() {
       // Open keyboard shortcuts in a popup window (like Domain Manager)
       chrome.windows.create({
         url: chrome.runtime.getURL('src/html/keyboard-shortcuts.html'),
+        type: 'popup',
+        width: 700,
+        height: 700
+      });
+    });
+  }
+
+  // Open What's New Page from header sparkle button
+  const headerWhatsNewBtn = document.getElementById("headerWhatsNewBtn");
+  if (headerWhatsNewBtn) {
+    headerWhatsNewBtn.addEventListener("click", () => {
+      chrome.windows.create({
+        url: chrome.runtime.getURL('src/html/whats-new.html'),
         type: 'popup',
         width: 700,
         height: 700
