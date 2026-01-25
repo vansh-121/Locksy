@@ -13,6 +13,7 @@ if (typeof importScripts === 'function') {
 let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
+let scheduledLockedTabs = new Set(); // Track tabs locked by scheduled locking (separate from manual locks)
 let isRestoring = false; // Flag to prevent race conditions during restoration
 let restorationPromise = null; // Promise for ongoing restoration
 
@@ -317,9 +318,11 @@ function checkScheduleAndAct() {
 
                 if (shouldLock) {
                   lockedTabs.add(activeTab.id);
+                  scheduledLockedTabs.add(activeTab.id); // Track that this was locked by schedule
                   lockTab(activeTab.id);
                   chrome.storage.local.set({
                     lockedTabIds: Array.from(lockedTabs),
+                    scheduledLockedTabIds: Array.from(scheduledLockedTabs),
                     scheduledLockState: true
                   });
                   updateBadge();
@@ -348,9 +351,11 @@ function checkScheduleAndAct() {
 
             if (shouldLock) {
               lockedTabs.add(activeTab.id);
+              scheduledLockedTabs.add(activeTab.id); // Track that this was locked by schedule
               lockTab(activeTab.id);
               chrome.storage.local.set({
                 lockedTabIds: Array.from(lockedTabs),
+                scheduledLockedTabIds: Array.from(scheduledLockedTabs),
                 scheduledLockState: true
               });
               updateBadge();
@@ -388,6 +393,7 @@ function checkScheduleAndAct() {
 
             // Lock the tab
             lockedTabs.add(tab.id);
+            scheduledLockedTabs.add(tab.id); // Track that this was locked by schedule
             lockTab(tab.id);
             lockedCount++;
           });
@@ -395,6 +401,7 @@ function checkScheduleAndAct() {
           // Update storage and badge
           chrome.storage.local.set({
             lockedTabIds: Array.from(lockedTabs),
+            scheduledLockedTabIds: Array.from(scheduledLockedTabs),
             scheduledLockState: true
           });
           updateBadge();
@@ -412,7 +419,7 @@ function checkScheduleAndAct() {
         });
       }
     } else if (!shouldBeLocked && previousState) {
-      // Exiting scheduled lock period - unlock all locked tabs
+      // Exiting scheduled lock period - only unlock tabs that were locked by the schedule
       chrome.tabs.query({}, async (tabs) => {
         let unlockedCount = 0;
 
@@ -420,10 +427,11 @@ function checkScheduleAndAct() {
         const unlockPromises = [];
 
         tabs.forEach(tab => {
-          // Only unlock tabs that are currently locked
-          if (lockedTabs.has(tab.id)) {
+          // Only unlock tabs that were locked by the schedule (not manually locked tabs)
+          if (lockedTabs.has(tab.id) && scheduledLockedTabs.has(tab.id)) {
             unlockPromises.push(
               unlockTab(tab.id).then(() => {
+                scheduledLockedTabs.delete(tab.id); // Remove from scheduled locked set
                 unlockedCount++;
               }).catch(err => {
                 console.error(`Failed to unlock tab ${tab.id}:`, err);
@@ -436,16 +444,21 @@ function checkScheduleAndAct() {
         await Promise.all(unlockPromises);
 
         // Update state
-        chrome.storage.local.set({ scheduledLockState: false });
+        chrome.storage.local.set({ 
+          scheduledLockState: false,
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+        });
 
         // Show notification
-        chrome.notifications.create({
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-          title: '⏰ Scheduled Lock Period Ended',
-          message: `${unlockedCount} tab${unlockedCount !== 1 ? 's' : ''} automatically unlocked`,
-          priority: 1
-        });
+        if (unlockedCount > 0) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '⏰ Scheduled Lock Period Ended',
+            message: `${unlockedCount} tab${unlockedCount !== 1 ? 's' : ''} automatically unlocked`,
+            priority: 1
+          });
+        }
       });
     }
   });
@@ -535,6 +548,7 @@ async function restoreLockedTabs() {
       "lockedTabIds",
       "lockedDomains",
       "temporarilyUnlockedTabIds",
+      "scheduledLockedTabIds",
       "autoLockEnabled",
       "autoLockDuration",
       "autoLockScope",
@@ -555,6 +569,9 @@ async function restoreLockedTabs() {
       }
       if (data.temporarilyUnlockedTabIds && Array.isArray(data.temporarilyUnlockedTabIds)) {
         temporarilyUnlockedTabs = new Set(data.temporarilyUnlockedTabIds);
+      }
+      if (data.scheduledLockedTabIds && Array.isArray(data.scheduledLockedTabIds)) {
+        scheduledLockedTabs = new Set(data.scheduledLockedTabIds);
       }
 
       // Restore timer settings
@@ -615,13 +632,15 @@ function validateAndCleanLockedTabs() {
         // Tab doesn't exist anymore, remove it
         lockedTabs.delete(tabId);
         temporarilyUnlockedTabs.delete(tabId);
+        scheduledLockedTabs.delete(tabId);
       }
 
       // When all tabs are checked, update storage and badge
       if (checkedCount === tabIds.length) {
         chrome.storage.local.set({
           lockedTabIds: Array.from(lockedTabs),
-          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
         });
         updateBadge();
       }
@@ -1001,13 +1020,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               if (tab.url && matchesPattern(tab.url, urlToCheck)) {
                 lockedTabs.delete(tab.id);
                 temporarilyUnlockedTabs.delete(tab.id);
+                scheduledLockedTabs.delete(tab.id);
                 // Send message to content script to remove overlay
                 chrome.tabs.sendMessage(tab.id, { action: "removeOverlay" }).catch(() => { });
               }
             });
             chrome.storage.local.set({
               lockedTabIds: Array.from(lockedTabs),
-              temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+              temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+              scheduledLockedTabIds: Array.from(scheduledLockedTabs)
             });
             // Update badge
             updateBadge();
@@ -1017,7 +1038,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       // Default: just unlock this tab
       lockedTabs.delete(tabId);
-      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      scheduledLockedTabs.delete(tabId);
+      chrome.storage.local.set({ 
+        lockedTabIds: Array.from(lockedTabs),
+        scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+      });
       // Update badge
       updateBadge();
     }
@@ -1400,6 +1425,7 @@ async function unlockTab(tabId) {
 
     // Remove from locked set FIRST (so periodic check in locked.js can detect this)
     lockedTabs.delete(tabId);
+    scheduledLockedTabs.delete(tabId); // Also remove from scheduled locked tabs
 
     // Check if this was a domain-locked tab
     if (isDomainLocked(originalUrl)) {
@@ -1409,7 +1435,10 @@ async function unlockTab(tabId) {
     }
 
     // Update storage
-    await chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    await chrome.storage.local.set({ 
+      lockedTabIds: Array.from(lockedTabs),
+      scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+    });
     await chrome.storage.local.remove(`lockData_${tabId}`);
 
     // Update badge
@@ -1429,15 +1458,18 @@ async function unlockTab(tabId) {
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   const wasLocked = lockedTabs.has(tabId);
   const wasTemporarilyUnlocked = temporarilyUnlockedTabs.has(tabId);
+  const wasScheduledLocked = scheduledLockedTabs.has(tabId);
 
   lockedTabs.delete(tabId);
   temporarilyUnlockedTabs.delete(tabId);
+  scheduledLockedTabs.delete(tabId);
 
-  if (wasLocked || wasTemporarilyUnlocked) {
+  if (wasLocked || wasTemporarilyUnlocked || wasScheduledLocked) {
     // Update storage
     await chrome.storage.local.set({
       lockedTabIds: Array.from(lockedTabs),
-      temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+      temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+      scheduledLockedTabIds: Array.from(scheduledLockedTabs)
     });
     // Clean up lock data
     await chrome.storage.local.remove(`lockData_${tabId}`);
@@ -1512,21 +1544,20 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       updateBadge();
     }
 
-    // Re-navigate to locked page if loading or URL changed
-    if (changeInfo.status === 'loading' || changeInfo.url) {
+    // Re-navigate to locked page ONLY if URL is actually changing (not on locked.html)
+    // This prevents refresh loops when the tab is already locked
+    if (changeInfo.url && !changeInfo.url.includes('/locked.html')) {
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
 
-      // Store current URL as original URL if not already stored
-      if (tab.url && !tab.url.includes('/locked.html')) {
-        const lockData = {
-          originalUrl: tab.url,
-          title: tab.title || 'Untitled',
-          timestamp: Date.now()
-        };
-        await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
-        // Firefox fix: Small delay to ensure storage sync
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
+      // Store current URL as original URL
+      const lockData = {
+        originalUrl: changeInfo.url,
+        title: tab.title || 'Untitled',
+        timestamp: Date.now()
+      };
+      await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
+      // Firefox fix: Small delay to ensure storage sync
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // Navigate to locked page
       chrome.tabs.update(tabId, { url: lockedUrl }).catch((error) => {
