@@ -147,9 +147,8 @@ All notable changes to Locksy will be documented in this file.
 - **Zero Performance Impact**: Efficient implementation with minimal overhead
 
 ### 📝 Documentation
+
 - **TIMER_FEATURE_SUMMARY.md**: Comprehensive 400+ line technical overview
-- **TIMER_QUICK_START.md**: User-friendly quick start guide
-- **ACTIVITY_DETECTION.md**: Detailed explanation of enhanced activity tracking (NEW!)
 - Complete usage instructions and real-world use cases
 
 ### 🎯 Feature Highlights

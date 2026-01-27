@@ -17,7 +17,8 @@ Locksy Extension/
 │   ├── DESIGN_SYSTEM.md      # Design system and styling guide
 │   ├── KEYBOARD_SHORTCUTS.md # Keyboard shortcuts documentation
 │   ├── PRIVACY.md            # Privacy policy
-│   └── PROJECT_STRUCTURE.md  # This file - project organization guide
+│   ├── PROJECT_STRUCTURE.md  # This file - project organization guide
+│   └── TIMER_FEATURE_SUMMARY.md # Comprehensive timer feature documentation
 │
 ├── src/                       # Source code
 │   ├── css/                  # Stylesheets
@@ -59,10 +60,8 @@ Locksy Extension/
 │
 ├── .git/                      # Git repository data
 ├── .gitignore                # Git ignore rules
-├── ACTIVITY_DETECTION.md     # Enhanced activity detection documentation
 ├── build.js                  # Build script for distribution packages
 ├── CHROME_WEB_STORE_DESCRIPTION.txt  # Chrome Web Store listing description
-├── DEBUG_AUTO_LOCK.md        # Auto-lock debugging guide
 ├── EDGE_ADDONS_DESCRIPTION.txt       # Edge Add-ons listing description
 ├── FIREFOX_ADDON_DESCRIPTION.txt     # Firefox Add-ons listing description
 ├── FIREFOX_PRIVACY_POLICY.txt        # Firefox-specific privacy policy
@@ -74,9 +73,7 @@ Locksy Extension/
 ├── package-lock.json         # npm dependency lock file
 ├── README.md                 # Main documentation and features
 ├── RELEASE_NOTES_v2.0.0.txt  # Release notes for v2.0.0
-├── TIMER_DESIGN_SHOWCASE.md  # Timer feature design showcase
 ├── TIMER_FEATURE_SUMMARY.md  # Comprehensive timer feature documentation
-├── TIMER_QUICK_START.md      # Quick start guide for timer features
 └── TEST_KEYBOARD_SHORTCUTS.md # Keyboard shortcuts testing guide
 
 ```
@@ -97,11 +94,7 @@ Locksy Extension/
 - **EDGE_ADDONS_DESCRIPTION.txt**: Store listing description for Edge Add-ons
 - **FIREFOX_ADDON_DESCRIPTION.txt**: Store listing description for Firefox Add-ons
 - **FIREFOX_PRIVACY_POLICY.txt**: Privacy policy formatted for Firefox submission
-- **ACTIVITY_DETECTION.md**: Documentation for enhanced activity detection system
-- **DEBUG_AUTO_LOCK.md**: Debugging guide for auto-lock functionality
-- **TIMER_DESIGN_SHOWCASE.md**: Design showcase for timer features
 - **TIMER_FEATURE_SUMMARY.md**: Comprehensive technical overview of timer and scheduling features
-- **TIMER_QUICK_START.md**: Quick start guide for auto-lock timer and scheduled locking
 - **RELEASE_NOTES_v2.0.0.txt**: Detailed release notes for version 2.0.0
 
 ### Source Files (`src/`)
@@ -158,6 +151,7 @@ BUILD_GUIDE.md**: Complete guide for building and verifying the extension
 - **KEYBOARD_SHORTCUTS.md**: Comprehensive keyboard shortcuts documentation
 - **PRIVACY.md**: Privacy policy explaining data handling
 - **PROJECT_STRUCTURE.md**: This file - explains project organization
+- **TIMER_FEATURE_SUMMARY.md**: Comprehensive technical overview of timer and scheduling features
 
 ## Key Features
 
