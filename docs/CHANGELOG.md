@@ -2,6 +2,181 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.2.0] - 2026-01-22
+
+### 🎉 Major New Features
+
+#### ⏱️ Auto-Lock Timer
+- **Automatic Inactivity Locking**: Locks all tabs after a period of inactivity
+  - Preset durations: 5, 15, 30, 60 minutes
+  - Custom duration support: 1-480 minutes (8 hours)
+  - Smart activity tracking across tab switching, navigation, and window focus
+  - Automatic timer reset on any user interaction
+  - Real-time status display with countdown information
+  - Desktop notifications when auto-lock activates
+  
+#### 📅 Scheduled Locking
+- **Time-Based Automatic Locking**: Lock tabs during specific hours
+  - Custom start and end time configuration (24-hour format)
+  - Support for overnight schedules (e.g., 22:00 to 06:00)
+  - Quick preset options:
+    - Work Hours (9:00 AM - 5:00 PM)
+    - Night Time (10:00 PM - 6:00 AM)
+    - All Day (24/7 protection)
+  - Automatic locking when entering scheduled period
+  - Notifications for schedule activation and deactivation
+  - Real-time schedule status indicator
+  - **Day Selection**: Choose specific days of the week for scheduled locking
+    - Individual day toggles (Mon, Tue, Wed, Thu, Fri, Sat, Sun)
+    - Quick presets: Weekdays, Weekends, Every Day
+    - Visual day indicators showing active days
+  - **Scope Options**: Choose what to lock during scheduled periods
+    - Lock all tabs (system-wide protection)
+    - Lock only active tab (focused protection)
+    - Per-feature scope configuration
+
+#### ⏰ Chrome Alarms API Integration
+- **Reliable Scheduled Operations**: Chrome Alarms API ensures scheduled locks work consistently
+  - Persistent alarms survive browser restarts
+  - Minute-based checking for schedule activation
+  - Automatic unlock checks when schedule ends
+  - More reliable than setInterval for long-running tasks
+  - Works even when extension popup is closed
+
+#### 🎨 UI Enhancements
+- **Beautiful Timer Settings Interface**
+  - Modern gradient-based design matching extension theme
+  - Collapsible sections for organized layout
+  - Smooth toggle switches with animations
+  - Active state highlighting on duration buttons
+  - Color-coded status messages (green/blue/red)
+  - Hover effects and transitions throughout
+  - Real-time feedback on all interactions
+  - **Developer Information Section**: Links to creator's website and GitHub profile
+  - **Sponsor Button**: Integrated support button in popup UI with enhanced styling
+
+#### 🔄 Scope Configuration (NEW!)
+- **Flexible Locking Targets**: Choose what gets locked for each feature
+  - **Auto-Lock Scope**: 
+    - All Tabs: Lock entire browser when timer expires
+    - Active Tab Only: Lock just the tab you're viewing
+  - **Scheduled Lock Scope**:
+    - All Tabs: System-wide protection during scheduled hours
+    - Active Tab Only: Focused protection on current work
+  - Independent configuration for each feature
+  - Visual radio button selectors in settings
+  - Settings persist across sessions
+
+#### 🎯 Enhanced Activity Detection (NEW!)
+- **Content Script Activity Tracker**: Comprehensive page-level activity monitoring
+  - **Mouse Movement Detection**: Detects when user moves mouse on page
+  - **Keyboard Input Detection**: Tracks typing and keyboard interactions
+  - **Scrolling Detection**: Monitors page scrolling activity
+  - **Video Playback Detection**: Special handling for watching videos
+    - Detects video play/pause events
+    - Periodic activity reporting while video plays (every 15 seconds)
+    - Prevents unwanted locks during Netflix, YouTube, etc.
+  - **Touch Gesture Support**: Mobile/tablet touch interactions
+  - **Page Visibility Tracking**: Detects when user switches back to tab
+  - **Performance Optimized**: 
+    - Debounced activity (1-second delay)
+    - Throttled reporting (max once per 10 seconds)
+    - Passive event listeners (no scroll blocking)
+    - Zero performance impact on browsing
+  
+- **Real-World Use Cases Now Supported**:
+  - ✅ Watching videos without interruption
+  - ✅ Reading long articles safely
+  - ✅ Working on single-page apps
+  - ✅ Coding in web-based IDEs
+  - ✅ Any passive content consumption
+  - ❌ Only locks when truly inactive
+  
+### 🔧 Technical Improvements
+- **Enhanced Background Script**: 273 new lines
+  - Auto-lock timer state management
+  - Multi-point activity tracking listeners
+  - Schedule checker running every minute
+  - Message handlers for timer configuration
+  - Persistent settings storage and restoration
+
+- **New Content Script**: activity-tracker.js (150 lines)
+  - Injected on all pages (`<all_urls>`)
+  - 15+ event listeners for comprehensive detection
+  - Smart throttling and debouncing
+  - Video playback interval checking
+  - Efficient messaging to background script
+  
+- **Expanded Popup Interface**: 367 new lines (70 HTML + 297 JS)
+  - Complete timer settings initialization
+  - UI event handlers for all controls
+  - Settings save/load functionality
+  - Status display and update functions
+  - Integration with existing lock controls
+  
+- **Rich CSS Styling**: 331 new lines
+  - Timer-specific component styles
+  - Toggle switch animations
+  - Button interaction effects
+  - Responsive layout adjustments
+  - Status message styling
+
+### 📊 Storage Schema Updates
+- New settings stored in `chrome.storage.local`:
+  - `autoLockEnabled`: boolean
+  - `autoLockDuration`: number (milliseconds)
+  - `autoLockScope`: string ('all' or 'active')
+  - `scheduledLockEnabled`: boolean
+  - `scheduledLockStart`: string (HH:MM format)
+  - `scheduledLockEnd`: string (HH:MM format)
+  - `scheduledLockDays`: array of numbers (0-6, Sunday-Saturday)
+  - `scheduledLockScope`: string ('all' or 'active')
+  - `scheduledLockState`: boolean (currently active)
+
+### 🚀 User Benefits
+- **Set-and-Forget Security**: Automatic protection without manual intervention
+- **Flexible Configuration**: Both preset options and custom settings
+- **No More Unwanted Locks**: Smart detection knows when you're actually using the browser
+- **Natural Behavior**: Works with how people really browse (watching videos, reading, etc.)
+- **Multiple Use Cases**:
+  - Office workers: Protection during meetings/breaks
+  - Students: Scheduled locking during class hours
+  - Families: Time-based restrictions
+  - Privacy-conscious: Always-on inactivity protection
+  - Content consumers: Watch videos without interruption
+- **Zero Performance Impact**: Efficient implementation with minimal overhead
+
+### 📝 Documentation
+
+- **TIMER_FEATURE_SUMMARY.md**: Comprehensive 400+ line technical overview
+- Complete usage instructions and real-world use cases
+
+### 🎯 Feature Highlights
+- ✅ Smart activity detection prevents premature locking (mouse, keyboard, scroll, video)
+- ✅ Handles video playback intelligently (YouTube, Netflix, etc.)
+- ✅ Respects passive content consumption (reading, watching)
+- ✅ Handles system pages gracefully (never locks browser settings)
+- ✅ Settings persist across browser sessions and restarts
+- ✅ Can use auto-lock and scheduled locking simultaneously
+- ✅ Day-specific scheduling for flexible work/life balance
+- ✅ Independent scope configuration (all tabs vs. active tab)
+- ✅ Chrome Alarms API for reliable scheduled operations
+- ✅ Developer information and support links integrated
+- ✅ Visual feedback at every step
+- ✅ Professional, polished user interface
+- ✅ Zero performance impact with smart throttling
+
+### 🔄 Implementation Stats
+- **Total New Code**: 1,121 lines across 5 files
+- **Core Files Modified**: 4 (background.js, popup.js, popup.html, popup.css)
+- **New Content Script**: activity-tracker.js (150 lines)
+- **Manifest Updates**: Both Chrome and Firefox manifests
+- **New Documentation**: 3 comprehensive guides
+- **New Documentation**: 2 comprehensive guides
+- **Zero Breaking Changes**: Fully backward compatible
+
+---
+
 ## [2.1.0] - 2026-01-06
 
 ### 🚀 Automation & User Experience

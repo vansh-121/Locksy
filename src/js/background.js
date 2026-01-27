@@ -13,8 +13,24 @@ if (typeof importScripts === 'function') {
 let lockedTabs = new Set(); // Track locked tabs by tab ID
 let lockedDomains = []; // Track locked domain patterns
 let temporarilyUnlockedTabs = new Set(); // Track tabs temporarily unlocked from domain locks
+let scheduledLockedTabs = new Set(); // Track tabs locked by scheduled locking (separate from manual locks)
 let isRestoring = false; // Flag to prevent race conditions during restoration
 let restorationPromise = null; // Promise for ongoing restoration
+
+// ============================================================================
+// AUTO-LOCK TIMER & SCHEDULED LOCKING
+// ============================================================================
+let autoLockTimer = null; // Timer for auto-lock after inactivity
+let autoLockEnabled = false; // Whether auto-lock is enabled
+let autoLockDuration = 15 * 60 * 1000; // Default: 15 minutes in milliseconds
+let autoLockScope = 'all'; // What to lock: 'all' or 'current'
+let lastActivityTime = Date.now(); // Track last user activity
+let scheduledLockEnabled = false; // Whether scheduled locking is enabled
+let scheduledLockStart = '09:00'; // Default start time (24h format)
+let scheduledLockEnd = '17:00'; // Default end time (24h format)
+let scheduledLockScope = 'all'; // What to lock: 'all' or 'current'
+let scheduledLockDays = [0, 1, 2, 3, 4, 5, 6]; // Days of week: 0=Sunday, 1=Monday, etc. Default: all days
+// Using Chrome Alarms API instead of setInterval for persistent scheduling
 
 // Function to update extension badge with locked tabs count
 function updateBadge() {
@@ -27,6 +43,433 @@ function updateBadge() {
   } else {
     chrome.action.setBadgeText({ text: '' }); // Clear badge when no locks
   }
+}
+
+// ============================================================================
+// AUTO-LOCK TIMER FUNCTIONS
+// ============================================================================
+
+/**
+ * Start the auto-lock timer
+ */
+function startAutoLockTimer() {
+  // Clear existing timer
+  if (autoLockTimer) {
+    clearTimeout(autoLockTimer);
+  }
+
+  // Update last activity time
+  lastActivityTime = Date.now();
+
+  console.log(`[Auto-Lock] Timer started. Will lock in ${autoLockDuration / 1000} seconds`);
+
+  // Set new timer
+  autoLockTimer = setTimeout(() => {
+    performAutoLock();
+  }, autoLockDuration);
+}
+
+/**
+ * Reset the auto-lock timer (called on user activity)
+ */
+function resetAutoLockTimer() {
+  if (autoLockEnabled) {
+    console.log('[Auto-Lock] Activity detected, resetting timer');
+    startAutoLockTimer();
+  }
+}
+
+/**
+ * Perform auto-lock: lock tabs based on scope setting
+ */
+function performAutoLock() {
+  console.log(`[Auto-Lock] Timer expired, locking ${autoLockScope === 'all' ? 'all tabs' : 'active tab only'}`);
+  chrome.storage.local.get(["lockPassword"], (data) => {
+    if (!data.lockPassword) {
+      console.log('[Auto-Lock] Skipping - no password set');
+      return;
+    }
+
+    console.log('[Auto-Lock] Password verified, proceeding with lock');
+
+    // Helper function to lock a single active tab
+    function lockActiveTab(tab) {
+      // Skip if no URL (new tab, loading, etc.)
+      if (!tab.url) {
+        console.log('[Auto-Lock] No URL, skipping (new tab or loading)');
+        return;
+      }
+
+      // Skip if already locked
+      if (lockedTabs.has(tab.id)) {
+        console.log('[Auto-Lock] Tab already locked, skipping');
+        return;
+      }
+
+      // Skip system pages
+      if (tab.url.startsWith('chrome://') ||
+        tab.url.startsWith('chrome-extension://') ||
+        tab.url.startsWith('edge://') ||
+        tab.url.startsWith('about:') ||
+        tab.url.startsWith('file://')) {
+        console.log('[Auto-Lock] System page, skipping:', tab.url);
+        return;
+      }
+
+      console.log('[Auto-Lock] Locking tab ID:', tab.id, 'URL:', tab.url);
+      lockedTabs.add(tab.id);
+      lockTab(tab.id);
+      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      updateBadge();
+
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+        title: '🔒 Auto-Lock Activated',
+        message: `Active tab locked due to inactivity`,
+        priority: 1
+      });
+    }
+
+    if (autoLockScope === 'current') {
+      // Lock only the currently active tab in a normal browser window (not DevTools/popup)
+      chrome.windows.getLastFocused({ populate: true }, (window) => {
+        if (!window || window.type !== 'normal') {
+          console.log('[Auto-Lock] Last focused window is not a normal browser window, finding first normal window');
+          // Find first normal window with an active tab
+          chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }, (windows) => {
+            const firstWindow = windows.find(w => w.focused || w.tabs.some(t => t.active));
+            if (!firstWindow) {
+              console.log('[Auto-Lock] No normal browser window found');
+              return;
+            }
+            const activeTab = firstWindow.tabs.find(t => t.active);
+            if (activeTab) {
+              lockActiveTab(activeTab);
+            }
+          });
+          return;
+        }
+
+        // Get active tab from the last focused normal window
+        const activeTab = window.tabs.find(t => t.active);
+        console.log('[Auto-Lock] Active tab in last focused window:', activeTab?.url);
+
+        if (!activeTab) {
+          console.log('[Auto-Lock] No active tab found in window');
+          return;
+        }
+
+        lockActiveTab(activeTab);
+      });
+    } else {
+      // Lock all open tabs (default behavior)
+      chrome.tabs.query({}, (tabs) => {
+        let lockedCount = 0;
+
+        tabs.forEach(tab => {
+          // Skip if already locked
+          if (lockedTabs.has(tab.id)) {
+            return;
+          }
+
+          // Skip system pages
+          if (tab.url &&
+            (tab.url.startsWith('chrome://') ||
+              tab.url.startsWith('chrome-extension://') ||
+              tab.url.startsWith('edge://') ||
+              tab.url.startsWith('about:') ||
+              tab.url.startsWith('file://'))) {
+            return;
+          }
+
+          // Lock the tab
+          lockedTabs.add(tab.id);
+          lockTab(tab.id);
+          lockedCount++;
+        });
+
+        // Update storage and badge
+        chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+        updateBadge();
+
+        // Show notification
+        if (lockedCount > 0) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '🔒 Auto-Lock Activated',
+            message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked due to inactivity`,
+            priority: 1
+          });
+        }
+      });
+    }
+  });
+}
+
+/**
+ * Stop the auto-lock timer
+ */
+function stopAutoLockTimer() {
+  if (autoLockTimer) {
+    clearTimeout(autoLockTimer);
+    autoLockTimer = null;
+  }
+}
+
+// ============================================================================
+// SCHEDULED LOCKING FUNCTIONS
+// ============================================================================
+
+/**
+ * Check if current time is within scheduled lock hours
+ */
+function isWithinScheduledHours() {
+  const now = new Date();
+  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  // Parse start and end times
+  const [startHour, startMin] = scheduledLockStart.split(':').map(Number);
+  const [endHour, endMin] = scheduledLockEnd.split(':').map(Number);
+
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const startMinutes = startHour * 60 + startMin;
+  const endMinutes = endHour * 60 + endMin;
+
+  // Handle overnight schedules (e.g., 22:00 - 06:00)
+  if (startMinutes > endMinutes) {
+    return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+  } else {
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  }
+}
+
+/**
+ * Start the schedule checker (runs every minute)
+ * Uses Chrome Alarms API for persistence across service worker restarts
+ */
+function startScheduleChecker() {
+  // Clear existing alarm
+  chrome.alarms.clear('scheduledLockCheck');
+
+  // Check immediately
+  checkScheduleAndAct();
+
+  // Create alarm to check every minute
+  chrome.alarms.create('scheduledLockCheck', {
+    periodInMinutes: 1
+  });
+
+  console.log('[Scheduled Lock] Alarm created - checking every minute');
+}
+
+/**
+ * Check schedule and lock/unlock accordingly
+ */
+function checkScheduleAndAct() {
+  if (!scheduledLockEnabled) {
+    console.log('[Scheduled Lock] Check skipped - not enabled');
+    return;
+  }
+
+  // Check if today is in the selected days
+  const currentDay = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+  if (!scheduledLockDays.includes(currentDay)) {
+    console.log('[Scheduled Lock] Check skipped - today not in selected days');
+    return;
+  }
+
+  const shouldBeLocked = isWithinScheduledHours();
+  console.log('[Scheduled Lock] Current time check - Should be locked:', shouldBeLocked);
+
+  chrome.storage.local.get(["lockPassword", "extensionActive", "scheduledLockState"], (data) => {
+    if (!data.lockPassword || !data.extensionActive) {
+      console.log('[Scheduled Lock] Check skipped - no password or extension not active');
+      return;
+    }
+
+    const previousState = data.scheduledLockState || false;
+    console.log('[Scheduled Lock] Previous state:', previousState, '| Current state:', shouldBeLocked);
+
+    if (shouldBeLocked && !previousState) {
+      // Entering scheduled lock period - lock tabs based on scope
+      console.log(`[Scheduled Lock] ⏰ ENTERING SCHEDULED LOCK PERIOD - Locking ${scheduledLockScope === 'all' ? 'all tabs' : 'active tab only'}`);
+
+      if (scheduledLockScope === 'current') {
+        // Lock only the currently active tab
+        chrome.windows.getLastFocused({ populate: true }, (window) => {
+          if (!window || window.type !== 'normal') {
+            console.log('[Scheduled Lock] Last focused window is not a normal browser window, finding first normal window');
+            chrome.windows.getAll({ populate: true, windowTypes: ['normal'] }, (windows) => {
+              const firstWindow = windows.find(w => w.focused || w.tabs.some(t => t.active));
+              if (!firstWindow) {
+                console.log('[Scheduled Lock] No normal browser window found');
+                return;
+              }
+              const activeTab = firstWindow.tabs.find(t => t.active);
+              if (activeTab && !lockedTabs.has(activeTab.id)) {
+                const shouldLock = activeTab.url &&
+                  !activeTab.url.startsWith('chrome://') &&
+                  !activeTab.url.startsWith('chrome-extension://') &&
+                  !activeTab.url.startsWith('edge://') &&
+                  !activeTab.url.startsWith('about:') &&
+                  !activeTab.url.startsWith('file://');
+
+                if (shouldLock) {
+                  lockedTabs.add(activeTab.id);
+                  scheduledLockedTabs.add(activeTab.id); // Track that this was locked by schedule
+                  lockTab(activeTab.id);
+                  chrome.storage.local.set({
+                    lockedTabIds: Array.from(lockedTabs),
+                    scheduledLockedTabIds: Array.from(scheduledLockedTabs),
+                    scheduledLockState: true
+                  });
+                  updateBadge();
+
+                  chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                    title: '⏰ Scheduled Lock Activated',
+                    message: 'Active tab locked per schedule',
+                    priority: 1
+                  });
+                }
+              }
+            });
+            return;
+          }
+
+          const activeTab = window.tabs.find(t => t.active);
+          if (activeTab && !lockedTabs.has(activeTab.id)) {
+            const shouldLock = activeTab.url &&
+              !activeTab.url.startsWith('chrome://') &&
+              !activeTab.url.startsWith('chrome-extension://') &&
+              !activeTab.url.startsWith('edge://') &&
+              !activeTab.url.startsWith('about:') &&
+              !activeTab.url.startsWith('file://');
+
+            if (shouldLock) {
+              lockedTabs.add(activeTab.id);
+              scheduledLockedTabs.add(activeTab.id); // Track that this was locked by schedule
+              lockTab(activeTab.id);
+              chrome.storage.local.set({
+                lockedTabIds: Array.from(lockedTabs),
+                scheduledLockedTabIds: Array.from(scheduledLockedTabs),
+                scheduledLockState: true
+              });
+              updateBadge();
+
+              chrome.notifications.create({
+                type: 'basic',
+                iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+                title: '⏰ Scheduled Lock Activated',
+                message: 'Active tab locked per schedule',
+                priority: 1
+              });
+            }
+          }
+        });
+      } else {
+        // Lock all tabs
+        chrome.tabs.query({}, (tabs) => {
+          let lockedCount = 0;
+
+          tabs.forEach(tab => {
+            // Skip if already locked
+            if (lockedTabs.has(tab.id)) {
+              return;
+            }
+
+            // Skip system pages
+            if (tab.url &&
+              (tab.url.startsWith('chrome://') ||
+                tab.url.startsWith('chrome-extension://') ||
+                tab.url.startsWith('edge://') ||
+                tab.url.startsWith('about:') ||
+                tab.url.startsWith('file://'))) {
+              return;
+            }
+
+            // Lock the tab
+            lockedTabs.add(tab.id);
+            scheduledLockedTabs.add(tab.id); // Track that this was locked by schedule
+            lockTab(tab.id);
+            lockedCount++;
+          });
+
+          // Update storage and badge
+          chrome.storage.local.set({
+            lockedTabIds: Array.from(lockedTabs),
+            scheduledLockedTabIds: Array.from(scheduledLockedTabs),
+            scheduledLockState: true
+          });
+          updateBadge();
+
+          // Show notification
+          if (lockedCount > 0) {
+            chrome.notifications.create({
+              type: 'basic',
+              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+              title: '⏰ Scheduled Lock Activated',
+              message: `${lockedCount} tab${lockedCount !== 1 ? 's' : ''} locked per schedule`,
+              priority: 1
+            });
+          }
+        });
+      }
+    } else if (!shouldBeLocked && previousState) {
+      // Exiting scheduled lock period - only unlock tabs that were locked by the schedule
+      chrome.tabs.query({}, async (tabs) => {
+        let unlockedCount = 0;
+
+        // Create array of promises for unlocking tabs
+        const unlockPromises = [];
+
+        tabs.forEach(tab => {
+          // Only unlock tabs that were locked by the schedule (not manually locked tabs)
+          if (lockedTabs.has(tab.id) && scheduledLockedTabs.has(tab.id)) {
+            unlockPromises.push(
+              unlockTab(tab.id).then(() => {
+                scheduledLockedTabs.delete(tab.id); // Remove from scheduled locked set
+                unlockedCount++;
+              }).catch(err => {
+                console.error(`Failed to unlock tab ${tab.id}:`, err);
+              })
+            );
+          }
+        });
+
+        // Wait for all unlocks to complete
+        await Promise.all(unlockPromises);
+
+        // Update state
+        chrome.storage.local.set({ 
+          scheduledLockState: false,
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+        });
+
+        // Show notification
+        if (unlockedCount > 0) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '⏰ Scheduled Lock Period Ended',
+            message: `${unlockedCount} tab${unlockedCount !== 1 ? 's' : ''} automatically unlocked`,
+            priority: 1
+          });
+        }
+      });
+    }
+  });
+}
+
+/**
+ * Stop the schedule checker
+ */
+function stopScheduleChecker() {
+  chrome.alarms.clear('scheduledLockCheck');
+  console.log('[Scheduled Lock] Alarm cleared');
 }
 
 // Pattern matching for domain locks
@@ -101,7 +544,20 @@ function removeLockedDomain(pattern) {
 // CRITICAL: Restore locked tabs and domains from storage when service worker wakes up
 async function restoreLockedTabs() {
   return new Promise((resolve) => {
-    chrome.storage.local.get(["lockedTabIds", "lockedDomains", "temporarilyUnlockedTabIds"], (data) => {
+    chrome.storage.local.get([
+      "lockedTabIds",
+      "lockedDomains",
+      "temporarilyUnlockedTabIds",
+      "scheduledLockedTabIds",
+      "autoLockEnabled",
+      "autoLockDuration",
+      "autoLockScope",
+      "scheduledLockEnabled",
+      "scheduledLockStart",
+      "scheduledLockEnd",
+      "scheduledLockScope",
+      "scheduledLockDays"
+    ], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
 
@@ -113,6 +569,43 @@ async function restoreLockedTabs() {
       }
       if (data.temporarilyUnlockedTabIds && Array.isArray(data.temporarilyUnlockedTabIds)) {
         temporarilyUnlockedTabs = new Set(data.temporarilyUnlockedTabIds);
+      }
+      if (data.scheduledLockedTabIds && Array.isArray(data.scheduledLockedTabIds)) {
+        scheduledLockedTabs = new Set(data.scheduledLockedTabIds);
+      }
+
+      // Restore timer settings
+      if (data.autoLockEnabled !== undefined) {
+        autoLockEnabled = data.autoLockEnabled;
+      }
+      if (data.autoLockDuration !== undefined) {
+        autoLockDuration = data.autoLockDuration;
+      }
+      if (data.autoLockScope !== undefined) {
+        autoLockScope = data.autoLockScope;
+      }
+      if (data.scheduledLockEnabled !== undefined) {
+        scheduledLockEnabled = data.scheduledLockEnabled;
+      }
+      if (data.scheduledLockStart !== undefined) {
+        scheduledLockStart = data.scheduledLockStart;
+      }
+      if (data.scheduledLockEnd !== undefined) {
+        scheduledLockEnd = data.scheduledLockEnd;
+      }
+      if (data.scheduledLockScope !== undefined) {
+        scheduledLockScope = data.scheduledLockScope;
+      }
+      if (data.scheduledLockDays !== undefined) {
+        scheduledLockDays = data.scheduledLockDays;
+      }
+
+      // Start timers if enabled
+      if (autoLockEnabled) {
+        startAutoLockTimer();
+      }
+      if (scheduledLockEnabled) {
+        startScheduleChecker();
       }
 
       resolve();
@@ -139,13 +632,15 @@ function validateAndCleanLockedTabs() {
         // Tab doesn't exist anymore, remove it
         lockedTabs.delete(tabId);
         temporarilyUnlockedTabs.delete(tabId);
+        scheduledLockedTabs.delete(tabId);
       }
 
       // When all tabs are checked, update storage and badge
       if (checkedCount === tabIds.length) {
         chrome.storage.local.set({
           lockedTabIds: Array.from(lockedTabs),
-          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
         });
         updateBadge();
       }
@@ -525,13 +1020,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               if (tab.url && matchesPattern(tab.url, urlToCheck)) {
                 lockedTabs.delete(tab.id);
                 temporarilyUnlockedTabs.delete(tab.id);
+                scheduledLockedTabs.delete(tab.id);
                 // Send message to content script to remove overlay
                 chrome.tabs.sendMessage(tab.id, { action: "removeOverlay" }).catch(() => { });
               }
             });
             chrome.storage.local.set({
               lockedTabIds: Array.from(lockedTabs),
-              temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+              temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+              scheduledLockedTabIds: Array.from(scheduledLockedTabs)
             });
             // Update badge
             updateBadge();
@@ -541,7 +1038,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       // Default: just unlock this tab
       lockedTabs.delete(tabId);
-      chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+      scheduledLockedTabs.delete(tabId);
+      chrome.storage.local.set({ 
+        lockedTabIds: Array.from(lockedTabs),
+        scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+      });
       // Update badge
       updateBadge();
     }
@@ -701,11 +1202,117 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true });
     });
     return true;
+  } else if (message.action === "setAutoLock") {
+    // Update auto-lock settings
+    const { enabled, duration, scope } = message;
+    autoLockEnabled = enabled;
+    if (duration !== undefined) {
+      autoLockDuration = duration;
+    }
+    if (scope !== undefined) {
+      autoLockScope = scope;
+    }
+
+    console.log(`[Auto-Lock] Settings updated - Enabled: ${enabled}, Duration: ${autoLockDuration}ms (${autoLockDuration / 60000} min), Scope: ${autoLockScope}`);
+
+    chrome.storage.local.set({
+      autoLockEnabled: enabled,
+      autoLockDuration: autoLockDuration,
+      autoLockScope: autoLockScope
+    });
+
+    if (enabled) {
+      console.log('[Auto-Lock] Starting timer now');
+      startAutoLockTimer();
+    } else {
+      console.log('[Auto-Lock] Stopping timer');
+      stopAutoLockTimer();
+    }
+
+    sendResponse({ success: true });
+    return true;
+  } else if (message.action === "getAutoLockSettings") {
+    // Return current auto-lock settings
+    sendResponse({
+      enabled: autoLockEnabled,
+      duration: autoLockDuration,
+      scope: autoLockScope,
+      lastActivity: lastActivityTime
+    });
+    return true;
+  } else if (message.action === "setScheduledLock") {
+    // Update scheduled lock settings
+    const { enabled, startTime, endTime, scope, days } = message;
+    scheduledLockEnabled = enabled;
+    if (startTime !== undefined) {
+      scheduledLockStart = startTime;
+    }
+    if (endTime !== undefined) {
+      scheduledLockEnd = endTime;
+    }
+    if (scope !== undefined) {
+      scheduledLockScope = scope;
+    }
+    if (days !== undefined) {
+      scheduledLockDays = days;
+    }
+
+    chrome.storage.local.set({
+      scheduledLockEnabled: enabled,
+      scheduledLockStart: scheduledLockStart,
+      scheduledLockEnd: scheduledLockEnd,
+      scheduledLockScope: scheduledLockScope,
+      scheduledLockDays: scheduledLockDays
+    });
+
+    if (enabled) {
+      startScheduleChecker();
+    } else {
+      stopScheduleChecker();
+    }
+
+    sendResponse({ success: true });
+    return true;
+  } else if (message.action === "getScheduledLockSettings") {
+    // Return current scheduled lock settings
+    sendResponse({
+      enabled: scheduledLockEnabled,
+      startTime: scheduledLockStart,
+      endTime: scheduledLockEnd,
+      scope: scheduledLockScope,
+      days: scheduledLockDays,
+      currentlyActive: isWithinScheduledHours()
+    });
+    return true;
+  } else if (message.action === "userActivity") {
+    // Reset auto-lock timer on user activity
+    resetAutoLockTimer();
+    sendResponse({ success: true });
+    return true;
+  } else if (message.action === "isTabLocked") {
+    // Check if a specific tab is currently locked
+    const tabId = message.tabId;
+    const isLocked = lockedTabs.has(tabId);
+    sendResponse({ isLocked: isLocked });
+    return true;
   }
   // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
 
   return true; // Keep the message channel open for async response
 });
+
+// ============================================================================
+// CHROME ALARMS LISTENER FOR SCHEDULED LOCK
+// ============================================================================
+// Handle alarms for scheduled lock checking
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'scheduledLockCheck') {
+    console.log('[Scheduled Lock] ⏰ Alarm triggered - checking schedule');
+    checkScheduleAndAct();
+  }
+});
+
+console.log('[Scheduled Lock] Alarm listener registered');
 
 // Navigation-based locking - stores original URL and navigates to locked.html
 async function lockTab(tabId, sendResponse) {
@@ -816,8 +1423,9 @@ async function unlockTab(tabId) {
 
     const originalUrl = lockData.originalUrl;
 
-    // Remove from locked set
+    // Remove from locked set FIRST (so periodic check in locked.js can detect this)
     lockedTabs.delete(tabId);
+    scheduledLockedTabs.delete(tabId); // Also remove from scheduled locked tabs
 
     // Check if this was a domain-locked tab
     if (isDomainLocked(originalUrl)) {
@@ -827,7 +1435,10 @@ async function unlockTab(tabId) {
     }
 
     // Update storage
-    await chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
+    await chrome.storage.local.set({ 
+      lockedTabIds: Array.from(lockedTabs),
+      scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+    });
     await chrome.storage.local.remove(`lockData_${tabId}`);
 
     // Update badge
@@ -847,15 +1458,18 @@ async function unlockTab(tabId) {
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   const wasLocked = lockedTabs.has(tabId);
   const wasTemporarilyUnlocked = temporarilyUnlockedTabs.has(tabId);
+  const wasScheduledLocked = scheduledLockedTabs.has(tabId);
 
   lockedTabs.delete(tabId);
   temporarilyUnlockedTabs.delete(tabId);
+  scheduledLockedTabs.delete(tabId);
 
-  if (wasLocked || wasTemporarilyUnlocked) {
+  if (wasLocked || wasTemporarilyUnlocked || wasScheduledLocked) {
     // Update storage
     await chrome.storage.local.set({
       lockedTabIds: Array.from(lockedTabs),
-      temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
+      temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs),
+      scheduledLockedTabIds: Array.from(scheduledLockedTabs)
     });
     // Clean up lock data
     await chrome.storage.local.remove(`lockData_${tabId}`);
@@ -930,21 +1544,20 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       updateBadge();
     }
 
-    // Re-navigate to locked page if loading or URL changed
-    if (changeInfo.status === 'loading' || changeInfo.url) {
+    // Re-navigate to locked page ONLY if URL is actually changing (not on locked.html)
+    // This prevents refresh loops when the tab is already locked
+    if (changeInfo.url && !changeInfo.url.includes('/locked.html')) {
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
 
-      // Store current URL as original URL if not already stored
-      if (tab.url && !tab.url.includes('/locked.html')) {
-        const lockData = {
-          originalUrl: tab.url,
-          title: tab.title || 'Untitled',
-          timestamp: Date.now()
-        };
-        await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
-        // Firefox fix: Small delay to ensure storage sync
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
+      // Store current URL as original URL
+      const lockData = {
+        originalUrl: changeInfo.url,
+        title: tab.title || 'Untitled',
+        timestamp: Date.now()
+      };
+      await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
+      // Firefox fix: Small delay to ensure storage sync
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       // Navigate to locked page
       chrome.tabs.update(tabId, { url: lockedUrl }).catch((error) => {
@@ -1246,5 +1859,29 @@ function handleLockAllTabs(isActive, hasPassword) {
     });
   });
 }
+
+// ============================================================================
+// ACTIVITY TRACKING FOR AUTO-LOCK
+// ============================================================================
+
+// Track tab activation (switching tabs)
+chrome.tabs.onActivated.addListener(() => {
+  resetAutoLockTimer();
+});
+
+// Track tab updates (navigation, refresh)
+chrome.tabs.onUpdated.addListener(() => {
+  resetAutoLockTimer();
+});
+
+// Track window focus changes
+chrome.windows.onFocusChanged.addListener(() => {
+  resetAutoLockTimer();
+});
+
+// Track new tabs
+chrome.tabs.onCreated.addListener(() => {
+  resetAutoLockTimer();
+});
 
 

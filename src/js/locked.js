@@ -160,6 +160,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             passwordInput.value = '';
         }
     });
+
+    // Periodic check if tab is still locked (every 5 seconds)
+    // This ensures automatic unlock when scheduled lock period ends
+    setInterval(async () => {
+        try {
+            // Check if this tab is still in the locked tabs list
+            const response = await chrome.runtime.sendMessage({
+                action: 'isTabLocked',
+                tabId: currentTabId
+            });
+
+            if (response && !response.isLocked) {
+                // Tab was unlocked from background (e.g., scheduled lock ended)
+                // Retrieve original URL and navigate
+                const lockData = await chrome.storage.local.get([`lockData_${currentTabId}`]);
+                const tabLockData = lockData[`lockData_${currentTabId}`];
+                
+                if (tabLockData && tabLockData.originalUrl) {
+                    window.location.href = tabLockData.originalUrl;
+                } else {
+                    // Fallback: close this tab if no original URL
+                    chrome.tabs.getCurrent((tab) => {
+                        if (tab) chrome.tabs.remove(tab.id);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error checking lock status:', error);
+        }
+    }, 5000); // Check every 5 seconds
 });
 
 // Check current rate limit status
