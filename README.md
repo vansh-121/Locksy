@@ -115,7 +115,105 @@
 
 ---
 
-## 🆕 Recent Improvements
+## � Feature Demonstrations
+
+<div align="center">
+
+**See Locksy in action!** Explore our interactive feature demonstrations below.
+
+</div>
+
+### 🔐 Getting Started
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part1.gif" alt="Setting Master Password" width="100%">
+      <br>
+      <b>1️⃣ Setting Master Password</b>
+      <br>
+      Create your secure master password with real-time strength indicator
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part2.gif" alt="Locking Current Tab" width="100%">
+      <br>
+      <b>2️⃣ Locking Current Tab</b>
+      <br>
+      One-click tab protection with instant lock overlay
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part3.gif" alt="Tab Locked" width="100%">
+      <br>
+      <b>3️⃣ Tab Locked</b>
+      <br>
+      Password-protected overlay secures your sensitive content
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part4.gif" alt="Smart Authentication Protection" width="100%">
+      <br>
+      <b>4️⃣ Smart Authentication Protection</b>
+      <br>
+      Current password required to change settings - no bypass!
+    </td>
+  </tr>
+</table>
+
+### 🛡️ Advanced Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part5.gif" alt="Domain Locking" width="100%">
+      <br>
+      <b>5️⃣ Domain & Subdomain Locking</b>
+      <br>
+      Lock entire domains with wildcard support for automatic protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part6.gif" alt="Keyboard Shortcuts" width="100%">
+      <br>
+      <b>6️⃣ Keyboard Shortcuts</b>
+      <br>
+      Pre-defined shortcuts for power users - fully customizable
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part7.gif" alt="Incognito Mode" width="100%">
+      <br>
+      <b>7️⃣ Incognito/InPrivate Mode</b>
+      <br>
+      Enable Locksy in private browsing for complete privacy protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part8.gif" alt="Auto Lock Feature" width="100%">
+      <br>
+      <b>8️⃣ Auto Lock Timer</b>
+      <br>
+      Automatic tab locking after inactivity with smart detection
+    </td>
+  </tr>
+</table>
+
+### ⏱️ Automation Features
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="assets/videos/Part9.gif" alt="Scheduled Lock" width="100%">
+      <br>
+      <b>9️⃣ Scheduled Lock Feature</b>
+      <br>
+      Time-based automatic locking with day selection and custom schedules
+    </td>
+  </tr>
+</table>
+
+---
+
+## �🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy v2.2 brings powerful automation features including auto-lock timers and scheduled locking. Following semantic versioning standards. [See full version history →](docs/CHANGELOG.md)
 

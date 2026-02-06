@@ -28,11 +28,11 @@ function createZip(outputFile, files, manifestPath) {
         // Add directories
         archive.directory('src/', 'src');
         
-        // Add assets but exclude screenshots folder
+        // Add assets but exclude screenshots and videos folders
         archive.directory('assets/', 'assets', (entry) => {
-            // Exclude the screenshots folder and its contents
+            // Exclude the screenshots and videos folders and their contents
             const normalized = entry.name.replace(/\\/g, '/');
-            if (normalized.includes('images/screenshots')) {
+            if (normalized.includes('images/screenshots') || normalized.includes('videos')) {
                 return false;
             }
             return entry;
