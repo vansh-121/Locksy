@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -31,86 +31,6 @@
   
   **New Project?** Yes. **Trustworthy?** Verify the code yourself! See [Trust & Verification](#-trust--verification)
   
-</div>
-
----
-
-## 🎥 Video Demo
-
-<div align="center">
-  
-**See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
-  
-  [![Locksy Extension Demo](https://img.youtube.com/vi/6uyd4sN5WiA/maxresdefault.jpg)](https://www.youtube.com/watch?v=6uyd4sN5WiA)
-  
-  [🎬 Watch on YouTube](https://www.youtube.com/watch?v=6uyd4sN5WiA)
-  
-</div>
-
----
-
-## 📸 Screenshots
-
-<div align="center">
-
-### 🎯 Main Interface & Features
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/1.png" alt="Locksy Main Features" width="100%">
-      <br>
-      <b>Securely Lock & Manage Your Browser Tabs</b>
-      <br>
-      Lock individual tabs or windows with one-click privacy protection
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/2.png" alt="Security Features" width="100%">
-      <br>
-      <b>Your Passwords, Your Control</b>
-      <br>
-      No data collection, SHA-256 encryption, offline-only operation
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
-      <br>
-      <b>Military-Grade Tab Protection</b>
-      <br>
-      Enterprise-level security for your sensitive browser tabs
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
-      <br>
-      <b>Tab Secured - Password Protected</b>
-      <br>
-      Enter password to unlock and access your protected content
-    </td>
-  </tr>
-</table>
-
-### 🚀 Quick Setup Guide
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/Step 1.png" alt="Setup Step 1" width="100%">
-      <br>
-      <b>Step 1: Set Master Password</b>
-      <br>
-      Create a strong password with real-time strength indicator
-    </td>
-    <td align="center" width="50%">
-      <img src="assets/images/screenshots/Step 3.png" alt="Setup Step 3" width="100%">
-      <br>
-      <b>Step 2: Start Locking Tabs</b>
-      <br>
-      One-click tab protection or use keyboard shortcuts
-    </td>
-  </tr>
-</table>
-
 </div>
 
 ---
@@ -210,6 +130,72 @@
     </td>
   </tr>
 </table>
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+### 🎯 Main Interface & Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/1.png" alt="Locksy Main Features" width="100%">
+      <br>
+      <b>Securely Lock & Manage Your Browser Tabs</b>
+      <br>
+      Lock individual tabs or windows with one-click privacy protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/2.png" alt="Security Features" width="100%">
+      <br>
+      <b>Your Passwords, Your Control</b>
+      <br>
+      No data collection, SHA-256 encryption, offline-only operation
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
+      <br>
+      <b>Military-Grade Tab Protection</b>
+      <br>
+      Enterprise-level security for your sensitive browser tabs
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
+      <br>
+      <b>Tab Secured - Password Protected</b>
+      <br>
+      Enter password to unlock and access your protected content
+    </td>
+  </tr>
+</table>
+
+### 🚀 Quick Setup Guide
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 1.png" alt="Setup Step 1" width="100%">
+      <br>
+      <b>Step 1: Set Master Password</b>
+      <br>
+      Create a strong password with real-time strength indicator
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Step 3.png" alt="Setup Step 3" width="100%">
+      <br>
+      <b>Step 2: Start Locking Tabs</b>
+      <br>
+      One-click tab protection or use keyboard shortcuts
+    </td>
+  </tr>
+</table>
+
+</div>
 
 ---
 
