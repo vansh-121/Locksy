@@ -35,11 +35,11 @@
 
 ---
 
-## � Feature Demonstrations
+## ✨ Features in Action
 
 <div align="center">
 
-**See Locksy in action!** Explore our interactive feature demonstrations below.
+**See Locksy in action!** Watch how each feature works with these live demonstrations.
 
 </div>
 
