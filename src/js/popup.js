@@ -435,6 +435,10 @@ function initializeMainUI() {
           <span class="sparkle-icon">✨</span>
           <span>What's New</span>
         </button>
+        <button id="headerNewsletterBtn" class="newsletter-link" title="Subscribe to updates and feedback requests" style="display: none;">
+          <span>📧</span>
+          <span>Subscribe Newsletter</span>
+        </button>
       </div>
     </div>
 
@@ -711,6 +715,7 @@ function initializeMainUI() {
     const lockControls = document.getElementById("lockControls");
     const lockTip = document.getElementById("lockTip");
     const keyboardShortcuts = document.getElementById("keyboardShortcuts");
+    const headerNewsletterBtn = document.getElementById("headerNewsletterBtn");
 
     if (hasExistingPassword) {
       // Password exists - require current password to change
@@ -724,6 +729,9 @@ function initializeMainUI() {
       if (lockControls) lockControls.style.display = "block";
       if (lockTip) lockTip.style.display = "block";
       if (keyboardShortcuts) keyboardShortcuts.style.display = "block";
+      
+      // Show Newsletter button (What's New is always visible)
+      if (headerNewsletterBtn) headerNewsletterBtn.style.display = "flex";
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";
@@ -736,6 +744,9 @@ function initializeMainUI() {
       if (lockControls) lockControls.style.display = "none";
       if (lockTip) lockTip.style.display = "none";
       if (keyboardShortcuts) keyboardShortcuts.style.display = "none";
+      
+      // Hide Newsletter button (What's New stays visible for new users)
+      if (headerNewsletterBtn) headerNewsletterBtn.style.display = "none";
     }
   }
 
@@ -1001,6 +1012,14 @@ function initializeMainUI() {
         width: 700,
         height: 700
       });
+    });
+  }
+
+  // Open Newsletter Page from header button
+  const headerNewsletterBtn = document.getElementById("headerNewsletterBtn");
+  if (headerNewsletterBtn) {
+    headerNewsletterBtn.addEventListener("click", () => {
+      chrome.tabs.create({ url: 'https://www.locksy.dev/newsletter' });
     });
   }
 

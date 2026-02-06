@@ -45,7 +45,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -72,13 +72,39 @@ body {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
+.newsletter-link {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  border: none;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
 .whats-new-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
+.newsletter-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.5);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+}
+
 .whats-new-link:active {
+  transform: translateY(0);
+}
+
+.newsletter-link:active {
   transform: translateY(0);
 }
 
@@ -395,6 +421,7 @@ button:disabled {
 .btn-lock-all,
 .btn-domain,
 .btn-shortcuts,
+.btn-newsletter,
 .btn-sponsor {
   color: white;
   border: none;
@@ -493,6 +520,10 @@ button:disabled {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.btn-newsletter {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
 .btn-sponsor {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -529,6 +560,12 @@ button:disabled {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
+.btn-newsletter:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+}
+
 .btn-sponsor:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
@@ -540,6 +577,7 @@ button:disabled {
 .btn-lock-all:active,
 .btn-domain:active,
 .btn-shortcuts:active,
+.btn-newsletter:active,
 .btn-sponsor:active {
   transform: translateY(0);
 }
