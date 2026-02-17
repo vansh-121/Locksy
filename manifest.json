@@ -75,7 +75,8 @@
         "src/html/locked.html",
         "src/css/locked.css",
         "src/js/locked.js",
-        "src/js/crypto-utils.js"
+        "src/js/crypto-utils.js",
+        "src/js/webauthn-utils.js"
       ],
       "matches": [
         "<all_urls>"

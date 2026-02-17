@@ -153,6 +153,267 @@ input[type="password"]:disabled {
     opacity: 0.6;
 }
 
+/* Fingerprint Section Styles */
+.fingerprint-section {
+    margin-top: 20px;
+}
+
+.fingerprint-section.hidden {
+    display: none;
+}
+
+/* Biometric-First Unlock Section */
+.biometric-primary-section {
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.biometric-primary-section.hidden {
+    display: none !important;
+}
+
+.biometric-scanning-area {
+    padding: 24px 16px;
+    margin-bottom: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.15);
+    transition: all 0.3s ease;
+}
+
+.biometric-scanning-area.scanning {
+    border-color: rgba(102, 126, 234, 0.4);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.15);
+}
+
+.biometric-scanning-area.success {
+    border-color: rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(56, 142, 60, 0.08) 100%);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.15);
+}
+
+.biometric-scanning-area.failed {
+    border-color: rgba(220, 53, 69, 0.4);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(185, 43, 39, 0.08) 100%);
+}
+
+.fingerprint-pulse-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    animation: biometric-pulse 1.5s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes biometric-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.12);
+        opacity: 0.7;
+    }
+}
+
+.biometric-scanning-area.success .fingerprint-pulse-icon {
+    animation: biometric-success 0.5s ease-in-out forwards;
+}
+
+@keyframes biometric-success {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.biometric-scanning-area.failed .fingerprint-pulse-icon {
+    animation: shake 0.5s ease-in-out;
+}
+
+.biometric-prompt {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 6px;
+}
+
+.biometric-subtext {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 400;
+}
+
+.btn-biometric-retry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    margin-bottom: 16px;
+    font-family: inherit;
+}
+
+.btn-biometric-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-biometric-retry.hidden {
+    display: none !important;
+}
+
+.biometric-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 16px 0;
+    color: #adb5bd;
+    font-size: 13px;
+}
+
+.biometric-divider::before,
+.biometric-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.biometric-divider span {
+    padding: 0 14px;
+    font-weight: 500;
+}
+
+.btn-use-password {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-use-password:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-1px);
+}
+
+/* Password section when biometric is active */
+.password-section.collapsed {
+    display: none;
+}
+
+/* Back-to-biometric link */
+.back-to-biometric {
+    margin-top: 12px;
+}
+
+.back-to-biometric.hidden {
+    display: none !important;
+}
+
+.btn-switch-biometric {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    color: #667eea;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-switch-biometric:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.divider span {
+    padding: 0 15px;
+    font-weight: 500;
+}
+
+.btn-fingerprint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-fingerprint:hover:not(:disabled) {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-fingerprint:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-fingerprint:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
 .btn-icon {
     font-size: 20px;
 }

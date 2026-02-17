@@ -136,12 +136,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error checking lock data:', error);
     }
 
+    // Check and initialize fingerprint authentication
+    await initializeFingerprintAuth();
+
     // Check initial rate limit status
     await checkRateLimitStatus();
 
-    // Focus password input
+    // Focus password input only if not in biometric-first mode
     const passwordInput = document.getElementById('passwordInput');
-    passwordInput.focus();
+    const passwordSection = document.getElementById('passwordSection');
+    if (passwordInput && passwordSection && !passwordSection.classList.contains('collapsed')) {
+        passwordInput.focus();
+    }
 
     // Enter key listener for password input
     passwordInput.addEventListener('keypress', (e) => {
@@ -176,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Retrieve original URL and navigate
                 const lockData = await chrome.storage.local.get([`lockData_${currentTabId}`]);
                 const tabLockData = lockData[`lockData_${currentTabId}`];
-                
+
                 if (tabLockData && tabLockData.originalUrl) {
                     window.location.href = tabLockData.originalUrl;
                 } else {
@@ -224,6 +230,390 @@ async function checkRateLimitStatus() {
     }
 }
 
+// ============================================================================
+// BIOMETRIC-FIRST AUTHENTICATION
+// ============================================================================
+
+let biometricCapability = null;
+
+/**
+ * Initialize biometric authentication - respects "Use as Default" preference
+ */
+async function initializeFingerprintAuth() {
+    try {
+        // Detect biometric capability
+        biometricCapability = await detectBiometricCapability();
+
+        if (!biometricCapability.available) {
+            // No biometric available - show password-only mode
+            showPasswordOnlyMode();
+            return;
+        }
+
+        // Check if fingerprint/biometric is registered
+        const isRegistered = await isFingerprintRegistered();
+        if (!isRegistered) {
+            // Biometric available but not set up - show password-only mode
+            showPasswordOnlyMode();
+            return;
+        }
+
+        // Check "Use as Default" preference
+        const stored = await chrome.storage.local.get(['biometricDefault']);
+        const isDefault = stored.biometricDefault === true;
+
+        if (isDefault) {
+            // Biometric is default → show biometric-first UI (auto-trigger fingerprint)
+            showBiometricFirstMode();
+            setTimeout(() => {
+                triggerBiometricAuth();
+            }, 600);
+        } else {
+            // Password is default → show password with biometric as secondary option
+            showPasswordWithBiometricMode();
+        }
+
+    } catch (error) {
+        console.error('Error initializing biometric auth:', error);
+        showPasswordOnlyMode();
+    }
+}
+
+/**
+ * Show biometric-first mode (biometric primary, password secondary)
+ */
+function showBiometricFirstMode() {
+    const biometricSection = document.getElementById('biometricPrimarySection');
+    const passwordSection = document.getElementById('passwordSection');
+    const biometricIcon = document.getElementById('biometricIcon');
+    const biometricPrompt = document.getElementById('biometricPromptText');
+    const biometricSubtext = document.getElementById('biometricSubtext');
+    const backToBiometric = document.getElementById('backToBiometric');
+    const switchBiometricIcon = document.getElementById('switchBiometricIcon');
+    const switchBiometricText = document.getElementById('switchBiometricText');
+
+    if (!biometricSection) return;
+
+    // Update biometric UI with detected capability
+    if (biometricCapability) {
+        if (biometricIcon) biometricIcon.textContent = biometricCapability.icon;
+        if (biometricPrompt) {
+            if (biometricCapability.type === 'face') {
+                biometricPrompt.textContent = 'Look at your camera to unlock';
+            } else if (biometricCapability.type === 'windows_hello') {
+                biometricPrompt.textContent = 'Touch your fingerprint sensor or look at your camera';
+            } else {
+                biometricPrompt.textContent = 'Touch your fingerprint sensor to unlock';
+            }
+        }
+        if (biometricSubtext) biometricSubtext.textContent = 'Verifying your identity...';
+
+        // Update the switch-to-biometric button text
+        if (switchBiometricIcon) switchBiometricIcon.textContent = biometricCapability.icon;
+        if (switchBiometricText) switchBiometricText.textContent = `Unlock with ${biometricCapability.label}`;
+    }
+
+    // Show biometric section, hide password
+    biometricSection.classList.remove('hidden');
+    passwordSection.classList.add('collapsed');
+
+    // Setup "Use Password Instead" button
+    const usePasswordBtn = document.getElementById('usePasswordBtn');
+    if (usePasswordBtn) {
+        usePasswordBtn.addEventListener('click', () => {
+            switchToPasswordMode();
+        });
+    }
+
+    // Setup retry button
+    const retryBtn = document.getElementById('retryBiometricBtn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            retryBtn.classList.add('hidden');
+            triggerBiometricAuth();
+        });
+    }
+
+    // Setup back-to-biometric button
+    const switchToBiometricBtn = document.getElementById('switchToBiometricBtn');
+    if (switchToBiometricBtn) {
+        switchToBiometricBtn.addEventListener('click', () => {
+            switchToBiometricMode();
+        });
+    }
+}
+
+/**
+ * Show password-only mode (no biometric available or not set up)
+ */
+function showPasswordOnlyMode() {
+    const biometricSection = document.getElementById('biometricPrimarySection');
+    const passwordSection = document.getElementById('passwordSection');
+    const backToBiometric = document.getElementById('backToBiometric');
+
+    if (biometricSection) biometricSection.classList.add('hidden');
+    if (passwordSection) passwordSection.classList.remove('collapsed');
+    if (backToBiometric) backToBiometric.classList.add('hidden');
+}
+
+/**
+ * Show password-primary mode with biometric as secondary option
+ * (When biometric is enabled but NOT set as default)
+ */
+function showPasswordWithBiometricMode() {
+    const biometricSection = document.getElementById('biometricPrimarySection');
+    const passwordSection = document.getElementById('passwordSection');
+    const backToBiometric = document.getElementById('backToBiometric');
+    const switchBiometricIcon = document.getElementById('switchBiometricIcon');
+    const switchBiometricText = document.getElementById('switchBiometricText');
+
+    // Hide biometric-first section, show password section
+    if (biometricSection) biometricSection.classList.add('hidden');
+    if (passwordSection) passwordSection.classList.remove('collapsed');
+
+    // Show the "Unlock with [Biometric]" button below password
+    if (backToBiometric) backToBiometric.classList.remove('hidden');
+
+    // Update the biometric button text with platform-specific label
+    if (biometricCapability) {
+        if (switchBiometricIcon) switchBiometricIcon.textContent = biometricCapability.icon;
+        if (switchBiometricText) switchBiometricText.textContent = `Unlock with ${biometricCapability.label}`;
+    }
+
+    // Set up the secondary biometric button handler
+    const switchToBiometricBtn = document.getElementById('switchToBiometricBtn');
+    if (switchToBiometricBtn) {
+        switchToBiometricBtn.addEventListener('click', () => {
+            switchToBiometricMode();
+        });
+    }
+}
+
+/**
+ * Switch from biometric to password input mode
+ */
+function switchToPasswordMode() {
+    const biometricSection = document.getElementById('biometricPrimarySection');
+    const passwordSection = document.getElementById('passwordSection');
+    const backToBiometric = document.getElementById('backToBiometric');
+
+    if (biometricSection) biometricSection.classList.add('hidden');
+    if (passwordSection) passwordSection.classList.remove('collapsed');
+    if (backToBiometric) backToBiometric.classList.remove('hidden');
+
+    // Focus password input
+    const passwordInput = document.getElementById('passwordInput');
+    if (passwordInput) setTimeout(() => passwordInput.focus(), 100);
+}
+
+/**
+ * Switch back from password to biometric mode
+ */
+function switchToBiometricMode() {
+    const biometricSection = document.getElementById('biometricPrimarySection');
+    const passwordSection = document.getElementById('passwordSection');
+    const backToBiometric = document.getElementById('backToBiometric');
+    const retryBtn = document.getElementById('retryBiometricBtn');
+
+    if (biometricSection) biometricSection.classList.remove('hidden');
+    if (passwordSection) passwordSection.classList.add('collapsed');
+    if (backToBiometric) backToBiometric.classList.add('hidden');
+
+    // Reset scan area state
+    const scanArea = document.getElementById('biometricScanArea');
+    if (scanArea) {
+        scanArea.classList.remove('failed', 'success');
+        scanArea.classList.add('scanning');
+    }
+    if (retryBtn) retryBtn.classList.add('hidden');
+
+    // Auto-trigger
+    triggerBiometricAuth();
+}
+
+/**
+ * Auto-trigger biometric authentication
+ */
+async function triggerBiometricAuth() {
+    const scanArea = document.getElementById('biometricScanArea');
+    const biometricSubtext = document.getElementById('biometricSubtext');
+    const retryBtn = document.getElementById('retryBiometricBtn');
+
+    try {
+        // Clear previous messages
+        hideError();
+        hideSuccess();
+
+        // Set scanning state
+        if (scanArea) {
+            scanArea.classList.remove('failed', 'success');
+            scanArea.classList.add('scanning');
+        }
+        if (biometricSubtext) biometricSubtext.textContent = 'Verifying your identity...';
+
+        // Get stored credential
+        const credential = await getFingerprintCredential();
+        if (!credential || !credential.credentialId) {
+            if (biometricSubtext) biometricSubtext.textContent = 'Biometric not set up. Use password.';
+            if (scanArea) scanArea.classList.remove('scanning');
+            switchToPasswordMode();
+            return;
+        }
+
+        // Authenticate with biometric
+        const success = await authenticateWithFingerprint(credential.credentialId);
+
+        if (success) {
+            // Success!
+            if (scanArea) {
+                scanArea.classList.remove('scanning');
+                scanArea.classList.add('success');
+            }
+            if (biometricSubtext) biometricSubtext.textContent = '✓ Identity verified!';
+
+            const biometricIcon = document.getElementById('biometricIcon');
+            if (biometricIcon) biometricIcon.textContent = '✅';
+
+            showSuccess('✅ Authentication successful! Unlocking...');
+
+            // Proceed with unlock
+            await proceedWithUnlock();
+        } else {
+            // Failed
+            if (scanArea) {
+                scanArea.classList.remove('scanning');
+                scanArea.classList.add('failed');
+            }
+            if (biometricSubtext) biometricSubtext.textContent = 'Authentication failed. Try again or use password.';
+            if (retryBtn) retryBtn.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Biometric authentication error:', error);
+
+        if (scanArea) {
+            scanArea.classList.remove('scanning');
+            scanArea.classList.add('failed');
+        }
+        if (biometricSubtext) biometricSubtext.textContent = error.message || 'Authentication cancelled. Try again or use password.';
+        if (retryBtn) retryBtn.classList.remove('hidden');
+    }
+}
+
+/**
+ * Legacy: Unlock tab using fingerprint authentication (kept for compatibility)
+ */
+async function unlockWithFingerprint() {
+    try {
+        // Clear previous messages
+        hideError();
+        hideSuccess();
+        hideRateLimitInfo();
+
+        // Show loading
+        showLoading(true);
+        disableUnlock(true);
+
+        // Get stored credential
+        const credential = await getFingerprintCredential();
+        if (!credential || !credential.credentialId) {
+            showError('Quick unlock not set up. Please use password.');
+            showLoading(false);
+            disableUnlock(false);
+            return;
+        }
+
+        // Authenticate with fingerprint
+        const success = await authenticateWithFingerprint(credential.credentialId);
+
+        if (success) {
+            // Biometric authentication successful
+            showSuccess('✅ Authentication successful! Unlocking...');
+
+            // Proceed with unlock (same logic as password unlock)
+            await proceedWithUnlock();
+        } else {
+            showError('Authentication failed. Please try again or use password.');
+            showLoading(false);
+            disableUnlock(false);
+        }
+    } catch (error) {
+        console.error('Biometric authentication error:', error);
+        showError(error.message || 'Authentication failed or cancelled. Please use password.');
+        showLoading(false);
+        disableUnlock(false);
+    }
+}
+
+/**
+ * Proceed with unlock after authentication (used by both password and fingerprint)
+ */
+async function proceedWithUnlock() {
+    try {
+        // Check if this is a domain-locked tab
+        const lockData = await chrome.storage.local.get([
+            'lockedDomains',
+            'domainUnlockPreferences',
+            `lockData_${currentTabId}`
+        ]);
+
+        const lockedDomains = lockData.lockedDomains || [];
+        const domainPreferences = lockData.domainUnlockPreferences || {};
+        const tabLockData = lockData[`lockData_${currentTabId}`];
+
+        if (tabLockData && tabLockData.originalUrl) {
+            const currentUrl = tabLockData.originalUrl;
+            let matchedPattern = null;
+
+            // Check if current URL matches any locked domain
+            const isDomainLocked = lockedDomains.some(pattern => {
+                try {
+                    const hostname = new URL(currentUrl).hostname;
+                    if (pattern === hostname) {
+                        matchedPattern = pattern;
+                        return true;
+                    }
+                    if (pattern.startsWith('*.')) {
+                        const domain = pattern.slice(2);
+                        if (hostname.endsWith(domain) || hostname === domain.replace('*.', '')) {
+                            matchedPattern = pattern;
+                            return true;
+                        }
+                    }
+                    if (hostname.includes(pattern) || pattern.includes(hostname)) {
+                        matchedPattern = pattern;
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Error matching pattern:', e);
+                }
+                return false;
+            });
+
+            if (isDomainLocked && matchedPattern) {
+                // Check if user has a saved preference for this domain
+                if (domainPreferences[matchedPattern]) {
+                    // Use saved preference and unlock
+                    await unlockWithScope(domainPreferences[matchedPattern]);
+                } else {
+                    // First time - show scope selection dialog
+                    showScopeSelection(matchedPattern, currentUrl);
+                }
+            } else {
+                // Regular tab lock - just unlock
+                await unlockWithScope('tab-only');
+            }
+        } else {
+            // No lock data, just unlock
+            await unlockWithScope('tab-only');
+        }
+    } catch (error) {
+        console.error('Error proceeding with unlock:', error);
+        showError('Failed to unlock. Please try again.');
+        showLoading(false);
+        disableUnlock(false);
+    }
+}
+
 // Unlock with password
 async function unlockWithPassword() {
     const passwordInput = document.getElementById('passwordInput');
@@ -260,63 +650,8 @@ async function unlockWithPassword() {
         const result = await verifyPasswordWithRateLimit(password, storedHash);
 
         if (result.success) {
-            // Password correct - check if this is a domain-locked tab
-            const lockData = await chrome.storage.local.get([
-                'lockedDomains',
-                'domainUnlockPreferences',
-                `lockData_${currentTabId}`
-            ]);
-
-            const lockedDomains = lockData.lockedDomains || [];
-            const domainPreferences = lockData.domainUnlockPreferences || {};
-            const tabLockData = lockData[`lockData_${currentTabId}`];
-
-            if (tabLockData && tabLockData.originalUrl) {
-                const currentUrl = tabLockData.originalUrl;
-                let matchedPattern = null;
-
-                // Check if current URL matches any locked domain
-                const isDomainLocked = lockedDomains.some(pattern => {
-                    try {
-                        const hostname = new URL(currentUrl).hostname;
-                        if (pattern === hostname) {
-                            matchedPattern = pattern;
-                            return true;
-                        }
-                        if (pattern.startsWith('*.')) {
-                            const domain = pattern.slice(2);
-                            if (hostname.endsWith(domain) || hostname === domain.replace('*.', '')) {
-                                matchedPattern = pattern;
-                                return true;
-                            }
-                        }
-                        if (hostname.includes(pattern) || pattern.includes(hostname)) {
-                            matchedPattern = pattern;
-                            return true;
-                        }
-                    } catch (e) {
-                        console.error('Error matching pattern:', e);
-                    }
-                    return false;
-                });
-
-                if (isDomainLocked && matchedPattern) {
-                    // Check if user has a saved preference for this domain
-                    if (domainPreferences[matchedPattern]) {
-                        // Use saved preference and unlock
-                        await unlockWithScope(domainPreferences[matchedPattern]);
-                    } else {
-                        // First time - show scope selection dialog
-                        showScopeSelection(matchedPattern, currentUrl);
-                    }
-                } else {
-                    // Regular tab lock - just unlock
-                    await unlockWithScope('tab-only');
-                }
-            } else {
-                // No lock data, just unlock
-                await unlockWithScope('tab-only');
-            }
+            // Password correct - proceed with unlock
+            await proceedWithUnlock();
 
         } else {
             // Password incorrect or rate limited
