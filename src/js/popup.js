@@ -2210,11 +2210,16 @@ function updateFingerprintStatus(message, type) {
   // Find or create status message element
   let statusMessage = statusDiv.querySelector('.status-message');
   if (!statusMessage) {
-    statusDiv.innerHTML = `
-      <span class="status-icon">ℹ️</span>
-      <span class="status-message">${message}</span>
-    `;
-    statusMessage = statusDiv.querySelector('.status-message');
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'status-icon';
+    iconSpan.textContent = 'ℹ️';
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'status-message';
+    msgSpan.textContent = message;
+    statusDiv.textContent = '';
+    statusDiv.appendChild(iconSpan);
+    statusDiv.appendChild(msgSpan);
+    statusMessage = msgSpan;
   } else {
     statusMessage.textContent = message;
   }
