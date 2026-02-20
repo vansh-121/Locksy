@@ -9,10 +9,15 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
   color: #333;
   min-width: 320px;
+  max-width: 100%;
   padding: 0 0 16px 0;
   position: relative;
+  /* Prevent horizontal scroll at any zoom level */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .container {
@@ -22,6 +27,10 @@ body {
   margin: 16px;
   padding: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  /* Ensure container never bleeds past body edge at any zoom */
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header {
@@ -295,7 +304,7 @@ input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+  /* Removed translateY — causes layout height jitter in tight popup layouts */
 }
 
 input::placeholder {
@@ -306,7 +315,8 @@ input::placeholder {
 button {
   width: 100%;
   padding: 14px 18px;
-  margin: 4px;
+  /* Use vertical margin only — horizontal margin causes overflow inside containers */
+  margin: 4px 0;
   border: none;
   border-radius: 12px;
   font-size: 15px;
@@ -316,6 +326,9 @@ button {
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Prevent buttons from ever exceeding their parent width */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 button:hover {
@@ -324,8 +337,6 @@ button:hover {
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   filter: brightness(1.05);
 }
 
@@ -749,6 +760,8 @@ button:disabled {
   display: flex;
   gap: 12px;
   justify-content: center;
+  /* Wrap to next line if items don't fit (e.g. zoomed in) */
+  flex-wrap: wrap;
   margin-bottom: 16px;
 }
 
