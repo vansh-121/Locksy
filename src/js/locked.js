@@ -262,6 +262,31 @@ async function initializeFingerprintAuth() {
         const stored = await chrome.storage.local.get(['biometricDefault']);
         const isDefault = stored.biometricDefault === true;
 
+        // Set up all biometric-related button handlers ONCE here, regardless of
+        // which mode is active. This prevents buttons from being dead when the
+        // user reaches the biometric screen via switchToBiometricMode().
+        const usePasswordBtn = document.getElementById('usePasswordBtn');
+        if (usePasswordBtn) {
+            usePasswordBtn.addEventListener('click', () => {
+                switchToPasswordMode();
+            });
+        }
+
+        const retryBtn = document.getElementById('retryBiometricBtn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', () => {
+                retryBtn.classList.add('hidden');
+                triggerBiometricAuth();
+            });
+        }
+
+        const switchToBiometricBtn = document.getElementById('switchToBiometricBtn');
+        if (switchToBiometricBtn) {
+            switchToBiometricBtn.addEventListener('click', () => {
+                switchToBiometricMode();
+            });
+        }
+
         if (isDefault) {
             // Biometric is default → show biometric-first UI (auto-trigger fingerprint)
             showBiometricFirstMode();
@@ -280,67 +305,51 @@ async function initializeFingerprintAuth() {
 }
 
 /**
+ * Update all biometric UI text/icons based on the detected capability.
+ * Call this whenever the biometric section becomes visible.
+ */
+function updateBiometricUI() {
+    if (!biometricCapability) return;
+
+    const biometricIcon = document.getElementById('biometricIcon');
+    const biometricPrompt = document.getElementById('biometricPromptText');
+    const biometricSubtext = document.getElementById('biometricSubtext');
+    const switchBiometricIcon = document.getElementById('switchBiometricIcon');
+    const switchBiometricText = document.getElementById('switchBiometricText');
+
+    if (biometricIcon) biometricIcon.textContent = biometricCapability.icon;
+
+    if (biometricPrompt) {
+        if (biometricCapability.type === 'face') {
+            biometricPrompt.textContent = 'Look at your camera to unlock';
+        } else if (biometricCapability.type === 'windows_hello') {
+            biometricPrompt.textContent = 'Touch your fingerprint sensor or look at your camera to unlock';
+        } else {
+            biometricPrompt.textContent = 'Touch your fingerprint sensor to unlock';
+        }
+    }
+
+    if (biometricSubtext) biometricSubtext.textContent = 'Verifying your identity...';
+
+    if (switchBiometricIcon) switchBiometricIcon.textContent = biometricCapability.icon;
+    if (switchBiometricText) switchBiometricText.textContent = `Unlock with ${biometricCapability.label}`;
+}
+
+/**
  * Show biometric-first mode (biometric primary, password secondary)
  */
 function showBiometricFirstMode() {
     const biometricSection = document.getElementById('biometricPrimarySection');
     const passwordSection = document.getElementById('passwordSection');
-    const biometricIcon = document.getElementById('biometricIcon');
-    const biometricPrompt = document.getElementById('biometricPromptText');
-    const biometricSubtext = document.getElementById('biometricSubtext');
-    const backToBiometric = document.getElementById('backToBiometric');
-    const switchBiometricIcon = document.getElementById('switchBiometricIcon');
-    const switchBiometricText = document.getElementById('switchBiometricText');
 
     if (!biometricSection) return;
 
-    // Update biometric UI with detected capability
-    if (biometricCapability) {
-        if (biometricIcon) biometricIcon.textContent = biometricCapability.icon;
-        if (biometricPrompt) {
-            if (biometricCapability.type === 'face') {
-                biometricPrompt.textContent = 'Look at your camera to unlock';
-            } else if (biometricCapability.type === 'windows_hello') {
-                biometricPrompt.textContent = 'Touch your fingerprint sensor or look at your camera';
-            } else {
-                biometricPrompt.textContent = 'Touch your fingerprint sensor to unlock';
-            }
-        }
-        if (biometricSubtext) biometricSubtext.textContent = 'Verifying your identity...';
-
-        // Update the switch-to-biometric button text
-        if (switchBiometricIcon) switchBiometricIcon.textContent = biometricCapability.icon;
-        if (switchBiometricText) switchBiometricText.textContent = `Unlock with ${biometricCapability.label}`;
-    }
+    // Update all biometric UI text and icons for the current platform
+    updateBiometricUI();
 
     // Show biometric section, hide password
     biometricSection.classList.remove('hidden');
     passwordSection.classList.add('collapsed');
-
-    // Setup "Use Password Instead" button
-    const usePasswordBtn = document.getElementById('usePasswordBtn');
-    if (usePasswordBtn) {
-        usePasswordBtn.addEventListener('click', () => {
-            switchToPasswordMode();
-        });
-    }
-
-    // Setup retry button
-    const retryBtn = document.getElementById('retryBiometricBtn');
-    if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
-            retryBtn.classList.add('hidden');
-            triggerBiometricAuth();
-        });
-    }
-
-    // Setup back-to-biometric button
-    const switchToBiometricBtn = document.getElementById('switchToBiometricBtn');
-    if (switchToBiometricBtn) {
-        switchToBiometricBtn.addEventListener('click', () => {
-            switchToBiometricMode();
-        });
-    }
 }
 
 /**
@@ -380,13 +389,6 @@ function showPasswordWithBiometricMode() {
         if (switchBiometricText) switchBiometricText.textContent = `Unlock with ${biometricCapability.label}`;
     }
 
-    // Set up the secondary biometric button handler
-    const switchToBiometricBtn = document.getElementById('switchToBiometricBtn');
-    if (switchToBiometricBtn) {
-        switchToBiometricBtn.addEventListener('click', () => {
-            switchToBiometricMode();
-        });
-    }
 }
 
 /**
@@ -418,6 +420,9 @@ function switchToBiometricMode() {
     if (biometricSection) biometricSection.classList.remove('hidden');
     if (passwordSection) passwordSection.classList.add('collapsed');
     if (backToBiometric) backToBiometric.classList.add('hidden');
+
+    // Update prompt text/icon for the correct platform (face vs fingerprint vs Windows Hello)
+    updateBiometricUI();
 
     // Reset scan area state
     const scanArea = document.getElementById('biometricScanArea');

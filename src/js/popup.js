@@ -1840,7 +1840,7 @@ async function initializePopupBiometricAuth() {
       if (capability.type === 'face') {
         scanText.textContent = 'Look at your camera';
       } else if (capability.type === 'windows_hello') {
-        scanText.textContent = 'Touch sensor or look at camera';
+        scanText.textContent = 'Touch your fingerprint sensor or look at your camera';
       } else {
         scanText.textContent = 'Touch your fingerprint sensor';
       }
@@ -1903,19 +1903,18 @@ async function initializePopupBiometricAuth() {
           biometricAuthDiv.style.display = 'block';
           passwordAuthDiv.style.display = 'none';
           backToBiometricLink.style.display = 'none';
-
-          // Show "Use Password" toggle in biometric view
-          if (usePasswordToggle) {
-            usePasswordToggle.addEventListener('click', () => {
-              biometricAuthDiv.style.display = 'none';
-              passwordAuthDiv.style.display = 'block';
-              backToBiometricLink.style.display = 'block';
-              const authPasswordInput = document.getElementById('authPassword');
-              if (authPasswordInput) setTimeout(() => authPasswordInput.focus(), 100);
-            });
-          }
-
           triggerPopupBiometricAuth();
+        });
+      }
+
+      // Register "Use Password" toggle once (outside backToBiometricLink handler to prevent listener stacking)
+      if (usePasswordToggle) {
+        usePasswordToggle.addEventListener('click', () => {
+          biometricAuthDiv.style.display = 'none';
+          passwordAuthDiv.style.display = 'block';
+          backToBiometricLink.style.display = 'block';
+          const authPasswordInput = document.getElementById('authPassword');
+          if (authPasswordInput) setTimeout(() => authPasswordInput.focus(), 100);
         });
       }
 

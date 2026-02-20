@@ -317,18 +317,18 @@ async function detectBiometricCapability() {
             // User previously set up biometric — hardware confirmed
             result.available = true;
             result.type = 'windows_hello';
-            result.label = 'Windows Hello';
+            result.label = 'Fingerprint / Face';
             result.icon = '👆';
-            result.description = 'Use Windows Hello (fingerprint or face) to unlock instantly.';
+            result.description = 'Use your fingerprint or face to unlock instantly.';
         } else {
             // Not yet registered — we can't tell if hardware exists
             // Mark as needing hardware verification during setup
             result.available = false;
             result.needsHardwareCheck = true;
             result.type = 'windows_hello_unverified';
-            result.label = 'Biometric Lock';
+            result.label = 'Fingerprint / Face';
             result.icon = '👆';
-            result.description = 'Requires a fingerprint reader or face recognition camera. Windows Hello PIN alone is not supported — it\'s no different from a password.';
+            result.description = 'Requires a fingerprint reader or face recognition camera. A PIN alone is not supported — it\'s no different from a password.';
         }
     } else if (ua.includes('linux') || ua.includes('chromeos')) {
         // LINUX/ChromeOS — SAME ISSUE AS WINDOWS: isPlatformAuthenticatorAvailable()
