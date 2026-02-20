@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 2.0.0  
-**Last Updated:** January 5, 2026
+**Version:** 2.3.0  
+**Last Updated:** February 21, 2026
 
 ---
 
@@ -132,7 +132,53 @@ Try it yourself:
 
 ---
 
-## 🔐 Password Security Deep Dive
+## � Biometric Authentication Security (WebAuthn / FIDO2)
+
+### How Biometric Unlock Works
+
+Locksy v2.3.0 introduces WebAuthn-based biometric unlock. Here's exactly what happens — and what doesn't:
+
+**What Locksy Does:**
+- ✅ Calls `navigator.credentials.create()` to register a PassKey credential with the device's platform authenticator (e.g., Windows Hello, Touch ID, Face ID)
+- ✅ Stores only the returned **credential ID** (a random base64 string) in `chrome.storage.local`
+- ✅ On unlock, calls `navigator.credentials.get()` with the stored credential ID to challenge the platform authenticator
+- ✅ Verifies only that the OS returned a valid assertion — no biometric data is ever seen, handled, or stored by Locksy
+
+**What Locksy Does NOT Do:**
+- ❌ Never accesses, reads, or stores any raw biometric data (fingerprint image, face scan, etc.)
+- ❌ Never transmits anything — WebAuthn is 100% local, no server involved
+- ❌ Never bypasses the OS security chip; the authenticator lives entirely inside the OS/hardware
+
+### Security Properties
+
+| Property | Value |
+|---|---|
+| Standard | WebAuthn / FIDO2 (W3C spec) |
+| Authenticator Type | Platform (TPM, Secure Enclave, etc.) |
+| Biometric Data Stored by Locksy | **NONE** |
+| Data Transmitted | **NONE** (100% local) |
+| Stored Credential | Public-key credential ID only |
+| Fallback | Master password always available |
+| Opt-in | Yes — disabled by default |
+
+### Technical Proof
+
+Search the codebase for any server-side or biometric data handling:
+```bash
+# No biometric data handling:
+grep -r "fingerprint\|biometricData\|rawBiometric" src/
+# Result: NONE
+
+# No network requests in webauthn-utils.js:
+grep -r "fetch\|XMLHttpRequest" src/js/webauthn-utils.js
+# Result: NONE
+```
+
+The `webauthn-utils.js` module is entirely local and only interacts with the browser's built-in `navigator.credentials` API.
+
+---
+
+## �🔐 Password Security Deep Dive
 
 ### How Your Password is Protected
 

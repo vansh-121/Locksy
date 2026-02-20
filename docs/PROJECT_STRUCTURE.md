@@ -1,7 +1,7 @@
 # Locksy Extension - Project Structure
 
 ## Overview
-This is a cross-browser extension that provides military-grade tab protection with PBKDF2 key derivation (600,000 iterations), SHA-256 encryption, and cryptographic salt generation.
+This is a cross-browser extension that provides military-grade tab protection with PBKDF2 key derivation (600,000 iterations), SHA-256 encryption, cryptographic salt generation, and biometric authentication via the WebAuthn/FIDO2 standard.
 
 ## Directory Structure
 
@@ -40,8 +40,9 @@ Locksy Extension/
 │       ├── crypto-utils.js         # PBKDF2 cryptographic utilities
 │       ├── domain-manager.js       # Domain lock management logic
 │       ├── keyboard-shortcuts.js   # Keyboard shortcuts guide logic
-│       ├── locked.js               # Locked tab overlay logic
-│       ├── popup.js                # Popup UI logic and event handlers
+│       ├── locked.js               # Locked tab overlay logic (incl. biometric unlock)
+│       ├── popup.js                # Popup UI logic and event handlers (incl. biometric settings)
+│       ├── webauthn-utils.js       # WebAuthn/FIDO2 biometric authentication utilities
 │       └── whats-new.js            # What's New overlay logic
 │
 ├── archive/                   # Archived/legacy files
@@ -96,18 +97,20 @@ Locksy Extension/
 - **FIREFOX_PRIVACY_POLICY.txt**: Privacy policy formatted for Firefox submission
 - **TIMER_FEATURE_SUMMARY.md**: Comprehensive technical overview of timer and scheduling features
 - **RELEASE_NOTES_v2.0.0.txt**: Detailed release notes for version 2.0.0
+- **RELEASE_NOTES_v2.3.0.txt**: Detailed release notes for version 2.3.0 (biometric authentication)
 
 ### Source Files (`src/`)
 
 #### JavaScript (`src/js/`)
 - **activity-tracker.js**: Content script injected on all pages for comprehensive activity detection (mouse, keyboard, scroll, video playback) with throttled reporting to background script
 - **background.js**: Service worker that manages locked tabs, domain locks, auto-lock timers, scheduled locking with Chrome Alarms API, activity tracking, keyboard shortcut handlers, badge updates, and monitors tab events
-- **locked.js**: Locked tab overlay logic with password verification, rate limiting, and unlock functionality
+- **locked.js**: Locked tab overlay logic with password verification, biometric (WebAuthn) unlock, rate limiting, and unlock functionality
 - **crypto-utils.js**: PBKDF2-SHA256 cryptographic utilities (600k iterations), secure salt generation using Web Crypto API, and constant-time comparison
 - **browser-polyfill.min.js**: Mozilla's WebExtension API polyfill for cross-browser compatibility (Chrome, Edge, Firefox)
 - **domain-manager.js**: Domain lock management UI logic, pattern handling, and unlock preferences
 - **keyboard-shortcuts.js**: Keyboard shortcuts guide page logic and navigation
-- **popup.js**: Extension popup UI logic, password management, tab locking controls, auto-lock timer settings, scheduled locking configuration with day selection and scope options, developer information section, and sponsor button
+- **popup.js**: Extension popup UI logic, password management, tab locking controls, biometric settings (enable/disable, credential registration), auto-lock timer settings, scheduled locking configuration with day selection and scope options, developer information section, and sponsor button
+- **webauthn-utils.js**: WebAuthn/FIDO2 biometric authentication utility module — `registerBiometric()`, `authenticateWithBiometric()`, `isBiometricAvailable()`, `clearBiometricCredential()` — handles PassKey credential lifecycle with full error handling and device compatibility checks
 - **whats-new.js**: What's New overlay logic for displaying update notifications
  with timer settings, scheduled locking, and developer information
 - **locked.html**: Locked tab overlay interface with password input
@@ -168,6 +171,11 @@ BUILD_GUIDE.md**: Complete guide for building and verifying the extension
 ### Functionality
 - Lock any browser tab with password protection
 - Lock entire domains with pattern matching (exact and wildcard)
+- **Biometric Authentication (WebAuthn)**: Unlock tabs with fingerprint, Face ID, Touch ID, or Windows Hello
+  - FIDO2-compliant PassKey credential per device
+  - Graceful fallback to master password
+  - Toggle on/off via popup settings; credential managed via `webauthn-utils.js`
+  - Zero biometric data stored — only a public-key credential ID saved locally
 - **Auto-Lock Timer**: Automatic locking after inactivity (5, 15, 30, 60 minutes, or custom 1-480 minutes)
   - Smart activity detection (mouse, keyboard, scrolling, video playback)
   - Configurable scope: all tabs or active tab only
@@ -222,8 +230,8 @@ The build script:
 - Root directory contains only essential files (manifest, readme, license)
 
 ## Version
-Current Version: 2.0.0
-Last Updated: December 27, 2025
+Current Version: 2.3.0
+Last Updated: February 21, 2026
 
 ## Architecture
 
@@ -258,6 +266,7 @@ Last Updated: December 27, 2025
 - JavaScript (ES6+)
 - Chrome Extension Manifest V3
 - **Web Crypto API** (PBKDF2, secure random generation)
+- **Web Authentication API (WebAuthn / FIDO2)** (biometric PassKey registration & authentication)
 - HTML5 Canvas API (for favicon manipulation)
 - Chrome Storage API
 - Chrome Tabs API
@@ -265,6 +274,7 @@ Last Updated: December 27, 2025
 - Chrome Notifications API
 - Chrome Web Navigation API
 - Chrome Commands API (keyboard shortcuts)
+- Chrome Alarms API (scheduled locking)
 
 ## Browser Compatibility
 - Chrome (Manifest V3) - Full support
