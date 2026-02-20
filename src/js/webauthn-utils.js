@@ -85,7 +85,11 @@ async function registerFingerprint(username = "locksy_user") {
             challenge: challenge,
             rp: {
                 name: "Locksy",
-                id: window.location.hostname || "locksy.extension"
+                // window.location.hostname is the extension ID on chrome-extension:// pages.
+                // Fall back to chrome.runtime.id (the actual extension ID) which is always
+                // a valid RP ID string. "locksy.extension" is NOT a valid domain and would
+                // cause navigator.credentials.create() to throw a SecurityError.
+                id: window.location.hostname || chrome.runtime.id
             },
             user: {
                 id: userId,
