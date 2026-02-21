@@ -1131,6 +1131,11 @@ function initializeMainUI() {
   const headerWhatsNewBtn = document.getElementById("headerWhatsNewBtn");
   if (headerWhatsNewBtn) {
     headerWhatsNewBtn.addEventListener("click", () => {
+      // Clear the update badge and storage flag if present
+      const badge = headerWhatsNewBtn.querySelector('.whats-new-badge');
+      if (badge) badge.remove();
+      chrome.storage.local.set({ showWhatsNew: false });
+
       chrome.windows.create({
         url: chrome.runtime.getURL('src/html/whats-new.html'),
         type: 'popup',
@@ -1241,6 +1246,19 @@ function initializeMainUI() {
 
   // Initialize timer settings
   initializeTimerSettings();
+
+  // Check if What's New should be shown after an update — add a badge dot
+  // instead of auto-opening a window (which would close this popup)
+  chrome.storage.local.get(['showWhatsNew'], (data) => {
+    if (data.showWhatsNew) {
+      const whatsNewBtn = document.getElementById('headerWhatsNewBtn');
+      if (whatsNewBtn && !whatsNewBtn.querySelector('.whats-new-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'whats-new-badge';
+        whatsNewBtn.appendChild(badge);
+      }
+    }
+  });
 }
 
 function showNotification(message, type = "info") {

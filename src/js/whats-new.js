@@ -12,13 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dismissBtn = document.getElementById('dismissWhatsNew');
     if (dismissBtn) {
         dismissBtn.addEventListener('click', () => {
-            // Mark as seen and switch back to main popup
+            // Mark as seen and close this window
             chrome.storage.local.set({ showWhatsNew: false }, () => {
-                // Switch popup back to main popup.html
-                chrome.action.setPopup({ popup: 'src/html/popup.html' }, () => {
-                    // Reload the popup to show main interface immediately
-                    window.location.href = 'popup.html';
-                });
+                window.close();
             });
         });
     }

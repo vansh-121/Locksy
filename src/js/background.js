@@ -702,26 +702,21 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
     // Only show What's New if the version actually changed
     if (previousVersion && currentVersion !== previousVersion) {
-      // Set flag and switch popup to whats-new.html
+      // Set flag so popup.js can open What's New on next open
       chrome.storage.local.set({
         showWhatsNew: true,
         whatsNewVersion: currentVersion,
         whatsNewPreviousVersion: previousVersion
       }, () => {
-        // Change the popup to whats-new.html
-        chrome.action.setPopup({ popup: 'src/html/whats-new.html' }, () => {
-          // Try to open the popup automatically
-          chrome.action.openPopup().catch(err => {
-            // If popup can't be opened automatically, create a notification
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-              title: "Locksy Updated! 🎉",
-              message: `Click the extension icon to see what's new in v${currentVersion}`,
-              priority: 2,
-              requireInteraction: true
-            });
-          });
+        // Notify the user to click the icon — never call setPopup/openPopup
+        // because setPopup breaks Firefox's click-to-open popup behavior.
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+          title: "Locksy Updated! 🎉",
+          message: `Click the extension icon to see what's new in v${currentVersion}`,
+          priority: 2,
+          requireInteraction: true
         });
       });
     } else {
