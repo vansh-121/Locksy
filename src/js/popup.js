@@ -2131,52 +2131,47 @@ async function initializeFingerprintAuth() {
             showNotification('Failed to disable biometric', 'error');
           }
         } else {
-          // User wants to ENABLE biometric — trigger registration
-          try {
-            if (capability.needsHardwareCheck) {
-              // Platform requires hardware verification first
-              const proceed = confirm(
-                '⚠️ Biometric Lock requires a fingerprint reader or face recognition camera.\n\n' +
-                'A system prompt will appear next. If you ONLY see a PIN or password option ' +
-                '(no fingerprint or face), it means your device doesn\'t have biometric hardware — press Cancel.\n\n' +
-                'If you see a fingerprint or face option, use it to complete setup.\n\n' +
-                'Continue?'
-              );
-              if (!proceed) return;
+          // User wants to ENABLE biometric.
+          // IMPORTANT: Do NOT call navigator.credentials.create() here in the popup.
+          // The extension popup closes the moment it loses focus — which is exactly
+          // what happens when the OS passkey/biometric dialog appears. This silently
+          // cancels the WebAuthn request and the user sees nothing (Brave bug report).
+          // Fix: open a dedicated standalone window that persists across focus changes.
 
-              updateFingerprintStatus('System prompt will appear — use fingerprint or face to verify...', 'info');
-              if (biometricOptions) biometricOptions.style.display = 'block';
+          updateFingerprintStatus('Opening biometric setup window…', 'info');
 
-              const result = await verifyBiometricHardwareAndRegister();
-              if (result.success && result.credential) {
-                await chrome.storage.local.set({ fingerprintCredential: result.credential });
-                biometricToggle.classList.add('active');
-                updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
-                showNotification('Biometric lock set up successfully!', 'success');
-                updateDefaultDescription(false, capability);
-              } else {
-                if (biometricOptions) biometricOptions.style.display = 'none';
-                showNotification('Setup cancelled. Your device may not have a fingerprint reader or camera.', 'error');
-                return;
-              }
-            } else {
-              // Direct registration (macOS/iOS/Android, or confirmed Windows)
-              updateFingerprintStatus('Authenticating — follow the on-screen prompt...', 'info');
-              if (biometricOptions) biometricOptions.style.display = 'block';
+          // Clear any stale result from a previous attempt
+          await chrome.storage.local.remove('biometricSetupResult');
 
-              const credential = await registerFingerprint();
-              await chrome.storage.local.set({ fingerprintCredential: credential });
+          chrome.windows.create({
+            url: chrome.runtime.getURL('src/html/biometric-setup.html'),
+            type: 'popup',
+            width: 560,
+            height: 600,
+            focused: true
+          });
 
+          // Listen for the result written by biometric-setup.js
+          const onStorageChanged = (changes) => {
+            if (!changes.biometricSetupResult) return;
+            chrome.storage.onChanged.removeListener(onStorageChanged);
+
+            const result = changes.biometricSetupResult.newValue;
+            if (result && result.success) {
               biometricToggle.classList.add('active');
+              if (biometricOptions) biometricOptions.style.display = 'block';
               updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
-              showNotification(`${capability.label} set up successfully!`, 'success');
               updateDefaultDescription(false, capability);
+              showNotification('Biometric lock set up successfully!', 'success');
+              // Clean up the signal key
+              chrome.storage.local.remove('biometricSetupResult');
+            } else if (result) {
+              if (biometricOptions) biometricOptions.style.display = 'none';
+              showNotification(result.error || 'Biometric setup cancelled or failed', 'error');
+              chrome.storage.local.remove('biometricSetupResult');
             }
-          } catch (error) {
-            console.error('Error setting up biometric:', error);
-            if (biometricOptions) biometricOptions.style.display = 'none';
-            showNotification(error.message || 'Biometric setup cancelled or failed', 'error');
-          }
+          };
+          chrome.storage.onChanged.addListener(onStorageChanged);
         }
       });
     }
