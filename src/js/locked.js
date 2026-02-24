@@ -190,10 +190,10 @@
                     if (tabLockData && tabLockData.originalUrl) {
                         window.location.href = tabLockData.originalUrl;
                     } else {
-                        // Fallback: close this tab if no original URL
-                        chrome.tabs.getCurrent((tab) => {
-                            if (tab) chrome.tabs.remove(tab.id);
-                        });
+                        // Fallback: background already navigated the tab (race condition).
+                        // Do NOT close the tab — just let the background-initiated
+                        // navigation take over. Closing would delete the tab entirely.
+                        console.log('[Locksy] Tab unlocked by background, waiting for navigation.');
                     }
                 }
             } catch (error) {
