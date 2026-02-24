@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-2.3.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-2.4.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -202,6 +202,14 @@
 ## �🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 2.4.0 - Bug Fixes & Improvements (February 24, 2026) 🛠️
+
+#### 🔧 What's New
+
+- **Bug fixes & stability improvements** — internal reliability enhancements for a smoother experience
+
+---
 
 ### Version 2.3.0 - Biometric Authentication (February 21, 2026) 🔑
 

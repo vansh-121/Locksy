@@ -2,6 +2,16 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.4.0] - 2026-02-24
+
+### 🐛 Bug Fixes
+- **Temporarily unlocked tabs state persistence**: Fixed `temporarilyUnlockedTabIds` being omitted from the storage write after a scheduled lock period ends. Previously, if the service worker restarted at that moment, tabs that were temporarily unlocked (via domain lock bypass) would be incorrectly re-locked on the next navigation check.
+
+### 🔧 Improvements
+- No user-facing feature changes; internal reliability and state consistency improvements only.
+
+---
+
 ## [2.3.0] - 2026-02-21
 
 ### 🎉 Major New Features
