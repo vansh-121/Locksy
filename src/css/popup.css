@@ -96,8 +96,17 @@ body {
 }
 
 @keyframes badge-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.25); opacity: 0.8; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.25);
+    opacity: 0.8;
+  }
 }
 
 .newsletter-link {
@@ -550,7 +559,7 @@ button:disabled {
 }
 
 .btn-unlock-all {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
 }
 
 .btn-domain {
@@ -590,8 +599,8 @@ button:disabled {
 
 .btn-unlock-all:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
 }
 
 .btn-lock-all:hover:not(:disabled),
