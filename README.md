@@ -203,11 +203,12 @@
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
 
-### Version 2.4.0 - Bug Fixes & Improvements (February 24, 2026) 🛠️
+### Version 2.4.0 - Unlock All Tabs & Bug Fixes (February 25, 2026) 🛠️
 
-#### 🔧 What's New
+#### 🔥 What's New
 
-- **Bug fixes & stability improvements** — internal reliability enhancements for a smoother experience
+- **🔓 Unlock All Tabs**: New popup button that unlocks every locked tab simultaneously — all tabs navigate back at once in a single batch operation
+- **Bug fixes & stability improvements** — temporarily unlocked tabs state now persists correctly across service worker restarts
 
 ---
 

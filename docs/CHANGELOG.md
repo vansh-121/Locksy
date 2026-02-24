@@ -2,13 +2,18 @@
 
 All notable changes to Locksy will be documented in this file.
 
-## [2.4.0] - 2026-02-24
+## [2.4.0] - 2026-02-25
+
+### ✨ New Features
+- **Unlock All Tabs**: New button in the popup that unlocks every locked tab simultaneously with a single click
+  - Batch implementation — one storage read, one storage write, all `tabs.update` calls fire in parallel
+  - All tabs navigate back to their original URLs at the same time (no sequential unlocking)
 
 ### 🐛 Bug Fixes
 - **Temporarily unlocked tabs state persistence**: Fixed `temporarilyUnlockedTabIds` being omitted from the storage write after a scheduled lock period ends. Previously, if the service worker restarted at that moment, tabs that were temporarily unlocked (via domain lock bypass) would be incorrectly re-locked on the next navigation check.
 
 ### 🔧 Improvements
-- No user-facing feature changes; internal reliability and state consistency improvements only.
+- Internal reliability and state consistency improvements.
 
 ---
 
