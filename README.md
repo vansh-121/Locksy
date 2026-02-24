@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-2.2.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-2.3.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -35,17 +35,101 @@
 
 ---
 
-## 🎥 Video Demo
+## ✨ Features in Action
 
 <div align="center">
-  
-**See Locksy in action!** Watch our video demonstration to learn how to protect your tabs with military-grade security.
-  
-  [![Locksy Extension Demo](https://img.youtube.com/vi/6uyd4sN5WiA/maxresdefault.jpg)](https://www.youtube.com/watch?v=6uyd4sN5WiA)
-  
-  [🎬 Watch on YouTube](https://www.youtube.com/watch?v=6uyd4sN5WiA)
-  
+
+**See Locksy in action!** Watch how each feature works with these live demonstrations.
+
 </div>
+
+### 🔐 Getting Started
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part1.gif" alt="Setting Master Password" width="100%">
+      <br>
+      <b>1️⃣ Setting Master Password</b>
+      <br>
+      Create your secure master password with real-time strength indicator
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part2.gif" alt="Locking Current Tab" width="100%">
+      <br>
+      <b>2️⃣ Locking Current Tab</b>
+      <br>
+      One-click tab protection with instant lock overlay
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part3.gif" alt="Tab Locked" width="100%">
+      <br>
+      <b>3️⃣ Tab Locked</b>
+      <br>
+      Password-protected overlay secures your sensitive content
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part4.gif" alt="Smart Authentication Protection" width="100%">
+      <br>
+      <b>4️⃣ Smart Authentication Protection</b>
+      <br>
+      Current password required to change settings - no bypass!
+    </td>
+  </tr>
+</table>
+
+### 🛡️ Advanced Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part5.gif" alt="Domain Locking" width="100%">
+      <br>
+      <b>5️⃣ Domain & Subdomain Locking</b>
+      <br>
+      Lock entire domains with wildcard support for automatic protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part6.gif" alt="Keyboard Shortcuts" width="100%">
+      <br>
+      <b>6️⃣ Keyboard Shortcuts</b>
+      <br>
+      Pre-defined shortcuts for power users - fully customizable
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part7.gif" alt="Incognito Mode" width="100%">
+      <br>
+      <b>7️⃣ Incognito/InPrivate Mode</b>
+      <br>
+      Enable Locksy in private browsing for complete privacy protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part8.gif" alt="Auto Lock Feature" width="100%">
+      <br>
+      <b>8️⃣ Auto Lock Timer</b>
+      <br>
+      Automatic tab locking after inactivity with smart detection
+    </td>
+  </tr>
+</table>
+
+### ⏱️ Automation Features
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="assets/videos/Part9.gif" alt="Scheduled Lock" width="100%">
+      <br>
+      <b>9️⃣ Scheduled Lock Feature</b>
+      <br>
+      Time-based automatic locking with day selection and custom schedules
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -115,9 +199,42 @@
 
 ---
 
-## 🆕 Recent Improvements
+## �🆕 Recent Improvements
 
-**📌 About Version Numbering**: Locksy v2.2 brings powerful automation features including auto-lock timers and scheduled locking. Following semantic versioning standards. [See full version history →](docs/CHANGELOG.md)
+**📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 2.3.0 - Biometric Authentication (February 21, 2026) 🔑
+
+<div align="center">
+
+**New Features & Improvements**
+
+</div>
+
+#### 🔥 What's New
+
+- **🔑 Biometric Authentication (WebAuthn)**: Unlock protected tabs with your fingerprint or face
+  - Supports Windows Hello, Touch ID, Face ID, and all FIDO2-compatible authenticators
+  - One-tap unlock — no more typing password every time
+  - Graceful fallback to master password if biometric is unavailable
+  - Toggle biometric lock on/off in settings; register/remove credential at any time
+  - Zero biometric data stored — only a public-key credential ID saved locally
+
+- **📬 Newsletter Subscription**: Subscribe to Locksy updates from within the popup
+
+- **🎨 Responsive Design Overhaul**:
+  - Lock screen fully responsive across all screen sizes and DPI levels
+  - Improved popup layout and domain manager on narrow viewports
+  - New biometric UI states: spinner, status badges, retry button
+
+#### 🎯 Benefits
+
+- **Effortless Security**: Biometrics make unlocking fast without sacrificing protection
+- **Device-Native Trust**: Uses the same security chip trusted by banking apps
+- **Always Backward Compatible**: Password authentication always available as fallback
+- **100% Local**: WebAuthn is fully offline — no server, no cloud, no data shared
+
+---
 
 ### Version 2.2.0 - Auto-Lock & Scheduled Locking (January 20, 2026) ⏱️
 
@@ -384,12 +501,13 @@ The store listings warn: **"Read and change all your data on all websites"**
 - **Local Operation**: Extension works entirely offline (test by disconnecting internet!)
 - **System Page Protection**: Chrome system pages cannot be locked for security
 
-### 🚨 What's Protected Against
+### What's Protected Against
 - ✅ **Unauthorized Password Changes**: Requires current password verification
 - ✅ **Brute Force Attacks**: Exponential backoff with 5-minute lockout
 - ✅ **Timing Attacks**: Constant-time password comparison
 - ✅ **Administrative Bypass**: No backdoor or override methods
 - ✅ **Extension Hijacking**: Secure state management prevents tampering
+- ✅ **Biometric Spoofing**: Handled entirely by the OS security chip — Locksy never touches biometric data
 
 ---
 
@@ -409,12 +527,14 @@ The store listings warn: **"Read and change all your data on all websites"**
 | Brute Force Protection | Password-Only Unlock | Lightweight | No Tracking |
 | No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
 | Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
+| Biometric (WebAuthn) | Biometric Unlock | Native OS Speed | Zero Biometric Data |
 
 </div>
 
 ### 🎯 Core Functionality
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
+- **Biometric Unlock**: Unlock tabs with fingerprint, Face ID, Touch ID, or Windows Hello via WebAuthn
 - **Domain Locking**: Lock entire domains with wildcard support
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
@@ -437,6 +557,12 @@ The store listings warn: **"Read and change all your data on all websites"**
   - 256-bit derived keys with 128-bit cryptographic salts
   - ~120 years to crack 8-character password (vs ~7 days with basic hashing)
   - Protection against rainbow table and brute-force attacks
+- **Biometric Authentication (WebAuthn / FIDO2)**: Device-native unlock
+  - Supports Windows Hello, Touch ID, Face ID, and all FIDO2-compatible platform authenticators
+  - Zero biometric data stored by Locksy — only a public-key credential ID saved locally
+  - Fully local — no server, no cloud, no data transmitted
+  - Password fallback always available
+  - Detailed in [docs/SECURITY.md](docs/SECURITY.md)
 - **Timing Attack Protection**: Constant-time password comparison
 - **Rate Limiting**: Exponential backoff with 5-minute lockout after 10 failed attempts
 - **Secure Salt Generation**: Web Crypto API `crypto.getRandomValues()`
@@ -630,6 +756,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 ### Security Implementation
 - **PBKDF2-SHA256**: 600,000 iterations for password hashing
+- **WebAuthn / FIDO2**: Biometric PassKey credential via platform authenticator
 - **Restoration Flag Pattern**: Prevents race conditions during startup
 - **Multi-Layer Storage**: Lock state persists across service worker restarts
 - **Constant-Time Comparison**: Protection against timing attacks
@@ -647,7 +774,9 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - `manifest.json`: Extension configuration (Manifest V3)
 - `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
 - `src/js/background.js`: Service worker for lock management
-- `src/js/popup.js`: Main interface and logic
+- `src/js/popup.js`: Main interface and logic (incl. biometric settings)
+- `src/js/locked.js`: Lock overlay logic (incl. biometric unlock)
+- `src/js/webauthn-utils.js`: WebAuthn/FIDO2 biometric authentication utilities
 - `src/html/locked.html`: Lock overlay interface
 - `src/css/`: Styling for all components
 - `docs/`: Comprehensive documentation (CHANGELOG, DESIGN_SYSTEM, etc.)

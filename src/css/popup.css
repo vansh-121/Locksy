@@ -9,10 +9,15 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
   color: #333;
   min-width: 320px;
+  max-width: 100%;
   padding: 0 0 16px 0;
   position: relative;
+  /* Prevent horizontal scroll at any zoom level */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .container {
@@ -22,6 +27,10 @@ body {
   margin: 16px;
   padding: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  /* Ensure container never bleeds past body edge at any zoom */
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header {
@@ -45,7 +54,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -72,13 +81,39 @@ body {
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
+.newsletter-link {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  border: none;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
 .whats-new-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
+.newsletter-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.5);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+}
+
 .whats-new-link:active {
+  transform: translateY(0);
+}
+
+.newsletter-link:active {
   transform: translateY(0);
 }
 
@@ -93,10 +128,13 @@ body {
 }
 
 @keyframes sparkle {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1) rotate(0deg);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.2) rotate(10deg);
@@ -104,10 +142,13 @@ body {
 }
 
 @keyframes sparkle-fast {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1.3) rotate(0deg);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.5) rotate(20deg);
@@ -263,7 +304,7 @@ input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+  /* Removed translateY — causes layout height jitter in tight popup layouts */
 }
 
 input::placeholder {
@@ -274,7 +315,8 @@ input::placeholder {
 button {
   width: 100%;
   padding: 14px 18px;
-  margin: 4px;
+  /* Use vertical margin only — horizontal margin causes overflow inside containers */
+  margin: 4px 0;
   border: none;
   border-radius: 12px;
   font-size: 15px;
@@ -284,6 +326,9 @@ button {
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* Prevent buttons from ever exceeding their parent width */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 button:hover {
@@ -292,8 +337,6 @@ button:hover {
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   filter: brightness(1.05);
 }
 
@@ -395,6 +438,7 @@ button:disabled {
 .btn-lock-all,
 .btn-domain,
 .btn-shortcuts,
+.btn-newsletter,
 .btn-sponsor {
   color: white;
   border: none;
@@ -493,6 +537,10 @@ button:disabled {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.btn-newsletter {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
 .btn-sponsor {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -529,6 +577,12 @@ button:disabled {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
+.btn-newsletter:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+}
+
 .btn-sponsor:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
@@ -540,6 +594,7 @@ button:disabled {
 .btn-lock-all:active,
 .btn-domain:active,
 .btn-shortcuts:active,
+.btn-newsletter:active,
 .btn-sponsor:active {
   transform: translateY(0);
 }
@@ -549,6 +604,77 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
+}
+
+/* Fingerprint Authentication Section */
+.fingerprint-auth-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e9ecef;
+}
+
+.fingerprint-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #495057;
+  min-height: 44px;
+  width: 100%;
+}
+
+.fingerprint-status .status-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.fingerprint-status .status-message {
+  font-weight: 600;
+  display: inline-block;
+  color: inherit;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.4;
+  font-size: 13px;
+}
+
+.fingerprint-status.success {
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  color: #155724;
+}
+
+.fingerprint-status.success .status-icon {
+  color: #28a745;
+  font-size: 20px;
+}
+
+.fingerprint-status.success .status-message {
+  color: #155724;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.fingerprint-status.error {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #721c24;
+}
+
+.fingerprint-status.error .status-icon {
+  color: #dc3545;
+  font-size: 20px;
+}
+
+.fingerprint-status.error .status-message {
+  color: #721c24;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 /* Legacy responsive adjustments - removed to maintain parallel format */
@@ -634,6 +760,8 @@ button:disabled {
   display: flex;
   gap: 12px;
   justify-content: center;
+  /* Wrap to next line if items don't fit (e.g. zoomed in) */
+  flex-wrap: wrap;
   margin-bottom: 16px;
 }
 

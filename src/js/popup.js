@@ -212,41 +212,111 @@ function showAuthenticationScreen() {
 
   // Create lock icon
   const lockIcon = document.createElement('div');
+  lockIcon.id = 'popupAuthIcon';
   lockIcon.textContent = '🔐';
   lockIcon.style.cssText = 'font-size: 48px; margin-bottom: 20px;';
   wrapper.appendChild(lockIcon);
 
   // Create heading
   const heading = document.createElement('h2');
+  heading.id = 'popupAuthHeading';
   heading.textContent = 'Authentication Required';
   heading.style.cssText = 'color: #2c3e50; margin-bottom: 12px;';
   wrapper.appendChild(heading);
 
   // Create description
   const description = document.createElement('p');
-  description.textContent = 'Enter your master password to access the extension';
+  description.id = 'popupAuthDescription';
+  description.textContent = 'Verify your identity to access the extension';
   description.style.cssText = 'color: #6c757d; margin-bottom: 25px;';
   wrapper.appendChild(description);
 
-  // Create input container
-  const inputContainer = document.createElement('div');
-  inputContainer.style.cssText = 'text-align: left;';
+  // Biometric auth section (shown when biometric is available)
+  const biometricAuthDiv = document.createElement('div');
+  biometricAuthDiv.id = 'popupBiometricAuth';
+  biometricAuthDiv.style.cssText = 'display: none; margin-bottom: 20px;';
+
+  const biometricScanBox = document.createElement('div');
+  biometricScanBox.id = 'popupBiometricScanBox';
+  biometricScanBox.style.cssText = 'padding: 20px 16px; border-radius: 14px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%); border: 2px solid rgba(102, 126, 234, 0.15); margin-bottom: 12px; transition: all 0.3s ease;';
+
+  const biometricScanIcon = document.createElement('div');
+  biometricScanIcon.id = 'popupBiometricScanIcon';
+  biometricScanIcon.textContent = '👆';
+  biometricScanIcon.style.cssText = 'font-size: 40px; margin-bottom: 10px;';
+  biometricScanBox.appendChild(biometricScanIcon);
+
+  const biometricScanText = document.createElement('p');
+  biometricScanText.id = 'popupBiometricScanText';
+  biometricScanText.textContent = 'Touch your fingerprint sensor';
+  biometricScanText.style.cssText = 'font-size: 14px; font-weight: 600; color: #2c3e50; margin: 0 0 4px 0;';
+  biometricScanBox.appendChild(biometricScanText);
+
+  const biometricScanSubtext = document.createElement('p');
+  biometricScanSubtext.id = 'popupBiometricSubtext';
+  biometricScanSubtext.textContent = 'Verifying your identity...';
+  biometricScanSubtext.style.cssText = 'font-size: 12px; color: #6c757d; margin: 0;';
+  biometricScanBox.appendChild(biometricScanSubtext);
+
+  biometricAuthDiv.appendChild(biometricScanBox);
+
+  const biometricRetryBtn = document.createElement('button');
+  biometricRetryBtn.id = 'popupBiometricRetry';
+  biometricRetryBtn.textContent = '🔄 Try Again';
+  biometricRetryBtn.style.cssText = 'display: none; width: 100%; padding: 12px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
+  biometricAuthDiv.appendChild(biometricRetryBtn);
+
+  // Divider between biometric and password
+  const dividerContainer = document.createElement('div');
+  dividerContainer.style.cssText = 'display: flex; align-items: center; margin: 16px 0; color: #adb5bd; font-size: 13px;';
+  const dividerLeft = document.createElement('div');
+  dividerLeft.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
+  const dividerText = document.createElement('span');
+  dividerText.textContent = 'or';
+  dividerText.style.cssText = 'padding: 0 14px; font-weight: 500;';
+  const dividerRight = document.createElement('div');
+  dividerRight.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
+  dividerContainer.appendChild(dividerLeft);
+  dividerContainer.appendChild(dividerText);
+  dividerContainer.appendChild(dividerRight);
+  biometricAuthDiv.appendChild(dividerContainer);
+
+  // "Use password" toggle button
+  const usePasswordToggle = document.createElement('button');
+  usePasswordToggle.id = 'popupUsePasswordToggle';
+  usePasswordToggle.textContent = '🔑 Use Password Instead';
+  usePasswordToggle.style.cssText = 'width: 100%; padding: 12px 18px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; color: #667eea; transition: all 0.3s ease;';
+  biometricAuthDiv.appendChild(usePasswordToggle);
+
+  wrapper.appendChild(biometricAuthDiv);
+
+  // Password auth section
+  const passwordAuthDiv = document.createElement('div');
+  passwordAuthDiv.id = 'popupPasswordAuth';
+  passwordAuthDiv.style.cssText = 'text-align: left;';
 
   const authInput = document.createElement('input');
   authInput.type = 'password';
   authInput.id = 'authPassword';
   authInput.placeholder = 'Enter your master password';
   authInput.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: 2px solid #e9ecef; border-radius: 12px; font-size: 15px; background: white; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);';
-  inputContainer.appendChild(authInput);
+  passwordAuthDiv.appendChild(authInput);
 
   const authButton = document.createElement('button');
   authButton.id = 'authButton';
   authButton.className = 'btn-primary';
   authButton.textContent = 'Authenticate';
   authButton.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
-  inputContainer.appendChild(authButton);
+  passwordAuthDiv.appendChild(authButton);
 
-  wrapper.appendChild(inputContainer);
+  // "Back to biometric" link (hidden initially)
+  const backToBiometricLink = document.createElement('button');
+  backToBiometricLink.id = 'popupBackToBiometric';
+  backToBiometricLink.style.cssText = 'display: none; width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: rgba(102, 126, 234, 0.08); color: #667eea;';
+  backToBiometricLink.textContent = '👆 Use Biometric Instead';
+  passwordAuthDiv.appendChild(backToBiometricLink);
+
+  wrapper.appendChild(passwordAuthDiv);
 
   // Create error div
   const authError = document.createElement('div');
@@ -276,8 +346,15 @@ function showAuthenticationScreen() {
   const authButtonElement = document.getElementById('authButton');
   const authErrorElement = document.getElementById('authError');
 
-  // Focus on password input
-  setTimeout(() => authPasswordInput.focus(), 100);
+  // Initialize biometric auth for popup
+  initializePopupBiometricAuth();
+
+  // Focus on password input (only if biometric isn't available)
+  setTimeout(() => {
+    if (document.getElementById('popupBiometricAuth').style.display === 'none') {
+      authPasswordInput.focus();
+    }
+  }, 100);
 
   // Enter key support
   authPasswordInput.addEventListener('keypress', (e) => {
@@ -418,6 +495,9 @@ function startSessionTimeout() {
 
 // SECURITY: Initialize main UI (only after authentication or first setup)
 function initializeMainUI() {
+  // Reset fingerprint initialization flag since DOM is being recreated
+  fingerprintInitialized = false;
+
   // Restore original HTML structure for main interface
   const container = document.querySelector('.container');
   container.innerHTML = `
@@ -434,6 +514,10 @@ function initializeMainUI() {
         <button id="headerWhatsNewBtn" class="whats-new-link" title="See what's new in this version">
           <span class="sparkle-icon">✨</span>
           <span>What's New</span>
+        </button>
+        <button id="headerNewsletterBtn" class="newsletter-link" title="Subscribe to updates and feedback requests" style="display: none;">
+          <span>📧</span>
+          <span>Subscribe Newsletter</span>
         </button>
       </div>
     </div>
@@ -491,6 +575,42 @@ function initializeMainUI() {
         </div>
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
+        
+        <!-- Biometric Lock Section -->
+        <div id="fingerprintAuthSection" class="fingerprint-auth-section" style="display: none;">
+          <div class="timer-header">
+            <h3 id="biometricSectionTitle">👆 Biometric Lock</h3>
+            <button class="collapse-btn" id="collapseBiometric">−</button>
+          </div>
+          <div class="timer-content" id="biometricContent">
+            <!-- Enable Biometric Toggle -->
+            <div class="toggle-container-small">
+              <span class="toggle-label-small" id="biometricToggleLabel">Enable Biometric</span>
+              <div id="biometricToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description" id="biometricDescription">Use your fingerprint or face to unlock tabs instantly</p>
+
+            <!-- Biometric Options (shown when enabled) -->
+            <div id="biometricOptions" style="display: none;">
+              <!-- Use as Default Toggle -->
+              <div class="toggle-container-small" style="margin-top: 8px;">
+                <span class="toggle-label-small">Use as Default Unlock</span>
+                <div id="biometricDefaultToggle" class="toggle-switch-small">
+                  <div class="toggle-slider-small"></div>
+                </div>
+              </div>
+              <p class="timer-description" id="biometricDefaultDesc">When enabled, biometric will be the primary unlock method</p>
+
+              <!-- Status -->
+              <div id="fingerprintStatus" class="fingerprint-status" style="margin-top: 8px;">
+                <span class="status-icon">ℹ️</span>
+                <span class="status-message">Detecting biometric hardware...</span>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Timer Settings Section -->
         <div class="timer-settings" id="timerSettings" style="display: block; margin-top: 16px;">
@@ -708,9 +828,13 @@ function initializeMainUI() {
 
   // CRITICAL SECURITY FUNCTION: Update Password UI
   function updatePasswordUI() {
+    // Reset fingerprint initialization flag to allow re-initialization
+    fingerprintInitialized = false;
+
     const lockControls = document.getElementById("lockControls");
     const lockTip = document.getElementById("lockTip");
     const keyboardShortcuts = document.getElementById("keyboardShortcuts");
+    const headerNewsletterBtn = document.getElementById("headerNewsletterBtn");
 
     if (hasExistingPassword) {
       // Password exists - require current password to change
@@ -724,6 +848,15 @@ function initializeMainUI() {
       if (lockControls) lockControls.style.display = "block";
       if (lockTip) lockTip.style.display = "block";
       if (keyboardShortcuts) keyboardShortcuts.style.display = "block";
+
+      // Show Newsletter button (What's New is always visible)
+      if (headerNewsletterBtn) headerNewsletterBtn.style.display = "flex";
+
+      // Initialize fingerprint authentication (only when password exists)
+      // Use setTimeout to ensure DOM elements are fully rendered
+      setTimeout(() => {
+        initializeFingerprintAuth();
+      }, 100);
     } else {
       // No password exists - first time setup
       currentPasswordGroup.style.display = "none";
@@ -736,6 +869,9 @@ function initializeMainUI() {
       if (lockControls) lockControls.style.display = "none";
       if (lockTip) lockTip.style.display = "none";
       if (keyboardShortcuts) keyboardShortcuts.style.display = "none";
+
+      // Hide Newsletter button (What's New stays visible for new users)
+      if (headerNewsletterBtn) headerNewsletterBtn.style.display = "none";
     }
   }
 
@@ -1001,6 +1137,14 @@ function initializeMainUI() {
         width: 700,
         height: 700
       });
+    });
+  }
+
+  // Open Newsletter Page from header button
+  const headerNewsletterBtn = document.getElementById("headerNewsletterBtn");
+  if (headerNewsletterBtn) {
+    headerNewsletterBtn.addEventListener("click", () => {
+      chrome.tabs.create({ url: 'https://www.locksy.dev/newsletter' });
     });
   }
 
@@ -1643,6 +1787,456 @@ function showScheduledStatus(message, type) {
     setTimeout(() => {
       statusDiv.style.display = 'none';
     }, 3000);
+  }
+}
+
+// ============================================================================
+// FINGERPRINT AUTHENTICATION FUNCTIONS
+// ============================================================================
+
+let fingerprintInitialized = false; // Prevent duplicate initialization
+
+/**
+ * Initialize biometric authentication for the popup auth screen
+ * Auto-triggers biometric if available and registered
+ */
+async function initializePopupBiometricAuth() {
+  try {
+    const biometricAuthDiv = document.getElementById('popupBiometricAuth');
+    const passwordAuthDiv = document.getElementById('popupPasswordAuth');
+    const backToBiometricLink = document.getElementById('popupBackToBiometric');
+    const usePasswordToggle = document.getElementById('popupUsePasswordToggle');
+    const popupAuthHeading = document.getElementById('popupAuthHeading');
+    const popupAuthDescription = document.getElementById('popupAuthDescription');
+    const popupAuthIcon = document.getElementById('popupAuthIcon');
+
+    if (!biometricAuthDiv) return;
+
+    // Detect biometric capability
+    const capability = await detectBiometricCapability();
+    if (!capability.available) {
+      biometricAuthDiv.style.display = 'none';
+      return;
+    }
+
+    // Check if biometric is registered
+    const isRegistered = await isFingerprintRegistered();
+    if (!isRegistered) {
+      biometricAuthDiv.style.display = 'none';
+      return;
+    }
+
+    // Check "Use as Default" preference
+    const stored = await chrome.storage.local.get(['biometricDefault']);
+    const isDefault = stored.biometricDefault === true;
+
+    // Update UI with capability info
+    const scanIcon = document.getElementById('popupBiometricScanIcon');
+    const scanText = document.getElementById('popupBiometricScanText');
+
+    if (scanIcon) scanIcon.textContent = capability.icon;
+
+    if (scanText) {
+      if (capability.type === 'face') {
+        scanText.textContent = 'Look at your camera';
+      } else if (capability.type === 'windows_hello') {
+        scanText.textContent = 'Touch your fingerprint sensor or look at your camera';
+      } else {
+        scanText.textContent = 'Touch your fingerprint sensor';
+      }
+    }
+
+    if (isDefault) {
+      // === BIOMETRIC IS DEFAULT: Show biometric-first, password secondary ===
+      biometricAuthDiv.style.display = 'block';
+      passwordAuthDiv.style.display = 'none';
+
+      if (popupAuthIcon) popupAuthIcon.textContent = capability.icon;
+      if (popupAuthHeading) popupAuthHeading.textContent = 'Welcome Back';
+      if (popupAuthDescription) popupAuthDescription.textContent = capability.description;
+
+      // "Use Password" toggle handler
+      if (usePasswordToggle) {
+        usePasswordToggle.addEventListener('click', () => {
+          biometricAuthDiv.style.display = 'none';
+          passwordAuthDiv.style.display = 'block';
+          if (backToBiometricLink) {
+            backToBiometricLink.style.display = 'block';
+            backToBiometricLink.textContent = `${capability.icon} Use ${capability.label} Instead`;
+          }
+          const authPasswordInput = document.getElementById('authPassword');
+          if (authPasswordInput) setTimeout(() => authPasswordInput.focus(), 100);
+        });
+      }
+
+      // "Back to biometric" handler
+      if (backToBiometricLink) {
+        backToBiometricLink.addEventListener('click', () => {
+          biometricAuthDiv.style.display = 'block';
+          passwordAuthDiv.style.display = 'none';
+          backToBiometricLink.style.display = 'none';
+          triggerPopupBiometricAuth();
+        });
+      }
+
+      // Auto-trigger biometric
+      setTimeout(() => triggerPopupBiometricAuth(), 400);
+
+    } else {
+      // === PASSWORD IS DEFAULT: Show password first, biometric as secondary ===
+      biometricAuthDiv.style.display = 'none';
+      passwordAuthDiv.style.display = 'block';
+
+      if (popupAuthIcon) popupAuthIcon.textContent = '🔐';
+      if (popupAuthHeading) popupAuthHeading.textContent = 'Authentication Required';
+      if (popupAuthDescription) popupAuthDescription.textContent = 'Verify your identity to access the extension';
+
+      // Show "Use Biometric Instead" button below password
+      if (backToBiometricLink) {
+        backToBiometricLink.style.display = 'block';
+        backToBiometricLink.textContent = `${capability.icon} Use ${capability.label} Instead`;
+      }
+
+      // Handle click on "Use Biometric Instead"
+      if (backToBiometricLink) {
+        backToBiometricLink.addEventListener('click', () => {
+          biometricAuthDiv.style.display = 'block';
+          passwordAuthDiv.style.display = 'none';
+          backToBiometricLink.style.display = 'none';
+          triggerPopupBiometricAuth();
+        });
+      }
+
+      // Register "Use Password" toggle once (outside backToBiometricLink handler to prevent listener stacking)
+      if (usePasswordToggle) {
+        usePasswordToggle.addEventListener('click', () => {
+          biometricAuthDiv.style.display = 'none';
+          passwordAuthDiv.style.display = 'block';
+          backToBiometricLink.style.display = 'block';
+          const authPasswordInput = document.getElementById('authPassword');
+          if (authPasswordInput) setTimeout(() => authPasswordInput.focus(), 100);
+        });
+      }
+
+      // Focus password input
+      const authPasswordInput = document.getElementById('authPassword');
+      if (authPasswordInput) setTimeout(() => authPasswordInput.focus(), 100);
+    }
+
+    // Retry button handler (works in both modes)
+    const retryBtn = document.getElementById('popupBiometricRetry');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', () => {
+        retryBtn.style.display = 'none';
+        triggerPopupBiometricAuth();
+      });
+    }
+
+  } catch (error) {
+    console.error('Error initializing popup biometric auth:', error);
+  }
+}
+
+/**
+ * Trigger biometric authentication for the popup auth screen
+ */
+async function triggerPopupBiometricAuth() {
+  const scanBox = document.getElementById('popupBiometricScanBox');
+  const scanSubtext = document.getElementById('popupBiometricSubtext');
+  const scanIcon = document.getElementById('popupBiometricScanIcon');
+  const retryBtn = document.getElementById('popupBiometricRetry');
+
+  try {
+    // Set scanning state
+    if (scanBox) scanBox.style.borderColor = 'rgba(102, 126, 234, 0.4)';
+    if (scanSubtext) scanSubtext.textContent = 'Verifying your identity...';
+
+    // Get stored credential
+    const credential = await getFingerprintCredential();
+    if (!credential || !credential.credentialId) {
+      if (scanSubtext) scanSubtext.textContent = 'Biometric not set up.';
+      return;
+    }
+
+    // Authenticate
+    const success = await authenticateWithFingerprint(credential.credentialId);
+
+    if (success) {
+      // Success!
+      if (scanBox) {
+        scanBox.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+        scanBox.style.background = 'linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(56, 142, 60, 0.08) 100%)';
+      }
+      if (scanIcon) scanIcon.textContent = '✅';
+      if (scanSubtext) scanSubtext.textContent = '✓ Identity verified!';
+
+      // Proceed with authentication
+      isAuthenticated = true;
+      resetFailedAttempts();
+      startSessionTimeout();
+
+      setTimeout(() => {
+        initializeMainUI();
+        showNotification('Authentication successful!', 'success');
+      }, 500);
+    } else {
+      // Failed
+      if (scanBox) scanBox.style.borderColor = 'rgba(220, 53, 69, 0.4)';
+      if (scanSubtext) scanSubtext.textContent = 'Authentication failed. Try again or use password.';
+      if (retryBtn) retryBtn.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Popup biometric auth error:', error);
+    if (scanBox) scanBox.style.borderColor = 'rgba(220, 53, 69, 0.4)';
+    if (scanSubtext) scanSubtext.textContent = error.message || 'Authentication cancelled.';
+    if (retryBtn) retryBtn.style.display = 'block';
+  }
+}
+
+/**
+ * Initialize biometric lock section with toggle UI (like Auto-Lock Timer)
+ */
+async function initializeFingerprintAuth() {
+  try {
+    // Prevent duplicate initialization
+    if (fingerprintInitialized) {
+      return;
+    }
+
+    const fingerprintSection = document.getElementById('fingerprintAuthSection');
+
+    // Check if elements exist (they should be in lockControls section)
+    if (!fingerprintSection || !hasExistingPassword) {
+      return;
+    }
+
+    fingerprintInitialized = true;
+
+    // Detect biometric capability
+    const capability = await detectBiometricCapability();
+
+    // Update section title and description with platform-specific labels
+    const titleEl = document.getElementById('biometricSectionTitle');
+    const descEl = document.getElementById('biometricDescription');
+    const toggleLabel = document.getElementById('biometricToggleLabel');
+
+    if (!capability.available && !capability.needsHardwareCheck) {
+      // Definitely not available - show section as disabled
+      if (titleEl) titleEl.textContent = '🚫 Biometric Lock';
+      if (descEl) descEl.textContent = capability.description;
+      if (toggleLabel) toggleLabel.textContent = 'Not Available';
+
+      const biometricToggle = document.getElementById('biometricToggle');
+      if (biometricToggle) {
+        biometricToggle.style.opacity = '0.5';
+        biometricToggle.style.pointerEvents = 'none';
+      }
+
+      fingerprintSection.style.display = 'block';
+      return;
+    }
+
+    // Set platform-aware labels
+    if (titleEl) titleEl.textContent = `${capability.icon} Biometric Lock`;
+    if (descEl) descEl.textContent = capability.description;
+    if (toggleLabel) toggleLabel.textContent = `Enable ${capability.label}`;
+
+    // Show section
+    fingerprintSection.style.display = 'block';
+
+    // Set up collapse/expand
+    const collapseBtn = document.getElementById('collapseBiometric');
+    const biometricContent = document.getElementById('biometricContent');
+    if (collapseBtn && biometricContent) {
+      collapseBtn.addEventListener('click', () => {
+        if (biometricContent.style.display === 'none') {
+          biometricContent.style.display = 'block';
+          collapseBtn.textContent = '−';
+        } else {
+          biometricContent.style.display = 'none';
+          collapseBtn.textContent = '+';
+        }
+      });
+    }
+
+    // Check current state
+    const isRegistered = await isFingerprintRegistered();
+    const biometricToggle = document.getElementById('biometricToggle');
+    const biometricOptions = document.getElementById('biometricOptions');
+    const biometricDefaultToggle = document.getElementById('biometricDefaultToggle');
+    const biometricDefaultDesc = document.getElementById('biometricDefaultDesc');
+
+    // Load "use as default" preference
+    const stored = await chrome.storage.local.get(['biometricDefault']);
+    const isDefault = stored.biometricDefault === true;
+
+    if (isRegistered) {
+      // Biometric is enabled - turn on the toggle
+      if (biometricToggle) biometricToggle.classList.add('active');
+      if (biometricOptions) biometricOptions.style.display = 'block';
+      updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
+
+      // Set default toggle state
+      if (biometricDefaultToggle && isDefault) {
+        biometricDefaultToggle.classList.add('active');
+      }
+      updateDefaultDescription(isDefault, capability);
+    } else {
+      // Biometric not set up
+      if (biometricToggle) biometricToggle.classList.remove('active');
+      if (biometricOptions) biometricOptions.style.display = 'none';
+    }
+
+    // === BIOMETRIC ENABLE/DISABLE TOGGLE ===
+    if (biometricToggle) {
+      biometricToggle.addEventListener('click', async () => {
+        const isCurrentlyActive = biometricToggle.classList.contains('active');
+
+        if (isCurrentlyActive) {
+          // User wants to DISABLE biometric
+          if (!confirm(`Are you sure you want to disable ${capability.label}? You will need to use your password to unlock tabs.`)) {
+            return;
+          }
+
+          try {
+            await removeFingerprint();
+            biometricToggle.classList.remove('active');
+            if (biometricOptions) biometricOptions.style.display = 'none';
+
+            // Also disable "use as default"
+            if (biometricDefaultToggle) biometricDefaultToggle.classList.remove('active');
+            await chrome.storage.local.set({ biometricDefault: false });
+
+            showNotification(`${capability.label} disabled successfully`, 'success');
+          } catch (error) {
+            console.error('Error disabling biometric:', error);
+            showNotification('Failed to disable biometric', 'error');
+          }
+        } else {
+          // User wants to ENABLE biometric — trigger registration
+          try {
+            if (capability.needsHardwareCheck) {
+              // Platform requires hardware verification first
+              const proceed = confirm(
+                '⚠️ Biometric Lock requires a fingerprint reader or face recognition camera.\n\n' +
+                'A system prompt will appear next. If you ONLY see a PIN or password option ' +
+                '(no fingerprint or face), it means your device doesn\'t have biometric hardware — press Cancel.\n\n' +
+                'If you see a fingerprint or face option, use it to complete setup.\n\n' +
+                'Continue?'
+              );
+              if (!proceed) return;
+
+              updateFingerprintStatus('System prompt will appear — use fingerprint or face to verify...', 'info');
+              if (biometricOptions) biometricOptions.style.display = 'block';
+
+              const result = await verifyBiometricHardwareAndRegister();
+              if (result.success && result.credential) {
+                await chrome.storage.local.set({ fingerprintCredential: result.credential });
+                biometricToggle.classList.add('active');
+                updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
+                showNotification('Biometric lock set up successfully!', 'success');
+                updateDefaultDescription(false, capability);
+              } else {
+                if (biometricOptions) biometricOptions.style.display = 'none';
+                showNotification('Setup cancelled. Your device may not have a fingerprint reader or camera.', 'error');
+                return;
+              }
+            } else {
+              // Direct registration (macOS/iOS/Android, or confirmed Windows)
+              updateFingerprintStatus('Authenticating — follow the on-screen prompt...', 'info');
+              if (biometricOptions) biometricOptions.style.display = 'block';
+
+              const credential = await registerFingerprint();
+              await chrome.storage.local.set({ fingerprintCredential: credential });
+
+              biometricToggle.classList.add('active');
+              updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
+              showNotification(`${capability.label} set up successfully!`, 'success');
+              updateDefaultDescription(false, capability);
+            }
+          } catch (error) {
+            console.error('Error setting up biometric:', error);
+            if (biometricOptions) biometricOptions.style.display = 'none';
+            showNotification(error.message || 'Biometric setup cancelled or failed', 'error');
+          }
+        }
+      });
+    }
+
+    // === "USE AS DEFAULT" TOGGLE ===
+    if (biometricDefaultToggle) {
+      biometricDefaultToggle.addEventListener('click', async () => {
+        const isCurrentlyDefault = biometricDefaultToggle.classList.contains('active');
+        const newDefault = !isCurrentlyDefault;
+
+        biometricDefaultToggle.classList.toggle('active', newDefault);
+        await chrome.storage.local.set({ biometricDefault: newDefault });
+        updateDefaultDescription(newDefault, capability);
+
+        if (newDefault) {
+          showNotification('Biometric is now the default unlock method', 'success');
+        } else {
+          showNotification('Password is now the default unlock method', 'info');
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error('Error initializing biometric section:', error);
+  }
+}
+
+/**
+ * Update the "Use as Default" description text
+ */
+function updateDefaultDescription(isDefault, capability) {
+  const descEl = document.getElementById('biometricDefaultDesc');
+  if (!descEl) return;
+
+  if (isDefault) {
+    descEl.textContent = `${capability.label} will auto-trigger when unlocking tabs`;
+  } else {
+    descEl.textContent = 'Password is primary, biometric available as alternative';
+  }
+}
+
+/**
+ * Update fingerprint status message
+ */
+function updateFingerprintStatus(message, type) {
+  const statusDiv = document.getElementById('fingerprintStatus');
+  if (!statusDiv) return;
+
+  // Find or create status message element
+  let statusMessage = statusDiv.querySelector('.status-message');
+  if (!statusMessage) {
+    statusDiv.innerHTML = `
+      <span class="status-icon">ℹ️</span>
+      <span class="status-message">${message}</span>
+    `;
+    statusMessage = statusDiv.querySelector('.status-message');
+  } else {
+    statusMessage.textContent = message;
+  }
+
+  // Update icon based on type
+  const statusIcon = statusDiv.querySelector('.status-icon');
+  if (statusIcon) {
+    if (type === 'success') {
+      statusIcon.textContent = '✅';
+    } else if (type === 'error') {
+      statusIcon.textContent = '⚠️';
+    } else {
+      statusIcon.textContent = 'ℹ️';
+    }
+  }
+
+  // Update status class
+  statusDiv.className = 'fingerprint-status';
+  if (type === 'success') {
+    statusDiv.classList.add('success');
+  } else if (type === 'error') {
+    statusDiv.classList.add('error');
   }
 }
 

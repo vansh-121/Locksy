@@ -2,6 +2,72 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.3.0] - 2026-02-21
+
+### 🎉 Major New Features
+
+#### 🔑 Biometric Authentication (WebAuthn)
+- **Fingerprint & Face Recognition Unlock**: Unlock protected tabs using your device's built-in biometrics
+  - Register biometric credential once per device via device authenticator (Windows Hello, Touch ID, Face ID, etc.)
+  - One-tap biometric unlock on the locked tab screen
+  - Graceful fallback to master password if biometric fails or is unavailable
+  - Retry option with clear status messaging for each biometric attempt
+  - Works with any FIDO2 / WebAuthn-compatible authenticator
+  - Biometric toggle in popup settings — enable or disable at any time
+  - Stored credentials never leave the device (public-key only, no biometric data stored)
+
+#### 📬 Newsletter Subscription
+- **Stay Updated**: Subscribe to Locksy updates directly from the extension popup
+  - Single-click newsletter subscription button integrated into the popup UI
+  - Opens subscription page without cluttering the popup flow
+
+### 🎨 UI & Responsive Design Improvements
+- **Responsive Layout Overhaul**: Better usability across all device viewports and screen sizes
+  - `locked.css`: Full responsive redesign — lock screen adapts cleanly to all display sizes
+  - `popup.css`: Layout and spacing adjustments for smaller popups and high-DPI screens
+  - `domain-manager.css`: Improved table and button layout on narrow viewports
+- **Biometric UI Components**: New styled states for biometric prompts, spinner, status badges, and retry buttons
+- **Authentication Screen Enhancements**: Cleaner visual separation between biometric and password flows
+- **Popup Settings Section**: New biometric lock settings panel with toggle and registration controls
+
+### 🔧 Technical Improvements
+- **New Module**: `webauthn-utils.js` — dedicated WebAuthn helper module
+  - `registerBiometric()`: creates and stores a PassKey credential
+  - `authenticateWithBiometric()`: verifies the stored credential challenge
+  - `isBiometricAvailable()`: detects platform authenticator support
+  - `clearBiometricCredential()`: removes stored credential on disable
+- **`locked.js`**: Significant refactor to integrate biometric unlock flow alongside existing password path
+- **`popup.js`**: Biometric settings wiring — toggle state, credential registration, status display
+- **`webauthn-utils.js`**: 389-line standalone utility with full error handling and device compatibility checks
+- **Manifest v2.3.0**: Version bump across both Chrome and Firefox manifests
+
+### 📊 Storage Schema Updates
+- New keys in `chrome.storage.local`:
+  - `biometricEnabled`: boolean — whether biometric unlock is active
+  - `biometricCredentialId`: base64 string — stored credential ID (public key reference only)
+
+### 🚀 User Benefits
+- **Effortless Unlocking**: No more typing password every time — use your fingerprint or face
+- **Device-Native Security**: Leverages the same security chip used by banking apps
+- **No Biometric Data Stored**: Only a reference ID is saved; actual biometric never leaves the OS
+- **Backward Compatible**: Existing password-only setups continue to work unchanged
+- **Privacy Preserved**: WebAuthn is fully local — zero server communication
+
+### 🎯 Feature Highlights
+- ✅ Biometric unlock (fingerprint / face / Windows Hello / Touch ID / Face ID)
+- ✅ Password fallback always available
+- ✅ Responsive lock screen for all screen sizes
+- ✅ Newsletter subscription button in popup
+- ✅ Zero biometric data ever transmitted or stored beyond the device
+
+### 🔄 Implementation Stats
+- **Total New Code**: ~2,000+ lines across 8 files
+- **New Module**: `webauthn-utils.js` (389 lines)
+- **Core Files Modified**: `locked.js`, `popup.js`, `locked.css`, `popup.css`, `locked.html`, `popup.html`, `domain-manager.css`
+- **Zero Breaking Changes**: Fully backward compatible with v2.2.0 and earlier
+
+---
+
 ## [2.2.0] - 2026-01-22
 
 ### 🎉 Major New Features

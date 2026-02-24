@@ -84,6 +84,44 @@
         <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts">⌨️ Keyboard Shortcuts</button>
 
+        <!-- Biometric Lock Section -->
+        <div id="fingerprintAuthSection" class="fingerprint-auth-section" style="display: none;">
+          <div class="timer-header">
+            <h3 id="biometricSectionTitle">👆 Biometric Lock</h3>
+            <button class="collapse-btn" id="collapseBiometric">−</button>
+          </div>
+          <div class="timer-content" id="biometricContent">
+            <!-- Enable Biometric Toggle -->
+            <div class="toggle-container-small">
+              <span class="toggle-label-small" id="biometricToggleLabel">Enable Biometric</span>
+              <div id="biometricToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description" id="biometricDescription">Use your fingerprint or face to unlock tabs instantly
+            </p>
+
+            <!-- Biometric Options (shown when enabled) -->
+            <div id="biometricOptions" style="display: none;">
+              <!-- Use as Default Toggle -->
+              <div class="toggle-container-small" style="margin-top: 8px;">
+                <span class="toggle-label-small">Use as Default Unlock</span>
+                <div id="biometricDefaultToggle" class="toggle-switch-small">
+                  <div class="toggle-slider-small"></div>
+                </div>
+              </div>
+              <p class="timer-description" id="biometricDefaultDesc">When enabled, biometric will be the primary unlock
+                method</p>
+
+              <!-- Status -->
+              <div id="fingerprintStatus" class="fingerprint-status" style="margin-top: 8px;">
+                <span class="status-icon">ℹ️</span>
+                <span class="status-message">Detecting biometric hardware...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Timer Settings Section -->
         <div class="timer-settings" id="timerSettings" style="display: none;">
           <div class="timer-header">
@@ -195,6 +233,7 @@
         </svg>
         <span>GitHub</span>
       </a>
+      </a>
       <!-- <a href="#" id="linkedinLink" class="dev-link" title="LinkedIn Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path
@@ -216,6 +255,7 @@
 
   <script src="../js/browser-polyfill.min.js"></script>
   <script src="../js/crypto-utils.js"></script>
+  <script src="../js/webauthn-utils.js"></script>
   <script src="../js/popup.js"></script>
 </body>
 

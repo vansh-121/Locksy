@@ -16,19 +16,50 @@
         <div class="lock-content">
             <div class="lock-icon">🔒</div>
             <h1>Tab Secured</h1>
-            <p class="subtitle">This tab is protected with military-grade encryption. Enter your password to continue.
-            </p>
+            <p class="subtitle" id="lockSubtitle">This tab is protected with military-grade encryption. Verify your
+                identity to continue.</p>
 
             <div class="unlock-section">
-                <div class="input-group">
-                    <input type="password" id="passwordInput" placeholder="Enter your password" autocomplete="off"
-                        spellcheck="false">
+                <!-- Biometric-First Unlock (shown when biometric is registered) -->
+                <div id="biometricPrimarySection" class="biometric-primary-section hidden">
+                    <div class="biometric-scanning-area" id="biometricScanArea">
+                        <div class="fingerprint-pulse-icon" id="biometricIcon">👆</div>
+                        <p class="biometric-prompt" id="biometricPromptText">Touch your fingerprint sensor to unlock</p>
+                        <p class="biometric-subtext" id="biometricSubtext">Verifying your identity...</p>
+                    </div>
+                    <button id="retryBiometricBtn" class="btn btn-biometric-retry hidden">
+                        <span class="btn-icon">🔄</span>
+                        <span>Try Again</span>
+                    </button>
+                    <div class="biometric-divider">
+                        <span>or</span>
+                    </div>
+                    <button id="usePasswordBtn" class="btn-use-password">
+                        <span>🔑 Use Password Instead</span>
+                    </button>
                 </div>
 
-                <button id="unlockBtn" class="btn btn-unlock">
-                    <span class="btn-icon">🔓</span>
-                    <span>Unlock Tab</span>
-                </button>
+                <!-- Password Section (secondary when biometric available, primary otherwise) -->
+                <div id="passwordSection" class="password-section">
+                    <div class="input-group">
+                        <input type="password" id="passwordInput" placeholder="Enter your password" autocomplete="off"
+                            spellcheck="false">
+                    </div>
+
+                    <button id="unlockBtn" class="btn btn-unlock">
+                        <span class="btn-icon">🔓</span>
+                        <span>Unlock Tab</span>
+                    </button>
+
+                    <!-- Back to biometric option (shown when biometric is available) -->
+                    <div id="backToBiometric" class="back-to-biometric hidden">
+                        <div class="biometric-divider"><span>or</span></div>
+                        <button id="switchToBiometricBtn" class="btn-switch-biometric">
+                            <span class="btn-icon" id="switchBiometricIcon">👆</span>
+                            <span id="switchBiometricText">Unlock with Fingerprint</span>
+                        </button>
+                    </div>
+                </div>
 
                 <div id="errorMessage" class="error-message"></div>
                 <div id="successMessage" class="success-message"></div>
@@ -78,6 +109,7 @@
     </div>
 
     <script src="../js/crypto-utils.js"></script>
+    <script src="../js/webauthn-utils.js"></script>
     <script src="../js/locked.js"></script>
 </body>
 
