@@ -467,7 +467,7 @@ function checkScheduleAndAct() {
         await Promise.all(unlockPromises);
 
         // Update state
-        chrome.storage.local.set({ 
+        chrome.storage.local.set({
           scheduledLockState: false,
           scheduledLockedTabIds: Array.from(scheduledLockedTabs)
         });
@@ -496,25 +496,24 @@ function stopScheduleChecker() {
 }
 
 // Pattern matching for domain locks
+// Behaviour matches what is shown in the Domain Manager UI:
+//   google.com   → locks google.com AND www.google.com (www is treated as same site)
+//   *.google.com → locks ALL subdomains (mail, drive, meet, www, etc.) but NOT google.com itself
 function matchesPattern(url, pattern) {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
 
-    // Exact match (e.g. pattern="github.com" matches "github.com")
-    if (pattern === hostname) return true;
-
-    // Wildcard subdomain: *.example.com
+    // Wildcard subdomain: *.example.com → subdomains only, not root
     if (pattern.startsWith('*.')) {
       const domain = pattern.slice(2);
-      // matches sub.example.com and example.com, but NOT notexample.com
-      return hostname === domain || hostname.endsWith('.' + domain);
+      return hostname.endsWith('.' + domain);
     }
 
-    // Plain domain pattern: treat it as an exact hostname OR a parent domain.
-    // e.g. pattern="github.com" matches "github.com" and "sub.github.com"
-    // but NOT "notgithub.com" or "github.com.evil.com".
-    return hostname === pattern || hostname.endsWith('.' + pattern);
+    // Plain domain: exact match OR the www. variant
+    // e.g. "google.com" matches "google.com" and "www.google.com"
+    // but NOT "mail.google.com" or "notgoogle.com"
+    return hostname === pattern || hostname === 'www.' + pattern;
   } catch (e) {
     return false;
   }
@@ -1060,7 +1059,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Default: just unlock this tab
       lockedTabs.delete(tabId);
       scheduledLockedTabs.delete(tabId);
-      chrome.storage.local.set({ 
+      chrome.storage.local.set({
         lockedTabIds: Array.from(lockedTabs),
         scheduledLockedTabIds: Array.from(scheduledLockedTabs)
       });
