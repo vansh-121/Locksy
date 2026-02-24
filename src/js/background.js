@@ -941,6 +941,70 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     });
     return true; // Keep the message channel open for async response
+  } else if (message.action === "unlockAllTabs") {
+    // Batch unlock: one storage read → one storage write → all tabs.update simultaneously
+    (async () => {
+      try {
+        const tabIds = Array.from(lockedTabs);
+        if (tabIds.length === 0) {
+          sendResponse({ success: true, unlockedCount: 0, total: 0 });
+          return;
+        }
+
+        // Step 1: Read ALL lock data in a single storage call
+        const lockDataKeys = tabIds.map(id => `lockData_${id}`);
+        const allLockData = await chrome.storage.local.get(lockDataKeys);
+
+        // Step 2: Determine which tabs have valid original URLs
+        const unlockable = tabIds.map(id => ({
+          id,
+          originalUrl: allLockData[`lockData_${id}`]?.originalUrl || null
+        }));
+
+        // Step 3: Build updated state — remove ALL locked tabs at once
+        const newTemporarilyUnlocked = new Set(temporarilyUnlockedTabs);
+        unlockable.forEach(({ id, originalUrl }) => {
+          if (originalUrl && isDomainLocked(originalUrl)) {
+            newTemporarilyUnlocked.add(id);
+          }
+        });
+
+        // Step 4: Single storage write for all state (before any navigation)
+        await chrome.storage.local.set({
+          lockedTabIds: [],
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs).filter(id => !lockedTabs.has(id)),
+          temporarilyUnlockedTabIds: Array.from(newTemporarilyUnlocked)
+        });
+
+        // Step 5: Update in-memory state
+        tabIds.forEach(id => {
+          lockedTabs.delete(id);
+          scheduledLockedTabs.delete(id);
+        });
+        newTemporarilyUnlocked.forEach(id => temporarilyUnlockedTabs.add(id));
+        updateBadge();
+
+        // Step 6: Navigate ALL tabs simultaneously — no awaiting between them
+        const navResults = await Promise.all(
+          unlockable.map(({ id, originalUrl }) => {
+            if (!originalUrl) return Promise.resolve({ success: false });
+            return chrome.tabs.update(id, { url: originalUrl })
+              .then(() => ({ success: true, id }))
+              .catch(e => ({ success: false, id, error: e.message }));
+          })
+        );
+
+        // Step 7: Remove all lockData in one batch
+        await chrome.storage.local.remove(lockDataKeys);
+
+        const unlockedCount = navResults.filter(r => r.success).length;
+        sendResponse({ success: true, unlockedCount, total: tabIds.length });
+      } catch (error) {
+        console.error('Error in unlockAllTabs:', error);
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
+    return true;
   } else if (message.action === "unlockTab") {
     // Unlock tab by tabId (called from locked.html)
     const tabId = message.tabId;

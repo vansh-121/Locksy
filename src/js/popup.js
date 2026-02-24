@@ -573,7 +573,8 @@ function initializeMainUI() {
             <span class="btn-text">All Tabs</span>
           </button>
         </div>
-        <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
+        <button id="unlockAllTabs" class="btn-unlock-all">🔓 Unlock All Tabs</button>
+        <button id="openDomainManager" class="btn-domain" style="margin-top: 8px;">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
         
         <!-- Biometric Lock Section -->
@@ -1097,6 +1098,50 @@ function initializeMainUI() {
         });
       } catch (error) {
         showNotification("Error locking tabs", "error");
+      }
+    });
+  }
+
+  // Unlock All Tabs button
+  const unlockAllTabsBtn = document.getElementById("unlockAllTabs");
+  if (unlockAllTabsBtn) {
+    unlockAllTabsBtn.addEventListener("click", () => {
+      try {
+        if (!isExtensionActive) {
+          showNotification("Please activate the extension first!", "warning");
+          return;
+        }
+
+        chrome.storage.local.get("lockedTabIds", (data) => {
+          const lockedTabIds = data.lockedTabIds || [];
+
+          if (lockedTabIds.length === 0) {
+            showNotification("No locked tabs to unlock!", "info");
+            return;
+          }
+
+          showNotification(`🔄 Unlocking ${lockedTabIds.length} tab${lockedTabIds.length !== 1 ? 's' : ''}...`, "info");
+
+          chrome.runtime.sendMessage({ action: "unlockAllTabs" }, (response) => {
+            setTimeout(() => {
+              if (response && response.success) {
+                const count = response.unlockedCount;
+                const total = response.total;
+                if (count === total) {
+                  showNotification(`✅ Successfully unlocked ${count} tab${count !== 1 ? 's' : ''}!`, "success");
+                } else if (count > 0) {
+                  showNotification(`✅ Unlocked ${count} of ${total} tab${total !== 1 ? 's' : ''}!`, "success");
+                } else {
+                  showNotification("❌ Failed to unlock tabs. Please try again.", "error");
+                }
+              } else {
+                showNotification("❌ Failed to unlock tabs. Please try again.", "error");
+              }
+            }, 300);
+          });
+        });
+      } catch (error) {
+        showNotification("Error unlocking tabs", "error");
       }
     });
   }

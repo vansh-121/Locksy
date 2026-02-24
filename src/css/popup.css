@@ -455,6 +455,7 @@ button:disabled {
 /* Common button styles for lock, domain, shortcuts, and sponsor buttons */
 .btn-lock-single,
 .btn-lock-all,
+.btn-unlock-all,
 .btn-domain,
 .btn-shortcuts,
 .btn-newsletter,
@@ -548,6 +549,10 @@ button:disabled {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
 
+.btn-unlock-all {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
 .btn-domain {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
@@ -583,6 +588,12 @@ button:disabled {
   background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
 }
 
+.btn-unlock-all:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+}
+
 .btn-lock-all:hover:not(:disabled),
 .btn-domain:hover:not(:disabled) {
   transform: translateY(-2px);
@@ -611,6 +622,7 @@ button:disabled {
 
 .btn-lock-single:active,
 .btn-lock-all:active,
+.btn-unlock-all:active,
 .btn-domain:active,
 .btn-shortcuts:active,
 .btn-newsletter:active,
@@ -619,7 +631,8 @@ button:disabled {
 }
 
 .btn-lock-single:disabled,
-.btn-lock-all:disabled {
+.btn-lock-all:disabled,
+.btn-unlock-all:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
