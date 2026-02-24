@@ -20,10 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Strip any leading *. the user may have typed so we show the clean domain
     const raw = domainPatternInput.value.trim().replace(/^\*\./, '');
     const display = raw || 'example.com';
+
+    // Build via DOM nodes — never innerHTML with user input (XSS / CodeQL)
+    const strong = document.createElement('strong');
+    strong.textContent = display;
+
+    subdomainHint.textContent = '';
     if (includeSubdomainsCheckbox.checked) {
-      subdomainHint.innerHTML = `<strong>${display}</strong> and all its subdomains will be locked`;
+      subdomainHint.appendChild(strong);
+      subdomainHint.appendChild(document.createTextNode(' and all its subdomains will be locked'));
     } else {
-      subdomainHint.innerHTML = `Only <strong>${display}</strong> will be locked`;
+      subdomainHint.appendChild(document.createTextNode('Only '));
+      subdomainHint.appendChild(strong);
+      subdomainHint.appendChild(document.createTextNode(' will be locked'));
     }
   }
 
