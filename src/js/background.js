@@ -469,7 +469,8 @@ function checkScheduleAndAct() {
         // Update state
         chrome.storage.local.set({
           scheduledLockState: false,
-          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs),
+          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
         });
 
         // Show notification
