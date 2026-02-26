@@ -12,6 +12,32 @@
 </head>
 
 <body>
+    <!-- Stealth Mode: Fake browser error page (shown instead of real lock page when stealth is on) -->
+    <div id="stealthOverlay" class="stealth-overlay" style="display:none;" aria-hidden="true">
+        <div class="stealth-error-icon-wrap">
+            <svg class="stealth-error-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#dadce0" stroke-width="2"/>
+                <path d="M8 9C8 9 8.5 7 12 7C15.5 7 16 9.5 14 11C12.5 12 12 13 12 14" stroke="#dadce0" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="17" r="1" fill="#dadce0"/>
+            </svg>
+        </div>
+        <h1 class="stealth-error-title">This site can't be reached</h1>
+        <p class="stealth-error-reason">The connection was refused.</p>
+        <div class="stealth-error-suggestions">
+            <p>Try:</p>
+            <ul>
+                <li>Checking the connection</li>
+                <li>Checking the proxy and the firewall</li>
+                <li>Running Windows Network Diagnostics</li>
+            </ul>
+        </div>
+        <p class="stealth-error-code" id="stealthErrorCode" title="Triple-click to reveal lock">ERR_CONNECTION_REFUSED</p>
+        <div class="stealth-error-buttons">
+            <button class="stealth-btn" onclick="window.history.back()">← Back</button>
+            <button class="stealth-btn stealth-btn-primary" id="stealthReloadBtn">Reload</button>
+        </div>
+    </div>
+
     <div class="lock-container">
         <div class="lock-content">
             <div class="lock-icon">🔒</div>

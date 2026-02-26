@@ -67,6 +67,13 @@
         "mac": "Alt+Shift+8"
       },
       "description": "Lock all tabs in current window"
+    },
+    "toggle-stealth-mode": {
+      "suggested_key": {
+        "default": "Alt+Shift+7",
+        "mac": "Alt+Shift+7"
+      },
+      "description": "Toggle Stealth Mode (hides lock indicators)"
     }
   },
   "web_accessible_resources": [

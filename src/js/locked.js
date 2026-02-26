@@ -58,6 +58,117 @@
     let currentTabId = null;
     let countdownInterval = null;
 
+    // ============================================================================
+    // STEALTH MODE
+    // ============================================================================
+
+    let stealthModeActive = false;
+
+    /**
+     * Check stealth mode state from background and apply if enabled
+     */
+    async function checkAndApplyStealthMode() {
+        return new Promise((resolve) => {
+            chrome.runtime.sendMessage({ action: 'getStealthMode' }, (response) => {
+                if (chrome.runtime.lastError || !response) {
+                    resolve(false);
+                    return;
+                }
+                stealthModeActive = response.enabled;
+                if (stealthModeActive) {
+                    enableStealthDisplay();
+                }
+                resolve(stealthModeActive);
+            });
+        });
+    }
+
+    /**
+     * Show the stealth (fake error page) overlay and hide the real lock UI
+     */
+    function enableStealthDisplay() {
+        // Change page title to look like a connection error
+        document.title = 'Connection Error';
+
+        // Blank out the favicon (remove red lock icon)
+        const favicon = document.getElementById('lockFavicon');
+        if (favicon) favicon.href = '';
+
+        // Show stealth overlay, hide real lock container
+        const overlay = document.getElementById('stealthOverlay');
+        const lockContainer = document.querySelector('.lock-container');
+        if (overlay) overlay.style.display = 'flex';
+        if (lockContainer) lockContainer.style.display = 'none';
+
+        // Apply white-background body override
+        document.body.classList.add('stealth-active');
+
+        // Set up secret reveal triggers
+        setupStealthRevealTrigger();
+    }
+
+    /**
+     * Restore the real lock UI when the reveal trigger fires
+     */
+    function disableStealthDisplay() {
+        const overlay = document.getElementById('stealthOverlay');
+        const lockContainer = document.querySelector('.lock-container');
+        if (overlay) overlay.style.display = 'none';
+        if (lockContainer) lockContainer.style.display = '';
+
+        document.body.classList.remove('stealth-active');
+        document.title = '\ud83d\udd12 Tab Locked - Locksy';
+
+        // Restore the lock favicon
+        setLockFavicon();
+
+        // Re-focus the password input
+        setTimeout(() => {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) passwordInput.focus();
+        }, 100);
+    }
+
+    /**
+     * Set up secret reveal triggers:
+     *   - Triple-click on the ERR_CONNECTION_REFUSED text
+     *   - Alt+U keyboard shortcut anywhere on the page
+     */
+    function setupStealthRevealTrigger() {
+        const errorCode = document.getElementById('stealthErrorCode');
+        if (errorCode) {
+            let clickCount = 0;
+            let clickTimer = null;
+
+            errorCode.addEventListener('click', () => {
+                clickCount++;
+                if (clickTimer) clearTimeout(clickTimer);
+
+                if (clickCount >= 3) {
+                    clickCount = 0;
+                    disableStealthDisplay();
+                    return;
+                }
+
+                clickTimer = setTimeout(() => { clickCount = 0; }, 600);
+            });
+        }
+
+        // Alt+U keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && (e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                disableStealthDisplay();
+            }
+        });
+
+        // Reload button acts naturally
+        const reloadBtn = document.getElementById('stealthReloadBtn');
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', () => { window.location.reload(); });
+        }
+    }
+
     // Function to set red lock favicon
     function setLockFavicon() {
         // Create canvas to draw lock icon
@@ -91,6 +202,9 @@
     document.addEventListener('DOMContentLoaded', async () => {
         // Set red lock favicon
         setLockFavicon();
+
+        // Apply stealth mode disguise if enabled (before any lock-UI is shown)
+        await checkAndApplyStealthMode();
 
         // Get tab ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);

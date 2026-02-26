@@ -55,8 +55,19 @@ let scheduledLockScope = 'all'; // What to lock: 'all' or 'current'
 let scheduledLockDays = [0, 1, 2, 3, 4, 5, 6]; // Days of week: 0=Sunday, 1=Monday, etc. Default: all days
 // Using Chrome Alarms API instead of setInterval for persistent scheduling
 
+// ============================================================================
+// STEALTH MODE
+// ============================================================================
+let stealthModeEnabled = false; // Whether stealth mode is active
+
 // Function to update extension badge with locked tabs count
 function updateBadge() {
+  // In stealth mode: always clear the badge so lock count is not revealed
+  if (stealthModeEnabled) {
+    chrome.action.setBadgeText({ text: '' });
+    return;
+  }
+
   const count = lockedTabs.size;
 
   if (count > 0) {
@@ -66,6 +77,16 @@ function updateBadge() {
   } else {
     chrome.action.setBadgeText({ text: '' }); // Clear badge when no locks
   }
+}
+
+/**
+ * Stealth-aware notification helper.
+ * Suppresses browser notifications when stealth mode is enabled.
+ * @param {object} options - chrome.notifications.create options object
+ */
+function notify(options) {
+  if (stealthModeEnabled) return;
+  chrome.notifications.create(options);
 }
 
 // ============================================================================
@@ -145,7 +166,7 @@ function performAutoLock() {
       chrome.storage.local.set({ lockedTabIds: Array.from(lockedTabs) });
       updateBadge();
 
-      chrome.notifications.create({
+      notify({
         type: 'basic',
         iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: '🔒 Auto-Lock Activated',
@@ -218,7 +239,7 @@ function performAutoLock() {
 
         // Show notification
         if (lockedCount > 0) {
-          chrome.notifications.create({
+          notify({
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: '🔒 Auto-Lock Activated',
@@ -350,7 +371,7 @@ function checkScheduleAndAct() {
                   });
                   updateBadge();
 
-                  chrome.notifications.create({
+                  notify({
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
                     title: '⏰ Scheduled Lock Activated',
@@ -383,7 +404,7 @@ function checkScheduleAndAct() {
               });
               updateBadge();
 
-              chrome.notifications.create({
+              notify({
                 type: 'basic',
                 iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
                 title: '⏰ Scheduled Lock Activated',
@@ -431,7 +452,7 @@ function checkScheduleAndAct() {
 
           // Show notification
           if (lockedCount > 0) {
-            chrome.notifications.create({
+            notify({
               type: 'basic',
               iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
               title: '⏰ Scheduled Lock Activated',
@@ -475,7 +496,7 @@ function checkScheduleAndAct() {
 
         // Show notification
         if (unlockedCount > 0) {
-          chrome.notifications.create({
+          notify({
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: '⏰ Scheduled Lock Period Ended',
@@ -582,7 +603,8 @@ async function restoreLockedTabs() {
       "scheduledLockStart",
       "scheduledLockEnd",
       "scheduledLockScope",
-      "scheduledLockDays"
+      "scheduledLockDays",
+      "stealthModeEnabled"
     ], (data) => {
       if (data.lockedTabIds && Array.isArray(data.lockedTabIds)) {
         lockedTabs = new Set(data.lockedTabIds);
@@ -624,6 +646,9 @@ async function restoreLockedTabs() {
       }
       if (data.scheduledLockDays !== undefined) {
         scheduledLockDays = data.scheduledLockDays;
+      }
+      if (data.stealthModeEnabled !== undefined) {
+        stealthModeEnabled = data.stealthModeEnabled;
       }
 
       // Start timers if enabled
@@ -930,7 +955,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         updateBadge();
         lockTab(message.tabId, sendResponse);
       } else {
-        chrome.notifications.create({
+        notify({
           type: "basic",
           iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: "Password Required",
@@ -1132,7 +1157,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       updateBadge();
     }
 
-    chrome.notifications.create({
+    notify({
       type: "basic",
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: "Tab Unlocked",
@@ -1155,7 +1180,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Prevent locking system URLs
         if (pattern.includes("chrome://") || pattern.includes("chrome-extension://") ||
           pattern.includes("edge://") || pattern.includes("about:") || pattern.includes("file://")) {
-          chrome.notifications.create({
+          notify({
             type: "basic",
             iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: "Cannot Lock Domain",
@@ -1173,7 +1198,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
             if (matchingTabs.length === 0) {
               updateBadge();
-              chrome.notifications.create({
+              notify({
                 type: "basic",
                 iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
                 title: "Domain Locked",
@@ -1199,7 +1224,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
           });
 
-          chrome.notifications.create({
+          notify({
             type: "basic",
             iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: "Domain Locked",
@@ -1211,7 +1236,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ success: false, error: "Domain already locked" });
         }
       } else {
-        chrome.notifications.create({
+        notify({
           type: "basic",
           iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: "Password Required",
@@ -1243,7 +1268,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         updateBadge();
       });
 
-      chrome.notifications.create({
+      notify({
         type: "basic",
         iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Domain Unlocked",
@@ -1380,6 +1405,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const isLocked = lockedTabs.has(tabId);
     sendResponse({ isLocked: isLocked });
     return true;
+  } else if (message.action === "getStealthMode") {
+    // Return current stealth mode state
+    sendResponse({ enabled: stealthModeEnabled });
+    return true;
+  } else if (message.action === "setStealthMode") {
+    // Enable or disable stealth mode
+    stealthModeEnabled = !!message.enabled;
+    chrome.storage.local.set({ stealthModeEnabled: stealthModeEnabled });
+    // Update badge immediately
+    updateBadge();
+    sendResponse({ success: true, enabled: stealthModeEnabled });
+    return true;
   }
   // Removed insecure unlock action - tabs can only be unlocked by entering the correct password
 
@@ -1428,7 +1465,7 @@ async function lockTab(tabId, sendResponse) {
       tab.url.startsWith("about:") ||
       tab.url.startsWith("file://")) {
       const errorMsg = "Cannot lock this tab. System pages, browser settings, local files, and extension pages cannot be locked for security reasons.";
-      chrome.notifications.create({
+      notify({
         type: "basic",
         iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
         title: "Cannot Lock Tab",
@@ -1477,7 +1514,7 @@ async function lockTab(tabId, sendResponse) {
   } catch (error) {
     console.error('Error locking tab:', error);
     const errorMsg = "Failed to lock tab: " + error.message;
-    chrome.notifications.create({
+    notify({
       type: "basic",
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: "Lock Failed",
@@ -1800,6 +1837,22 @@ chrome.commands.onCommand.addListener((command) => {
       case 'lock-all-tabs':
         handleLockAllTabs(true, hasPassword); // Always active
         break;
+
+      case 'toggle-stealth-mode':
+        stealthModeEnabled = !stealthModeEnabled;
+        chrome.storage.local.set({ stealthModeEnabled });
+        updateBadge();
+        // Only show a notification when DISABLING stealth (to confirm it's off)
+        if (!stealthModeEnabled) {
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: '🕵️ Stealth Mode Disabled',
+            message: 'Locksy is now visible. Lock indicators are shown normally.',
+            priority: 1
+          });
+        }
+        break;
     }
   });
 });
@@ -1807,7 +1860,7 @@ chrome.commands.onCommand.addListener((command) => {
 // Handler: Lock current tab via keyboard shortcut
 function handleLockCurrentTab(isActive, hasPassword) {
   if (!isActive) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Extension Inactive',
@@ -1818,7 +1871,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
   }
 
   if (!hasPassword) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Password Required',
@@ -1834,7 +1887,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
 
       // Check if tab is already locked
       if (lockedTabs.has(tab.id)) {
-        chrome.notifications.create({
+        notify({
           type: 'basic',
           iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: 'Already Locked',
@@ -1851,7 +1904,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
           tab.url.startsWith('edge://') ||
           tab.url.startsWith('about:') ||
           tab.url.startsWith('file://'))) {
-        chrome.notifications.create({
+        notify({
           type: 'basic',
           iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
           title: 'Cannot Lock Tab',
@@ -1869,7 +1922,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
 
       lockTab(tab.id, (response) => {
         if (response && response.success) {
-          chrome.notifications.create({
+          notify({
             type: 'basic',
             iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
             title: '🔒 Tab Locked',
@@ -1885,7 +1938,7 @@ function handleLockCurrentTab(isActive, hasPassword) {
 // Handler: Open Domain Lock Manager via keyboard shortcut
 function handleOpenDomainManager(isActive, hasPassword) {
   if (!isActive) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Extension Inactive',
@@ -1896,7 +1949,7 @@ function handleOpenDomainManager(isActive, hasPassword) {
   }
 
   if (!hasPassword) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Password Required',
@@ -1917,7 +1970,7 @@ function handleOpenDomainManager(isActive, hasPassword) {
 // Handler: Lock all tabs in current window via keyboard shortcut
 function handleLockAllTabs(isActive, hasPassword) {
   if (!isActive) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Extension Inactive',
@@ -1928,7 +1981,7 @@ function handleLockAllTabs(isActive, hasPassword) {
   }
 
   if (!hasPassword) {
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: 'Password Required',
@@ -1975,7 +2028,7 @@ function handleLockAllTabs(isActive, hasPassword) {
       message += ` (${skippedCount} system tab${skippedCount !== 1 ? 's' : ''} skipped)`;
     }
 
-    chrome.notifications.create({
+    notify({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
       title: '🔒 Bulk Lock Complete',

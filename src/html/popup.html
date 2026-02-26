@@ -201,6 +201,34 @@
             </div>
           </div>
         </div>
+
+        <!-- Stealth Mode Section -->
+        <div class="stealth-mode-settings" id="stealthModeSettings" style="margin-top: 16px;">
+          <div class="timer-header">
+            <h3>🕵️ Stealth Mode</h3>
+            <button class="collapse-btn" id="collapseStealthMode">−</button>
+          </div>
+          <div class="timer-content" id="stealthModeContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Stealth Mode</span>
+              <div id="stealthModeToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Hides lock indicators. Locked pages appear as connection errors to casual observers.</p>
+
+            <div id="stealthModeInfo" class="inactivity-note" style="display:none;">
+              <div class="note-icon">🔑</div>
+              <div class="note-content">
+                <strong>How to unlock:</strong> On a locked tab (shown as a connection error), <strong>triple-click</strong> the <code>ERR_CONNECTION_REFUSED</code> text, or press <kbd>Alt+U</kbd>, to reveal the password form.
+                <br><br>
+                <strong>Toggle shortcut:</strong> <kbd>Alt+Shift+7</kbd> toggles Stealth Mode on/off.
+                <br><br>
+                <strong>Tip:</strong> You can also right-click the Locksy icon and choose "Hide in toolbar" to fully hide the extension.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="lockTip"

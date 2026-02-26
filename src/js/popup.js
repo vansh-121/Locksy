@@ -711,6 +711,30 @@ function initializeMainUI() {
             </div>
           </div>
         </div>
+
+        <!-- Stealth Mode Section -->
+        <div class="stealth-mode-settings" id="stealthModeSettings" style="display: none; margin-top: 16px;">
+          <div class="timer-header">
+            <h3>🕵️ Stealth Mode</h3>
+            <button class="collapse-btn" id="collapseStealthMode">−</button>
+          </div>
+          <div class="timer-content" id="stealthModeContent">
+            <div class="toggle-container-small">
+              <span class="toggle-label-small">Enable Stealth Mode</span>
+              <div id="stealthModeToggle" class="toggle-switch-small">
+                <div class="toggle-slider-small"></div>
+              </div>
+            </div>
+            <p class="timer-description">Hides lock indicators. Locked pages appear as connection errors to casual observers.</p>
+            <div id="stealthModeInfo" class="inactivity-note" style="display:none;">
+              <div class="note-icon">🔑</div>
+              <div class="note-content">
+                <strong>How to unlock:</strong> Triple-click the <code>ERR_CONNECTION_REFUSED</code> text or press <kbd>Alt+U</kbd>.<br><br>
+                <strong>Toggle shortcut:</strong> <kbd>Alt+Shift+7</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="lockTip" style="display: none; margin-top: 12px; padding: 12px; background: #d1f2eb; border-radius: 8px; border-left: 4px solid #28a745;">
@@ -1292,6 +1316,9 @@ function initializeMainUI() {
   // Initialize timer settings
   initializeTimerSettings();
 
+  // Initialize stealth mode settings
+  initializeStealthMode();
+
   // Check if What's New should be shown after an update — add a badge dot
   // instead of auto-opening a window (which would close this popup)
   chrome.storage.local.get(['showWhatsNew'], (data) => {
@@ -1851,6 +1878,66 @@ function showScheduledStatus(message, type) {
       statusDiv.style.display = 'none';
     }, 3000);
   }
+}
+
+// ============================================================================
+// STEALTH MODE SETTINGS
+// ============================================================================
+
+function initializeStealthMode() {
+  const stealthSettings = document.getElementById('stealthModeSettings');
+  const stealthToggle = document.getElementById('stealthModeToggle');
+  const stealthInfo = document.getElementById('stealthModeInfo');
+  const collapseBtn = document.getElementById('collapseStealthMode');
+  const stealthContent = document.getElementById('stealthModeContent');
+
+  if (!stealthSettings || !stealthToggle) return;
+
+  // Show the stealth mode section
+  stealthSettings.style.display = 'block';
+
+  // Collapse / expand
+  if (collapseBtn && stealthContent) {
+    collapseBtn.addEventListener('click', () => {
+      if (stealthContent.style.display === 'none') {
+        stealthContent.style.display = 'block';
+        collapseBtn.textContent = '−';
+      } else {
+        stealthContent.style.display = 'none';
+        collapseBtn.textContent = '+';
+      }
+    });
+  }
+
+  // Load current stealth state from background
+  chrome.runtime.sendMessage({ action: 'getStealthMode' }, (response) => {
+    if (response) {
+      const isActive = response.enabled;
+      stealthToggle.classList.toggle('active', isActive);
+      if (stealthInfo) {
+        stealthInfo.style.display = isActive ? 'block' : 'none';
+      }
+    }
+  });
+
+  // Toggle click handler
+  stealthToggle.addEventListener('click', () => {
+    const isActive = !stealthToggle.classList.contains('active');
+    stealthToggle.classList.toggle('active', isActive);
+
+    if (stealthInfo) {
+      stealthInfo.style.display = isActive ? 'block' : 'none';
+    }
+
+    chrome.runtime.sendMessage({ action: 'setStealthMode', enabled: isActive }, (response) => {
+      if (response && response.success) {
+        showNotification(
+          isActive ? '🕵️ Stealth Mode enabled' : '👁️ Stealth Mode disabled',
+          isActive ? 'success' : 'info'
+        );
+      }
+    });
+  });
 }
 
 // ============================================================================
