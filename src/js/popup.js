@@ -573,7 +573,8 @@ function initializeMainUI() {
             <span class="btn-text">All Tabs</span>
           </button>
         </div>
-        <button id="openDomainManager" class="btn-domain">🌐 Domain Lock</button>
+        <button id="unlockAllTabs" class="btn-unlock-all">🔓 Unlock All Tabs</button>
+        <button id="openDomainManager" class="btn-domain" style="margin-top: 8px;">🌐 Domain Lock</button>
         <button id="openShortcutsPage" class="btn-shortcuts" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">⌨️ Keyboard Shortcuts</button>
         
         <!-- Biometric Lock Section -->
@@ -1101,6 +1102,50 @@ function initializeMainUI() {
     });
   }
 
+  // Unlock All Tabs button
+  const unlockAllTabsBtn = document.getElementById("unlockAllTabs");
+  if (unlockAllTabsBtn) {
+    unlockAllTabsBtn.addEventListener("click", () => {
+      try {
+        if (!isExtensionActive) {
+          showNotification("Please activate the extension first!", "warning");
+          return;
+        }
+
+        chrome.storage.local.get("lockedTabIds", (data) => {
+          const lockedTabIds = data.lockedTabIds || [];
+
+          if (lockedTabIds.length === 0) {
+            showNotification("No locked tabs to unlock!", "info");
+            return;
+          }
+
+          showNotification(`🔄 Unlocking ${lockedTabIds.length} tab${lockedTabIds.length !== 1 ? 's' : ''}...`, "info");
+
+          chrome.runtime.sendMessage({ action: "unlockAllTabs" }, (response) => {
+            setTimeout(() => {
+              if (response && response.success) {
+                const count = response.unlockedCount;
+                const total = response.total;
+                if (count === total) {
+                  showNotification(`✅ Successfully unlocked ${count} tab${count !== 1 ? 's' : ''}!`, "success");
+                } else if (count > 0) {
+                  showNotification(`✅ Unlocked ${count} of ${total} tab${total !== 1 ? 's' : ''}!`, "success");
+                } else {
+                  showNotification("❌ Failed to unlock tabs. Please try again.", "error");
+                }
+              } else {
+                showNotification("❌ Failed to unlock tabs. Please try again.", "error");
+              }
+            }, 300);
+          });
+        });
+      } catch (error) {
+        showNotification("Error unlocking tabs", "error");
+      }
+    });
+  }
+
   // Open Domain Manager button
   if (openDomainManagerBtn) {
     openDomainManagerBtn.addEventListener("click", () => {
@@ -1131,6 +1176,11 @@ function initializeMainUI() {
   const headerWhatsNewBtn = document.getElementById("headerWhatsNewBtn");
   if (headerWhatsNewBtn) {
     headerWhatsNewBtn.addEventListener("click", () => {
+      // Clear the update badge and storage flag if present
+      const badge = headerWhatsNewBtn.querySelector('.whats-new-badge');
+      if (badge) badge.remove();
+      chrome.storage.local.set({ showWhatsNew: false });
+
       chrome.windows.create({
         url: chrome.runtime.getURL('src/html/whats-new.html'),
         type: 'popup',
@@ -1241,6 +1291,19 @@ function initializeMainUI() {
 
   // Initialize timer settings
   initializeTimerSettings();
+
+  // Check if What's New should be shown after an update — add a badge dot
+  // instead of auto-opening a window (which would close this popup)
+  chrome.storage.local.get(['showWhatsNew'], (data) => {
+    if (data.showWhatsNew) {
+      const whatsNewBtn = document.getElementById('headerWhatsNewBtn');
+      if (whatsNewBtn && !whatsNewBtn.querySelector('.whats-new-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'whats-new-badge';
+        whatsNewBtn.appendChild(badge);
+      }
+    }
+  });
 }
 
 function showNotification(message, type = "info") {
@@ -2113,52 +2176,47 @@ async function initializeFingerprintAuth() {
             showNotification('Failed to disable biometric', 'error');
           }
         } else {
-          // User wants to ENABLE biometric — trigger registration
-          try {
-            if (capability.needsHardwareCheck) {
-              // Platform requires hardware verification first
-              const proceed = confirm(
-                '⚠️ Biometric Lock requires a fingerprint reader or face recognition camera.\n\n' +
-                'A system prompt will appear next. If you ONLY see a PIN or password option ' +
-                '(no fingerprint or face), it means your device doesn\'t have biometric hardware — press Cancel.\n\n' +
-                'If you see a fingerprint or face option, use it to complete setup.\n\n' +
-                'Continue?'
-              );
-              if (!proceed) return;
+          // User wants to ENABLE biometric.
+          // IMPORTANT: Do NOT call navigator.credentials.create() here in the popup.
+          // The extension popup closes the moment it loses focus — which is exactly
+          // what happens when the OS passkey/biometric dialog appears. This silently
+          // cancels the WebAuthn request and the user sees nothing (Brave bug report).
+          // Fix: open a dedicated standalone window that persists across focus changes.
 
-              updateFingerprintStatus('System prompt will appear — use fingerprint or face to verify...', 'info');
-              if (biometricOptions) biometricOptions.style.display = 'block';
+          updateFingerprintStatus('Opening biometric setup window…', 'info');
 
-              const result = await verifyBiometricHardwareAndRegister();
-              if (result.success && result.credential) {
-                await chrome.storage.local.set({ fingerprintCredential: result.credential });
-                biometricToggle.classList.add('active');
-                updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
-                showNotification('Biometric lock set up successfully!', 'success');
-                updateDefaultDescription(false, capability);
-              } else {
-                if (biometricOptions) biometricOptions.style.display = 'none';
-                showNotification('Setup cancelled. Your device may not have a fingerprint reader or camera.', 'error');
-                return;
-              }
-            } else {
-              // Direct registration (macOS/iOS/Android, or confirmed Windows)
-              updateFingerprintStatus('Authenticating — follow the on-screen prompt...', 'info');
-              if (biometricOptions) biometricOptions.style.display = 'block';
+          // Clear any stale result from a previous attempt
+          await chrome.storage.local.remove('biometricSetupResult');
 
-              const credential = await registerFingerprint();
-              await chrome.storage.local.set({ fingerprintCredential: credential });
+          chrome.windows.create({
+            url: chrome.runtime.getURL('src/html/biometric-setup.html'),
+            type: 'popup',
+            width: 560,
+            height: 600,
+            focused: true
+          });
 
+          // Listen for the result written by biometric-setup.js
+          const onStorageChanged = (changes) => {
+            if (!changes.biometricSetupResult) return;
+            chrome.storage.onChanged.removeListener(onStorageChanged);
+
+            const result = changes.biometricSetupResult.newValue;
+            if (result && result.success) {
               biometricToggle.classList.add('active');
+              if (biometricOptions) biometricOptions.style.display = 'block';
               updateFingerprintStatus(`${capability.label} is active — biometric unlock is enabled`, 'success');
-              showNotification(`${capability.label} set up successfully!`, 'success');
               updateDefaultDescription(false, capability);
+              showNotification('Biometric lock set up successfully!', 'success');
+              // Clean up the signal key
+              chrome.storage.local.remove('biometricSetupResult');
+            } else if (result) {
+              if (biometricOptions) biometricOptions.style.display = 'none';
+              showNotification(result.error || 'Biometric setup cancelled or failed', 'error');
+              chrome.storage.local.remove('biometricSetupResult');
             }
-          } catch (error) {
-            console.error('Error setting up biometric:', error);
-            if (biometricOptions) biometricOptions.style.display = 'none';
-            showNotification(error.message || 'Biometric setup cancelled or failed', 'error');
-          }
+          };
+          chrome.storage.onChanged.addListener(onStorageChanged);
         }
       });
     }
@@ -2210,11 +2268,16 @@ function updateFingerprintStatus(message, type) {
   // Find or create status message element
   let statusMessage = statusDiv.querySelector('.status-message');
   if (!statusMessage) {
-    statusDiv.innerHTML = `
-      <span class="status-icon">ℹ️</span>
-      <span class="status-message">${message}</span>
-    `;
-    statusMessage = statusDiv.querySelector('.status-message');
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'status-icon';
+    iconSpan.textContent = 'ℹ️';
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'status-message';
+    msgSpan.textContent = message;
+    statusDiv.textContent = '';
+    statusDiv.appendChild(iconSpan);
+    statusDiv.appendChild(msgSpan);
+    statusMessage = msgSpan;
   } else {
     statusMessage.textContent = message;
   }

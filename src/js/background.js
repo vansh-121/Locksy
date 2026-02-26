@@ -17,6 +17,29 @@ let scheduledLockedTabs = new Set(); // Track tabs locked by scheduled locking (
 let isRestoring = false; // Flag to prevent race conditions during restoration
 let restorationPromise = null; // Promise for ongoing restoration
 
+// Bug A fix: track pending new-tab domain-lock listeners so they can be
+// cleaned up if the tab is closed before it ever gets a URL.
+const pendingTabLockListeners = new Map(); // tabId -> onUpdated listener fn
+
+// Bug B fix: deduplicate concurrent lock navigations.
+// Both onUpdated and webNavigation.onBeforeNavigate fire for the same
+// navigation event and would both call tabs.update(lockedUrl). This map
+// throttles to one navigation per tab per 500 ms.
+const recentLockNavigation = new Map(); // tabId -> timestamp
+const LOCK_NAV_DEDUP_MS = 500;
+
+function markLockNavigationSent(tabId) {
+  recentLockNavigation.set(tabId, Date.now());
+}
+
+function wasLockNavigationRecentlySent(tabId) {
+  const ts = recentLockNavigation.get(tabId);
+  if (!ts) return false;
+  if (Date.now() - ts < LOCK_NAV_DEDUP_MS) return true;
+  recentLockNavigation.delete(tabId); // expired
+  return false;
+}
+
 // ============================================================================
 // AUTO-LOCK TIMER & SCHEDULED LOCKING
 // ============================================================================
@@ -444,9 +467,10 @@ function checkScheduleAndAct() {
         await Promise.all(unlockPromises);
 
         // Update state
-        chrome.storage.local.set({ 
+        chrome.storage.local.set({
           scheduledLockState: false,
-          scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs),
+          temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs)
         });
 
         // Show notification
@@ -473,22 +497,24 @@ function stopScheduleChecker() {
 }
 
 // Pattern matching for domain locks
+// Behaviour matches what is shown in the Domain Manager UI:
+//   google.com   → locks google.com AND www.google.com (www is treated as same site)
+//   *.google.com → locks ALL subdomains (mail, drive, meet, www, etc.) but NOT google.com itself
 function matchesPattern(url, pattern) {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
 
-    // Exact match
-    if (pattern === hostname) return true;
-
-    // Wildcard subdomain: *.example.com
+    // Wildcard subdomain: *.example.com → subdomains only, not root
     if (pattern.startsWith('*.')) {
       const domain = pattern.slice(2);
-      return hostname.endsWith(domain) || hostname === domain.replace('*.', '');
+      return hostname.endsWith('.' + domain);
     }
 
-    // Check if pattern is contained in hostname or vice versa
-    return hostname.includes(pattern) || pattern.includes(hostname);
+    // Plain domain: exact match OR the www. variant
+    // e.g. "google.com" matches "google.com" and "www.google.com"
+    // but NOT "mail.google.com" or "notgoogle.com"
+    return hostname === pattern || hostname === 'www.' + pattern;
   } catch (e) {
     return false;
   }
@@ -702,26 +728,21 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
     // Only show What's New if the version actually changed
     if (previousVersion && currentVersion !== previousVersion) {
-      // Set flag and switch popup to whats-new.html
+      // Set flag so popup.js can open What's New on next open
       chrome.storage.local.set({
         showWhatsNew: true,
         whatsNewVersion: currentVersion,
         whatsNewPreviousVersion: previousVersion
       }, () => {
-        // Change the popup to whats-new.html
-        chrome.action.setPopup({ popup: 'src/html/whats-new.html' }, () => {
-          // Try to open the popup automatically
-          chrome.action.openPopup().catch(err => {
-            // If popup can't be opened automatically, create a notification
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-              title: "Locksy Updated! 🎉",
-              message: `Click the extension icon to see what's new in v${currentVersion}`,
-              priority: 2,
-              requireInteraction: true
-            });
-          });
+        // Notify the user to click the icon — never call setPopup/openPopup
+        // because setPopup breaks Firefox's click-to-open popup behavior.
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+          title: "Locksy Updated! 🎉",
+          message: `Click the extension icon to see what's new in v${currentVersion}`,
+          priority: 2,
+          requireInteraction: true
         });
       });
     } else {
@@ -920,6 +941,70 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     });
     return true; // Keep the message channel open for async response
+  } else if (message.action === "unlockAllTabs") {
+    // Batch unlock: one storage read → one storage write → all tabs.update simultaneously
+    (async () => {
+      try {
+        const tabIds = Array.from(lockedTabs);
+        if (tabIds.length === 0) {
+          sendResponse({ success: true, unlockedCount: 0, total: 0 });
+          return;
+        }
+
+        // Step 1: Read ALL lock data in a single storage call
+        const lockDataKeys = tabIds.map(id => `lockData_${id}`);
+        const allLockData = await chrome.storage.local.get(lockDataKeys);
+
+        // Step 2: Determine which tabs have valid original URLs
+        const unlockable = tabIds.map(id => ({
+          id,
+          originalUrl: allLockData[`lockData_${id}`]?.originalUrl || null
+        }));
+
+        // Step 3: Build updated state — remove ALL locked tabs at once
+        const newTemporarilyUnlocked = new Set(temporarilyUnlockedTabs);
+        unlockable.forEach(({ id, originalUrl }) => {
+          if (originalUrl && isDomainLocked(originalUrl)) {
+            newTemporarilyUnlocked.add(id);
+          }
+        });
+
+        // Step 4: Single storage write for all state (before any navigation)
+        await chrome.storage.local.set({
+          lockedTabIds: [],
+          scheduledLockedTabIds: Array.from(scheduledLockedTabs).filter(id => !lockedTabs.has(id)),
+          temporarilyUnlockedTabIds: Array.from(newTemporarilyUnlocked)
+        });
+
+        // Step 5: Update in-memory state
+        tabIds.forEach(id => {
+          lockedTabs.delete(id);
+          scheduledLockedTabs.delete(id);
+        });
+        newTemporarilyUnlocked.forEach(id => temporarilyUnlockedTabs.add(id));
+        updateBadge();
+
+        // Step 6: Navigate ALL tabs simultaneously — no awaiting between them
+        const navResults = await Promise.all(
+          unlockable.map(({ id, originalUrl }) => {
+            if (!originalUrl) return Promise.resolve({ success: false });
+            return chrome.tabs.update(id, { url: originalUrl })
+              .then(() => ({ success: true, id }))
+              .catch(e => ({ success: false, id, error: e.message }));
+          })
+        );
+
+        // Step 7: Remove all lockData in one batch
+        await chrome.storage.local.remove(lockDataKeys);
+
+        const unlockedCount = navResults.filter(r => r.success).length;
+        sendResponse({ success: true, unlockedCount, total: tabIds.length });
+      } catch (error) {
+        console.error('Error in unlockAllTabs:', error);
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
+    return true;
   } else if (message.action === "unlockTab") {
     // Unlock tab by tabId (called from locked.html)
     const tabId = message.tabId;
@@ -1039,7 +1124,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Default: just unlock this tab
       lockedTabs.delete(tabId);
       scheduledLockedTabs.delete(tabId);
-      chrome.storage.local.set({ 
+      chrome.storage.local.set({
         lockedTabIds: Array.from(lockedTabs),
         scheduledLockedTabIds: Array.from(scheduledLockedTabs)
       });
@@ -1423,29 +1508,48 @@ async function unlockTab(tabId) {
 
     const originalUrl = lockData.originalUrl;
 
-    // Remove from locked set FIRST (so periodic check in locked.js can detect this)
-    lockedTabs.delete(tabId);
-    scheduledLockedTabs.delete(tabId); // Also remove from scheduled locked tabs
+    // CRITICAL ORDER (Bug 2 fix — service worker restart race condition):
+    // Write storage FIRST before touching in-memory state.
+    // If the SW is killed after the storage write, it will restart and read
+    // the already-updated storage (tab not in lockedTabIds), so it will NOT
+    // re-lock. Writing memory first and storage second means a SW restart
+    // between those two steps causes the tab to be re-locked on wake-up.
 
-    // Check if this was a domain-locked tab
+    // Step 1: Build updated sets (without this tab) but don't mutate in-memory yet
+    const newLockedTabIds = Array.from(lockedTabs).filter(id => id !== tabId);
+    const newScheduledTabIds = Array.from(scheduledLockedTabs).filter(id => id !== tabId);
+
+    // Step 2: Check domain lock and build temporarily unlocked set
+    const newTemporarilyUnlocked = new Set(temporarilyUnlockedTabs);
     if (isDomainLocked(originalUrl)) {
-      temporarilyUnlockedTabs.add(tabId);
-      // Persist temporarily unlocked tabs
-      await chrome.storage.local.set({ temporarilyUnlockedTabIds: Array.from(temporarilyUnlockedTabs) });
+      newTemporarilyUnlocked.add(tabId);
     }
 
-    // Update storage
-    await chrome.storage.local.set({ 
-      lockedTabIds: Array.from(lockedTabs),
-      scheduledLockedTabIds: Array.from(scheduledLockedTabs)
+    // Step 3: Persist everything to storage atomically BEFORE in-memory changes
+    // lockData is kept alive here on purpose — removed AFTER navigation (Bug 1 fix)
+    await chrome.storage.local.set({
+      lockedTabIds: newLockedTabIds,
+      scheduledLockedTabIds: newScheduledTabIds,
+      temporarilyUnlockedTabIds: Array.from(newTemporarilyUnlocked)
     });
-    await chrome.storage.local.remove(`lockData_${tabId}`);
+
+    // Step 4: Now safely update in-memory state
+    lockedTabs.delete(tabId);
+    scheduledLockedTabs.delete(tabId);
+    if (isDomainLocked(originalUrl)) {
+      temporarilyUnlockedTabs.add(tabId);
+    }
 
     // Update badge
     updateBadge();
 
-    // Navigate back to original URL
+    // Step 5: Navigate back to original URL FIRST, then remove lock data
+    // (keeping lockData alive until now prevents the 5-sec interval in locked.js
+    // from seeing isLocked=false + no lockData and deleting the tab — Bug 1 fix)
     await chrome.tabs.update(tabId, { url: originalUrl });
+
+    // Step 6: Now safe to remove lock data — tab has already started navigating
+    await chrome.storage.local.remove(`lockData_${tabId}`);
 
     return { success: true };
 
@@ -1456,6 +1560,13 @@ async function unlockTab(tabId) {
 }
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
+  // Bug A fix: clean up any orphaned new-tab domain-lock listener for this tab
+  const pendingListener = pendingTabLockListeners.get(tabId);
+  if (pendingListener) {
+    chrome.tabs.onUpdated.removeListener(pendingListener);
+    pendingTabLockListeners.delete(tabId);
+  }
+
   const wasLocked = lockedTabs.has(tabId);
   const wasTemporarilyUnlocked = temporarilyUnlockedTabs.has(tabId);
   const wasScheduledLocked = scheduledLockedTabs.has(tabId);
@@ -1505,9 +1616,12 @@ chrome.tabs.onCreated.addListener(async (tab) => {
     if (updatedTabId === tab.id && changeInfo.url) {
       checkAndLock(updatedTabId, changeInfo);
       chrome.tabs.onUpdated.removeListener(listener);
+      pendingTabLockListeners.delete(tab.id); // Bug A fix: clean up map entry
     }
   };
 
+  // Bug A fix: store listener so it can be cleaned up if tab closes early
+  pendingTabLockListeners.set(tab.id, listener);
   chrome.tabs.onUpdated.addListener(listener);
 });
 
@@ -1547,6 +1661,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     // Re-navigate to locked page ONLY if URL is actually changing (not on locked.html)
     // This prevents refresh loops when the tab is already locked
     if (changeInfo.url && !changeInfo.url.includes('/locked.html')) {
+      // Bug B fix: skip if onBeforeNavigate already dispatched a lock navigation
+      // for this tab within the dedup window to prevent double navigation
+      if (wasLockNavigationRecentlySent(tabId)) return;
+
       const lockedUrl = chrome.runtime.getURL('src/html/locked.html') + `?tab=${tabId}`;
 
       // Store current URL as original URL
@@ -1558,6 +1676,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await chrome.storage.local.set({ [`lockData_${tabId}`]: lockData });
       // Firefox fix: Small delay to ensure storage sync
       await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Mark dispatched BEFORE calling tabs.update so onBeforeNavigate dedup also works
+      markLockNavigationSent(tabId);
 
       // Navigate to locked page
       chrome.tabs.update(tabId, { url: lockedUrl }).catch((error) => {
@@ -1612,6 +1733,10 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
         // Firefox fix: Small delay to ensure storage sync
         await new Promise(resolve => setTimeout(resolve, 50));
       }
+
+      // Bug B fix: skip if onUpdated already dispatched a lock navigation
+      if (wasLockNavigationRecentlySent(details.tabId)) return;
+      markLockNavigationSent(details.tabId);
 
       chrome.tabs.update(details.tabId, { url: lockedUrl }).catch((error) => {
         console.error('Error enforcing lock on navigation:', error);

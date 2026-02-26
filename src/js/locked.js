@@ -190,10 +190,10 @@
                     if (tabLockData && tabLockData.originalUrl) {
                         window.location.href = tabLockData.originalUrl;
                     } else {
-                        // Fallback: close this tab if no original URL
-                        chrome.tabs.getCurrent((tab) => {
-                            if (tab) chrome.tabs.remove(tab.id);
-                        });
+                        // Fallback: background already navigated the tab (race condition).
+                        // Do NOT close the tab — just let the background-initiated
+                        // navigation take over. Closing would delete the tab entirely.
+                        console.log('[Locksy] Tab unlocked by background, waiting for navigation.');
                     }
                 }
             } catch (error) {
@@ -573,22 +573,27 @@
                 const currentUrl = tabLockData.originalUrl;
                 let matchedPattern = null;
 
-                // Check if current URL matches any locked domain
+                // Check if current URL matches any locked domain.
+                // NOTE: Must stay in sync with matchesPattern() in background.js.
+                // Rules:
+                //   google.com   → exact match + www.google.com
+                //   *.google.com → subdomains only, NOT google.com itself
                 const isDomainLocked = lockedDomains.some(pattern => {
                     try {
                         const hostname = new URL(currentUrl).hostname;
-                        if (pattern === hostname) {
-                            matchedPattern = pattern;
-                            return true;
-                        }
+
+                        // Wildcard subdomain: *.example.com → subdomains only
                         if (pattern.startsWith('*.')) {
                             const domain = pattern.slice(2);
-                            if (hostname.endsWith(domain) || hostname === domain.replace('*.', '')) {
+                            if (hostname.endsWith('.' + domain)) {
                                 matchedPattern = pattern;
                                 return true;
                             }
+                            return false;
                         }
-                        if (hostname.includes(pattern) || pattern.includes(hostname)) {
+
+                        // Plain domain: exact match OR www. variant
+                        if (hostname === pattern || hostname === 'www.' + pattern) {
                             matchedPattern = pattern;
                             return true;
                         }

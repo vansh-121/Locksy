@@ -29,15 +29,27 @@
     <div class="add-domain-section">
       <h3>Add New Domain Lock</h3>
       <div class="input-group">
-        <input type="text" id="domainPattern" placeholder="example.com or *.example.com" />
+        <input type="text" id="domainPattern" placeholder="example.com" />
         <button id="lockDomain" class="btn-primary">🔒 Lock Domain</button>
+      </div>
+      <div class="subdomain-toggle-row">
+        <label class="subdomain-toggle-label">
+          <div class="toggle-switch">
+            <input type="checkbox" id="includeSubdomains" />
+            <span class="toggle-slider"></span>
+          </div>
+          <div class="toggle-text">
+            <span class="toggle-title">Include subdomains</span>
+            <span class="toggle-hint" id="subdomainHint">Only <strong>example.com</strong> will be locked</span>
+          </div>
+        </label>
       </div>
       <div class="examples">
         <p><strong>Examples:</strong></p>
         <ul>
-          <li><code>github.com</code> - Locks only github.com</li>
-          <li><code>*.google.com</code> - Locks all Google subdomains (mail, drive, etc.)</li>
-          <li><code>facebook.com</code> - Locks Facebook</li>
+          <li><code>github.com</code> — locks only github.com</li>
+          <li><code>google.com</code> + toggle ON — locks google.com, mail.google.com, drive.google.com, etc.</li>
+          <li><code>facebook.com</code> — locks only facebook.com</li>
         </ul>
       </div>
     </div>

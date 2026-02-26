@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Setup - Locksy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .status-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .status-box.waiting {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .status-box.success {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .status-box.error {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .status-box.waiting .status-text {
+            color: #667eea;
+        }
+
+        .status-box.success .status-text {
+            color: #28a745;
+        }
+
+        .status-box.error .status-text {
+            color: #dc3545;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <span class="icon" id="mainIcon">👆</span>
+        <h2 id="mainTitle">Set Up Biometric Unlock</h2>
+        <p class="subtitle" id="mainSubtitle">
+            Your browser will ask you to verify using your fingerprint, face, or device PIN.
+            Please follow the prompt that appears.
+        </p>
+
+        <div class="status-box waiting" id="statusBox">
+            <span class="spinner" id="spinner"></span>
+            <span class="status-text" id="statusText">Waiting for system prompt…</span>
+        </div>
+
+        <p class="hint" id="hintText">
+            Keep this window open and in focus. Do not close it until the setup is complete.
+        </p>
+
+        <button class="btn btn-primary hidden" id="retryBtn">🔄 Try Again</button>
+        <button class="btn btn-secondary hidden" id="closeBtn">Close</button>
+    </div>
+
+    <script src="../js/browser-polyfill.min.js"></script>
+    <script src="../js/webauthn-utils.js"></script>
+    <script src="../js/biometric-setup.js"></script>
+</body>
+
+</html>

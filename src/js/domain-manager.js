@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const backButton = document.getElementById('backButton');
   const domainPatternInput = document.getElementById('domainPattern');
   const lockDomainBtn = document.getElementById('lockDomain');
+  const includeSubdomainsCheckbox = document.getElementById('includeSubdomains');
+  const subdomainHint = document.getElementById('subdomainHint');
   const domainsContainer = document.getElementById('domainsContainer');
   const noDomainsMessage = document.getElementById('noDomainsMessage');
   const domainCount = document.getElementById('domainCount');
@@ -12,6 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
   backButton.addEventListener('click', () => {
     window.close();
   });
+
+  // Update hint text when input or toggle changes
+  function updateSubdomainHint() {
+    // Strip any leading *. the user may have typed so we show the clean domain
+    const raw = domainPatternInput.value.trim().replace(/^\*\./, '');
+    const display = raw || 'example.com';
+
+    // Build via DOM nodes — never innerHTML with user input (XSS / CodeQL)
+    const strong = document.createElement('strong');
+    strong.textContent = display;
+
+    subdomainHint.textContent = '';
+    if (includeSubdomainsCheckbox.checked) {
+      subdomainHint.appendChild(strong);
+      subdomainHint.appendChild(document.createTextNode(' and all its subdomains will be locked'));
+    } else {
+      subdomainHint.appendChild(document.createTextNode('Only '));
+      subdomainHint.appendChild(strong);
+      subdomainHint.appendChild(document.createTextNode(' will be locked'));
+    }
+  }
+
+  domainPatternInput.addEventListener('input', updateSubdomainHint);
+  includeSubdomainsCheckbox.addEventListener('change', updateSubdomainHint);
 
   // Lock domain button
   lockDomainBtn.addEventListener('click', () => {
@@ -29,10 +55,23 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLockedDomains();
 
   function handleLockDomain() {
-    const pattern = domainPatternInput.value.trim();
+    const raw = domainPatternInput.value.trim();
+
+    if (!raw) {
+      showNotification('Please enter a domain!', 'warning');
+      return;
+    }
+
+    // Strip any manually typed *. prefix so we apply it cleanly ourselves
+    const baseDomain = raw.startsWith('*.') ? raw.slice(2) : raw;
+
+    // Build the final pattern: prepend *. if the toggle is on
+    const pattern = includeSubdomainsCheckbox.checked
+      ? `*.${baseDomain}`
+      : baseDomain;
 
     if (!pattern) {
-      showNotification('Please enter a domain pattern!', 'warning');
+      showNotification('Please enter a domain!', 'warning');
       return;
     }
 
@@ -60,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (response && response.success) {
             showNotification(`Domain "${pattern}" locked successfully!`, 'success');
             domainPatternInput.value = '';
+            includeSubdomainsCheckbox.checked = false;
+            updateSubdomainHint();
             loadLockedDomains();
           } else if (response && response.error) {
             showNotification(response.error, 'error');

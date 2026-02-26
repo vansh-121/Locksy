@@ -79,6 +79,34 @@ body {
   gap: 4px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.whats-new-link .whats-new-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: #ff3b3b;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(255, 59, 59, 0.6);
+  animation: badge-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.25);
+    opacity: 0.8;
+  }
 }
 
 .newsletter-link {
@@ -436,6 +464,7 @@ button:disabled {
 /* Common button styles for lock, domain, shortcuts, and sponsor buttons */
 .btn-lock-single,
 .btn-lock-all,
+.btn-unlock-all,
 .btn-domain,
 .btn-shortcuts,
 .btn-newsletter,
@@ -529,6 +558,10 @@ button:disabled {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
 
+.btn-unlock-all {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
 .btn-domain {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
@@ -564,6 +597,12 @@ button:disabled {
   background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
 }
 
+.btn-unlock-all:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+}
+
 .btn-lock-all:hover:not(:disabled),
 .btn-domain:hover:not(:disabled) {
   transform: translateY(-2px);
@@ -592,6 +631,7 @@ button:disabled {
 
 .btn-lock-single:active,
 .btn-lock-all:active,
+.btn-unlock-all:active,
 .btn-domain:active,
 .btn-shortcuts:active,
 .btn-newsletter:active,
@@ -600,7 +640,8 @@ button:disabled {
 }
 
 .btn-lock-single:disabled,
-.btn-lock-all:disabled {
+.btn-lock-all:disabled,
+.btn-unlock-all:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
