@@ -70,11 +70,13 @@
     async function checkAndApplyStealthMode() {
         return new Promise((resolve) => {
             chrome.runtime.sendMessage({ action: 'getStealthMode' }, (response) => {
-                if (chrome.runtime.lastError || !response) {
+                if (chrome.runtime.lastError || !response || response.enabled === undefined) {
+                    console.log('[Stealth Mode] No response or bad response, defaulting to OFF');
                     resolve(false);
                     return;
                 }
-                stealthModeActive = response.enabled;
+                stealthModeActive = !!response.enabled;
+                console.log('[Stealth Mode] Current state:', stealthModeActive);
                 if (stealthModeActive) {
                     enableStealthDisplay();
                 }

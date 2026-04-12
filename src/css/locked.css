@@ -825,7 +825,7 @@ body.stealth-active {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    display: flex;
+    display: none; /* Default to hidden, only shown when stealth mode is enabled */
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
@@ -931,4 +931,654 @@ body.stealth-active {
     20%  { opacity: 1; transform: translateY(0); }
     80%  { opacity: 1; }
     100% { opacity: 0; }
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT - Respects prefers-color-scheme
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+    color: #f0f0f0;
+  }
+
+  .lock-container {
+    background: #1a1a2a !important;
+    color: #f0f0f0 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9) !important;
+    border: 1px solid #2a2a3e !important;
+  }
+
+  h1 {
+    color: #ffffff !important;
+  }
+
+  h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+  }
+
+  /* Main lock container heading styles */
+  .lock-container h1 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  /* Catch-all for any light containers */
+  .card,
+  .box,
+  .panel,
+  .container,
+  .content,
+  .form-box,
+  .dialog,
+  .modal {
+    background: #1a1a2a !important;
+    border-color: #3a3a4a !important;
+    color: #f0f0f0 !important;
+  }
+
+  /* Ensure all text is light */
+  h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+  }
+
+  p, span, label, div {
+    color: #f0f0f0 !important;
+  }
+
+  .subtitle {
+    color: #c0c0c0 !important;
+  }
+
+  /* INPUT STYLING - MAXIMUM SPECIFICITY */
+  .password-section .input-group input[type="password"],
+  .input-group input[type="password"],
+  input[type="password"],
+  #passwordInput {
+    background: #2a2a3a !important;
+    background-color: #2a2a3a !important;
+    border: 2px solid #404050 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  /* WebKit autofill override */
+  .password-section .input-group input[type="password"]:-webkit-autofill,
+  .input-group input[type="password"]:-webkit-autofill,
+  input[type="password"]:-webkit-autofill,
+  #passwordInput:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #2a2a3a inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #2a2a3a !important;
+  }
+
+  .password-section .input-group input[type="password"]:-webkit-autofill::first-line,
+  .input-group input[type="password"]:-webkit-autofill::first-line {
+    color: #ffffff !important;
+  }
+
+  .password-section .input-group input[type="password"]::placeholder,
+  .input-group input[type="password"]::placeholder,
+  input[type="password"]::placeholder,
+  #passwordInput::placeholder {
+    color: #a0a0a0 !important;
+  }
+
+  .password-section .input-group input[type="password"]:focus,
+  .input-group input[type="password"]:focus,
+  input[type="password"]:focus,
+  #passwordInput:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+    background: #333343 !important;
+    outline: none !important;
+  }
+
+  /* All input types dark */
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    background: #353545 !important;
+    border: 1px solid #404050 !important;
+    color: #f0f0f0 !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #667eea !important;
+    background: #3a3a4a !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #909090 !important;
+  }
+
+  .biometric-scanning-area {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.3);
+  }
+
+  .biometric-scanning-area.scanning {
+    border-color: rgba(102, 126, 234, 0.6);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .biometric-scanning-area.success {
+    border-color: rgba(34, 197, 94, 0.6);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+
+  .biometric-scanning-area.failed {
+    border-color: rgba(239, 68, 68, 0.6);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.15) 100%);
+  }
+
+  .biometric-prompt {
+    color: #ffffff;
+  }
+
+  .biometric-subtext {
+    color: #c0c0c0;
+  }
+
+  .biometric-divider {
+    color: #808080;
+  }
+
+  .biometric-divider::before,
+  .biometric-divider::after {
+    border-bottom-color: #3a3a4a;
+  }
+
+  .divider {
+    color: #808080;
+  }
+
+  .divider::before,
+  .divider::after {
+    border-bottom-color: #3a3a4a;
+  }
+
+  .error-message {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  .success-message {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+  }
+
+  .rate-limit-info {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    color: #fcd34d;
+  }
+
+  .rate-limit-info.locked {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  .security-info {
+    border-top: 1px solid #3a3a4a;
+  }
+
+  .security-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    color: #b8d4f0;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-use-password {
+    background: transparent;
+    color: #a8d5f0;
+    border: 2px solid #404050;
+  }
+
+  .btn-use-password:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.15);
+  }
+
+  .btn-switch-biometric {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    color: #b8d4f0;
+    border: 2px solid rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-switch-biometric:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+    border-color: rgba(102, 126, 234, 0.6);
+  }
+
+  .remember-choice {
+    background: rgba(102, 126, 234, 0.15);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+
+  .remember-choice label {
+    color: #f0f0f0;
+  }
+
+  .remember-choice small {
+    color: #c0c0c0;
+  }
+
+  .note {
+    color: #c0c0c0;
+  }
+
+  .note strong {
+    color: #f0f0f0;
+  }
+
+  /* Stealth mode fake error page in dark mode */
+  body.stealth-active {
+    background: #1a1a1a !important;
+    color: #f0f0f0 !important;
+  }
+
+  .stealth-overlay {
+    background: #1a1a1a;
+    color: #f0f0f0;
+  }
+
+  .stealth-error-title {
+    color: #ffffff;
+  }
+
+  .stealth-error-reason {
+    color: #c0c0c0;
+  }
+
+  .stealth-error-suggestions {
+    color: #c0c0c0;
+  }
+
+  .stealth-error-code {
+    color: #808080;
+  }
+
+  .stealth-error-code:hover {
+    color: #a0a0a0;
+  }
+
+  .stealth-btn {
+    background: #353545;
+    color: #f0f0f0;
+    border: 1px solid #404050;
+  }
+
+  .stealth-btn:hover {
+    background: #3a3a4a;
+    border-color: #505060;
+  }
+
+  .stealth-btn-primary {
+    background: #1a73e8;
+    color: #ffffff;
+    border: none;
+  }
+
+  .stealth-btn-primary:hover {
+    background: #1765cc;
+  }
+
+  .stealth-reveal-hint {
+    color: #808080;
+  }
+
+  .spinner {
+    border: 3px solid rgba(102, 126, 234, 0.2);
+    border-top: 3px solid #667eea;
+  }
+
+  .btn:focus-visible {
+    outline-color: #667eea;
+  }
+
+  /* Biometric button in dark mode */
+  .btn-unlock,
+  .btn-fingerprint {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+  }
+
+  .btn-unlock:hover:not(:disabled),
+  .btn-fingerprint:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+  }
+
+  .btn-biometric-retry {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-biometric-retry:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  }
+
+  /* Additional input placeholder and disabled state styles */
+  input[type="password"]::placeholder {
+    color: #808080;
+  }
+
+  input[type="password"]:disabled {
+    background: #2a2a2a;
+    opacity: 0.5;
+  }
+}
+
+/* Light mode biometric area - these should only show in light mode */
+.biometric-scanning-area {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border: 2px solid rgba(102, 126, 234, 0.15);
+}
+
+.biometric-scanning-area.scanning {
+  border-color: rgba(102, 126, 234, 0.4);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.15);
+}
+
+.biometric-scanning-area.success {
+  border-color: rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(56, 142, 60, 0.08) 100%);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.15);
+}
+
+.biometric-scanning-area.failed {
+  border-color: rgba(220, 53, 69, 0.4);
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(185, 43, 39, 0.08) 100%);
+}
+
+.biometric-prompt {
+  color: #2c3e50;
+}
+
+.biometric-subtext {
+  color: #6c757d;
+}
+
+.biometric-divider {
+  color: #959595;
+}
+
+.biometric-divider::before,
+.biometric-divider::after {
+  border-bottom-color: #d0d0d0;
+}
+
+.divider {
+  color: #959595;
+}
+
+.divider::before,
+.divider::after {
+  border-bottom-color: #d0d0d0;
+}
+
+/* Light mode messages */
+.error-message {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.2);
+  color: #721c24;
+}
+
+.success-message {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: rgba(76, 175, 80, 0.2);
+  color: #155724;
+}
+
+.rate-limit-info {
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.2);
+    color: #ffd93d;
+  }
+
+  .rate-limit-info.locked {
+    background: rgba(220, 53, 69, 0.15);
+    border-color: rgba(220, 53, 69, 0.4);
+    color: #ff8a8a;
+  }
+
+  .security-info {
+    border-top-color: #404040;
+  }
+
+  .security-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    color: #a8d5f0;
+  }
+
+  .btn-use-password {
+    background: transparent;
+    color: #8aa8e8;
+    border-color: #505050;
+  }
+
+  .btn-use-password:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .btn-switch-biometric {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    color: #a8d5f0;
+    border-color: rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-switch-biometric:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+
+  .remember-choice {
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  .remember-choice label {
+    color: #e0e0e0;
+  }
+
+  .remember-choice small {
+    color: #b0b0b0;
+  }
+
+  .note {
+    color: #b0b0b0;
+  }
+
+  .note strong {
+    color: #e0e0e0;
+  }
+
+  /* Stealth mode fake error page in dark mode */
+  body.stealth-active {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+  }
+
+  .stealth-overlay {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+
+  .stealth-error-title {
+    color: #e0e0e0;
+  }
+
+  .stealth-error-reason {
+    color: #b0b0b0;
+  }
+
+  .stealth-error-suggestions {
+    color: #b0b0b0;
+  }
+
+  .stealth-error-code {
+    color: #707070;
+  }
+
+  .stealth-error-code:hover {
+    color: #909090;
+  }
+
+  .stealth-btn {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #404040;
+  }
+
+  .stealth-btn:hover {
+    background: #323232;
+  }
+
+  .stealth-btn-primary {
+    background: #1a73e8;
+    color: #ffffff;
+  }
+
+  .stealth-btn-primary:hover {
+    background: #1765cc;
+  }
+
+  .stealth-reveal-hint {
+    color: #707070;
+  }
+
+  .spinner {
+    border: 3px solid rgba(102, 126, 234, 0.15);
+    border-top: 3px solid #667eea;
+  }
+
+  .btn:focus-visible {
+    outline-color: #667eea;
+  }
+
+  /* Rate limit info */
+  .rate-limit-info {
+    background: rgba(251, 191, 36, 0.15) !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+    color: #fcd34d !important;
+  }
+
+  .rate-limit-info.locked {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #fca5a5 !important;
+  }
+
+  /* Remember choice checkbox area */
+  .remember-choice {
+    background: rgba(102, 126, 234, 0.15) !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+  }
+
+  .remember-choice label {
+    color: #f0f0f0 !important;
+  }
+
+  .remember-choice input[type="checkbox"] {
+    border-color: #505060 !important;
+    background: #353545 !important;
+  }
+
+  /* Scope selection dialog */
+  .success-icon {
+    color: #f0f0f0;
+  }
+
+  /* All headings in dark mode */
+  h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+  }
+
+  /* Ensure all text is readable */
+  p, li, span, label, div {
+    color: #f0f0f0 !important;
+  }
+
+  /* FORCE ALL INPUTS AND TEXTAREAS TO BE DARK */
+  input,
+  textarea,
+  select,
+  button {
+    background: #2a2a3a !important;
+    color: #ffffff !important;
+    border-color: #404050 !important;
+  }
+
+  /* Except for buttons - they should keep their gradient */
+  .btn,
+  .btn-unlock,
+  .btn-primary,
+  button[class*="btn"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: none !important;
+  }
+}
+/* ============================================================================
+   CLASS-BASED DARK MODE - Fallback for systems where media query doesn't work
+   Applied by JavaScript when dark mode is detected
+   ============================================================================ */
+body.dark-mode {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%) !important;
+  color: #f0f0f0 !important;
+}
+
+body.dark-mode .lock-container {
+  background: #1a1a2a !important;
+  color: #f0f0f0 !important;
+  border: 1px solid #2a2a3e !important;
+}
+
+body.dark-mode input[type="password"],
+body.dark-mode #passwordInput {
+  background: #2a2a3a !important;
+  color: #ffffff !important;
+  border: 2px solid #404050 !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.dark-mode input[type="password"]::placeholder,
+body.dark-mode #passwordInput::placeholder {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+  color: #ffffff !important;
+}
+
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label {
+  color: #f0f0f0 !important;
+}
+
+body.dark-mode .subtitle {
+  color: #c0c0c0 !important;
 }

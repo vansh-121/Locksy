@@ -144,12 +144,14 @@ function showLockoutScreen(remainingTime) {
 
   // Create heading
   const heading = document.createElement('h2');
+  heading.id = 'popupLockoutHeading';
   heading.textContent = 'Extension Locked';
   heading.style.cssText = 'color: #dc3545; margin-bottom: 16px;';
   wrapper.appendChild(heading);
 
   // Create message paragraph
   const message = document.createElement('p');
+  message.id = 'popupLockoutMessage';
   message.style.cssText = 'color: #6c757d; margin-bottom: 20px;';
   message.appendChild(document.createTextNode('Too many failed authentication attempts.'));
   message.appendChild(document.createElement('br'));
@@ -158,8 +160,10 @@ function showLockoutScreen(remainingTime) {
 
   // Create security measure box
   const securityBox = document.createElement('div');
+  securityBox.id = 'popupLockoutSecurityBox';
   securityBox.style.cssText = 'background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 12px; margin-top: 20px;';
   const securityText = document.createElement('p');
+  securityText.id = 'popupLockoutSecurityText';
   securityText.style.cssText = 'margin: 0; font-size: 12px; color: #721c24; font-weight: 500;';
   const securityStrong = document.createElement('strong');
   securityStrong.textContent = '🛡️ Security Measure:';
@@ -268,13 +272,16 @@ function showAuthenticationScreen() {
 
   // Divider between biometric and password
   const dividerContainer = document.createElement('div');
+  dividerContainer.id = 'popupAuthDivider';
   dividerContainer.style.cssText = 'display: flex; align-items: center; margin: 16px 0; color: #adb5bd; font-size: 13px;';
   const dividerLeft = document.createElement('div');
+  dividerLeft.id = 'popupAuthDividerLeft';
   dividerLeft.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
   const dividerText = document.createElement('span');
   dividerText.textContent = 'or';
   dividerText.style.cssText = 'padding: 0 14px; font-weight: 500;';
   const dividerRight = document.createElement('div');
+  dividerRight.id = 'popupAuthDividerRight';
   dividerRight.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
   dividerContainer.appendChild(dividerLeft);
   dividerContainer.appendChild(dividerText);

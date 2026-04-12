@@ -340,6 +340,24 @@ input::placeholder {
   font-weight: 500;
 }
 
+@media (prefers-color-scheme: dark) {
+  input {
+    background: #353545;
+    border-color: #404050;
+    color: #f0f0f0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  input::placeholder {
+    color: #909090;
+  }
+}
+
 button {
   width: 100%;
   padding: 14px 18px;
@@ -1598,4 +1616,725 @@ kbd,
 /* Active (on) state the stealth toggle — matches existing toggle color scheme */
 #stealthModeToggle.active {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT - Respects prefers-color-scheme
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+    color: #f0f0f0;
+  }
+
+  .container {
+    background: #1a1a2a !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid #2a2a3e !important;
+  }
+
+  .header h2 {
+    color: #ffffff;
+  }
+
+  .toggle-label {
+    color: #f0f0f0;
+  }
+
+  .toggle-section {
+    background: #282838 !important;
+    border: 1px solid #3a3a4a !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .toggle-section p {
+    color: #c0c0c0 !important;
+  }
+
+  .toggle-label-small {
+    color: #f0f0f0;
+  }
+
+  .timer-description {
+    color: #c0c0c0;
+  }
+
+  .toggle-switch {
+    background: linear-gradient(135deg, #3a3a4a 0%, #2a2a3a 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid #404050;
+  }
+
+  .toggle-slider {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  .toggle-switch-small {
+    background: #3a3a4a;
+    border: 1px solid #404050;
+  }
+
+  .toggle-switch-small.active {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 8px rgba(34, 197, 94, 0.3);
+  }
+
+  .toggle-slider-small {
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .inactivity-note {
+    background: linear-gradient(135deg, #1e3a4a 0%, #1a2f3d 100%);
+    border: 1px solid #3a5a7a;
+    border-left: 4px solid #5ba3d1;
+  }
+
+  .note-content {
+    color: #b8d4f0;
+  }
+
+  .note-icon {
+    color: #b8d4f0;
+  }
+
+  kbd,
+  .stealth-mode-settings code {
+    background: #2a2a3a;
+    border: 1px solid #3a3a4a;
+    color: #f0f0f0;
+  }
+
+  .stealth-mode-settings {
+    border-top: 2px solid #3a3a4a;
+  }
+
+  .whats-new-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    color: white;
+  }
+
+  .whats-new-link:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  }
+
+  .newsletter-link {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+    color: white;
+  }
+
+  .newsletter-link:hover {
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.5);
+  }
+
+  .timer-header {
+    color: #f0f0f0;
+  }
+
+  .timer-header h3 {
+    color: #ffffff;
+  }
+
+  /* Timer content - the white containers */
+  .timer-content {
+    background: #282838 !important;
+    border: 1px solid #3a3a4a !important;
+  }
+
+  /* Toggle container with white background */
+  .toggle-container-small {
+    background: #282838 !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #3a3a4a !important;
+  }
+
+  .collapse-btn {
+    color: #f0f0f0;
+    background: #2a2a3a;
+    border: 1px solid #3a3a4a;
+  }
+
+  .collapse-btn:hover {
+    background: #353545;
+    border-color: #4a4a5a;
+    color: #ffffff;
+  }
+
+  .section {
+    border-color: #3a3a4a;
+  }
+
+  .section-header {
+    color: #f0f0f0;
+  }
+
+  .status-badge {
+    background: #282838 !important;
+    border-color: #3a3a4a !important;
+    color: #f0f0f0 !important;
+  }
+
+  /* All light background elements forced to dark */
+  .card,
+  .box,
+  .panel,
+  .item-container,
+  .domain-lock {
+    background: #1a1a2a !important;
+    color: #f0f0f0 !important;
+    border-color: #3a3a4a !important;
+  }
+
+  .controls-section {
+    opacity: 0.5;
+  }
+
+  .controls-section.enabled {
+    opacity: 1;
+  }
+
+  /* Domain lock list styling in dark mode */
+  .domain-lock {
+    background: #2a2a3a;
+    border-color: #3a3a4a;
+    color: #f0f0f0;
+  }
+
+  .domain-lock:hover {
+    background: #323243;
+  }
+
+  .domain-item {
+    color: #f0f0f0;
+    border-color: #3a3a4a;
+  }
+
+  /* Button styling in dark mode */
+  button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+
+  button:hover:not(.collapse-btn) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  }
+
+  button:active:not(.collapse-btn) {
+    transform: translateY(0);
+  }
+
+  /* Timer section styling */
+  .timer-item {
+    background: #2a2a3a;
+    border: 1px solid #3a3a4a;
+    border-radius: 8px;
+  }
+
+  .timer-item h4 {
+    color: #ffffff;
+  }
+
+  .timer-item input {
+    background: #353545;
+    border: 1px solid #404050;
+    color: #f0f0f0;
+  }
+
+  .timer-item input:focus {
+    background: #3a3a4a;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+
+  .timer-item input::placeholder {
+    color: #909090;
+  }
+
+  /* Lock tip styling */
+  #lockTip {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border-left-color: #22c55e !important;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    color: #a8f0c4 !important;
+  }
+
+  #lockTip p {
+    color: #a8f0c4 !important;
+  }
+
+  /* Auth Modal Specifics */
+  #popupAuthHeading {
+    color: #ffffff !important;
+  }
+
+  #popupAuthDescription,
+  #popupBiometricSubtext {
+    color: #c0c0c0 !important;
+  }
+
+  #popupBiometricScanBox {
+    background: #2a2a3a !important;
+    border-color: #404050 !important;
+  }
+
+  #popupBiometricScanText {
+    color: #ffffff !important;
+  }
+
+  #popupAuthDividerLeft,
+  #popupAuthDividerRight {
+    border-color: #404050 !important;
+  }
+
+  #popupUsePasswordToggle {
+    border-color: #404050 !important;
+    color: #a5b4fc !important;
+  }
+
+  #popupBackToBiometric {
+    background: rgba(165, 180, 252, 0.1) !important;
+    color: #a5b4fc !important;
+  }
+
+  #authPassword {
+    background: #353545 !important;
+    border-color: #404050 !important;
+    color: #f0f0f0 !important;
+    box-shadow: none !important;
+  }
+
+  #authPassword::placeholder {
+    color: #909090 !important;
+  }
+
+  /* Lockout Screen Specifics */
+  #popupLockoutHeading {
+    color: #ff6b6b !important;
+  }
+
+  #popupLockoutMessage {
+    color: #c0c0c0 !important;
+  }
+
+  #popupLockoutSecurityBox {
+    background: #4a1c1c !important;
+    border-color: #5c2c2c !important;
+  }
+
+  #popupLockoutSecurityText {
+    color: #ff8e8e !important;
+  }
+
+  /* Input fields */
+  input[type="text"],
+  input[type="password"],
+  input[type="number"],
+  textarea {
+    background: #353545;
+    border: 1px solid #404050;
+    color: #f0f0f0;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus,
+  textarea:focus {
+    background: #3a3a4a;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    outline: none;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="password"]::placeholder,
+  input[type="number"]::placeholder,
+  textarea::placeholder {
+    color: #909090;
+  }
+
+  /* Tab content */
+  .tab-content {
+    background: #2a2a3a;
+    border-color: #3a3a4a;
+  }
+
+  .tab-button {
+    color: #c0c0c0;
+    border-color: #3a3a4a;
+  }
+
+  .tab-button.active {
+    color: #ffffff;
+    border-color: #667eea;
+  }
+
+  /* Status colors in dark mode */
+  .status-locked {
+    color: #ff6b6b;
+  }
+
+  .status-unlocked {
+    color: #22c55e;
+  }
+
+  .status-timedout {
+    color: #fbbf24;
+  }
+
+  /* Error/warning messages */
+  .error-message {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .warning-message {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fcd34d;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+
+  .success-message {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  /* Focus states */
+  button:focus,
+  input:focus,
+  textarea:focus {
+    outline: none;
+  }
+
+  /* Fingerprint status section */
+  .fingerprint-status {
+    background: #353545 !important;
+    color: #f0f0f0 !important;
+    border: 1px solid #404050 !important;
+  }
+
+  /* Developer information box */
+  .developer-info {
+    background: #2a2a3a !important;
+    border-top-color: #667eea !important;
+    color: #f0f0f0 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .developer-info h3 {
+    color: #ffffff !important;
+  }
+
+  .developer-info p,
+  .developer-info li {
+    color: #c0c0c0 !important;
+  }
+
+  .developer-info code {
+    background: #3a3a4a !important;
+    color: #f0a894 !important;
+    border: 1px solid #404050 !important;
+  }
+
+  /* Whats new section */
+  .whats-new-header {
+    background: #2a2a3a !important;
+    border-color: #3a3a4a !important;
+  }
+
+  .whats-new-header h2 {
+    color: #ffffff !important;
+  }
+
+  .whats-new-header .version-badge {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #a8d5f0 !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
+  }
+
+  .whats-new-content {
+    background: #2a2a3a !important;
+    color: #f0f0f0 !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid #3a3a4a !important;
+  }
+
+  .whats-new-content h3 {
+    color: #ffffff !important;
+  }
+
+  .whats-new-content p,
+  .whats-new-content li {
+    color: #c0c0c0 !important;
+  }
+
+  /* Timer checkbox container */
+  .enable-timer-row {
+    background: #2a2a3a !important;
+    color: #f0f0f0 !important;
+    border: 1px solid #3a3a4a !important;
+  }
+
+  /* All card-like containers */
+  .card,
+  .panel,
+  .box {
+    background: #2a2a3a !important;
+    color: #f0f0f0 !important;
+    border-color: #3a3a4a !important;
+  }
+
+  /* Text in sections */
+  p, li, span, label {
+    color: #f0f0f0 !important;
+  }
+
+  /* Ensure text is always readable */
+  .content-section {
+    background: #2a2a3a !important;
+    color: #f0f0f0 !important;
+  }
+
+  /* Status Indicator - DARK MODE FIX */
+  .status-indicator {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .status-active {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    animation: glow-green 2s ease-in-out infinite alternate;
+  }
+
+  .status-inactive {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(185, 28, 28, 0.2) 100%);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+
+  /* Button elements that might have light backgrounds */
+  .btn-whats-new {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-whats-new:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  }
+
+  .dev-link {
+    background: #353545;
+    color: #a8d5f0;
+    border: 2px solid #404050;
+  }
+
+  .dev-link:hover {
+    border-color: #667eea;
+    color: #a8d5f0;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .developer-credit {
+    color: #c0c0c0;
+  }
+
+  .developer-name-link {
+    color: #667eea;
+  }
+
+  .developer-name-link:hover {
+    color: #a8d5f0;
+    border-bottom: 1px solid #667eea;
+  }
+
+  /* Domain Pattern Input */
+  #domainPattern {
+    background: #353545;
+    border: 2px solid #404050;
+    color: #f0f0f0;
+  }
+
+  #domainPattern:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+
+  /* Domains Container */
+  #domainsContainer {
+    background: #2a2a3a;
+  }
+
+  #domainsContainer::-webkit-scrollbar-track {
+    background: #3a3a4a;
+  }
+
+  #domainsContainer::-webkit-scrollbar-thumb {
+    background: #505060;
+  }
+
+  #domainsContainer::-webkit-scrollbar-thumb:hover {
+    background: #606070;
+  }
+
+  .domain-item {
+    background: linear-gradient(135deg, #303040 0%, #2a2a3a 100%);
+    border-left: 3px solid #5ba3d1;
+    color: #f0f0f0;
+  }
+
+  .domain-item:hover {
+    background: #353545;
+  }
+
+  .btn-unlock-domain {
+    background: #dc3545;
+    color: white;
+    border: none;
+  }
+
+  .btn-unlock-domain:hover {
+    background: #ff6b6b;
+  }
+
+  /* Feature list styling */
+  .feature-item {
+    background: #303040;
+    border-left: 4px solid #667eea;
+    color: #f0f0f0;
+  }
+
+  .feature-item:hover {
+    background: #353545;
+  }
+
+  /* Privacy note */
+  .privacy-note {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  /* Toggle section background */
+  .toggle-section {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border: 1px solid #3a3a4a;
+  }
+
+  /* Status message styling */
+  .status-message {
+    color: #f0f0f0;
+  }
+
+  .status-message.success {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .status-message.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .status-message.info {
+    background: rgba(102, 126, 234, 0.15);
+    color: #a8d5f0;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+
+  /* Scope and Duration buttons */
+  .scope-btn,
+  .duration-btn,
+  .preset-btn,
+  .day-btn {
+    background: #353545;
+    border: 2px solid #404050;
+    color: #f0f0f0;
+  }
+
+  .scope-btn:hover,
+  .duration-btn:hover,
+  .preset-btn:hover,
+  .day-btn:hover {
+    border-color: #667eea;
+    background: #3a3a4a;
+  }
+
+  .scope-btn.active,
+  .duration-btn.active,
+  .day-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+  }
+
+  /* Time input styling */
+  .time-input input[type="time"] {
+    background: #353545;
+    border: 2px solid #404050;
+    color: #f0f0f0;
+  }
+
+  .time-input input[type="time"]:focus {
+    border-color: #667eea;
+    background: #3a3a4a;
+  }
+
+  /* Custom duration input */
+  .custom-duration input {
+    background: #353545;
+    border: 2px solid #404050;
+    color: #f0f0f0;
+  }
+
+  .custom-duration input:focus {
+    border-color: #667eea;
+    background: #3a3a4a;
+  }
+
+  .custom-duration input::placeholder {
+    color: #909090;
+  }
+
+  /* Light mode element overrides for dark mode */
+  .feature-item:hover {
+    background: #353545 !important;
+  }
+
+  .toggle-container-small {
+    background: #353545 !important;
+  }
+
+  .scope-btn,
+  .duration-btn,
+  .preset-btn,
+  .day-btn {
+    background: #353545 !important;
+  }
+
+  .scope-btn:hover,
+  .duration-btn:hover,
+  .preset-btn:hover,
+  .day-btn:hover {
+    background: #3a3a4a !important;
+  }
+
+  .custom-duration input {
+    background: #353545 !important;
+  }
+
+  .time-input input[type="time"] {
+    background: #353545 !important;
+  }
 }

@@ -348,3 +348,237 @@ body {
         padding: 0 20px 20px;
     }
 }
+
+/* ============================================================================
+   DARK MODE SUPPORT - Respects prefers-color-scheme
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+        color: #f0f0f0;
+    }
+
+    .container {
+        background: #1a1a2a !important;
+        border: 1px solid #2a2a3e !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #404050 0%, #4a4a5a 100%);
+        border-bottom: 1px solid #3a3a4a;
+        color: white;
+    }
+
+    .header h2 {
+        color: white;
+    }
+
+    .header p {
+        color: #d0d0d0;
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #505060 0%, #3a3a4a 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        background: linear-gradient(135deg, #606070 0%, #4a4a5a 100%);
+    }
+
+    .section {
+        border-bottom: 1px solid #3a3a4a;
+    }
+
+    .section-title {
+        color: white;
+    }
+
+    /* Ensure all containers and boxes are dark */
+    .card,
+    .box,
+    .section-box,
+    .panel {
+        background: #1a1a2a !important;
+        border-color: #3a3a4a !important;
+        color: #f0f0f0 !important;
+    }
+
+    .shortcuts-grid {
+        background: #2a2a3a;
+    }
+
+    .shortcut-row {
+        background: #303040;
+        border-bottom: 1px solid #3a3a4a;
+    }
+
+    .shortcut-row:hover {
+        background: #353545;
+    }
+
+    .shortcut-keys {
+        background: #353545;
+        border: 1px solid #404050;
+        color: #f0f0f0;
+    }
+
+    .shortcut-description {
+        color: #c0c0c0;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #1e4d3a 0%, #1a3f30 100%);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-left: 4px solid #22c55e;
+    }
+
+    .info-box h3 {
+        color: #86efac;
+    }
+
+    .info-box p {
+        color: #86efac;
+    }
+
+    .help-section {
+        color: #c0c0c0;
+    }
+
+    .help-section li::before {
+        color: #22c55e;
+    }
+
+    .help-section strong {
+        color: #f0f0f0;
+    }
+
+    .notification.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .notification.info {
+        background: rgba(102, 126, 234, 0.15);
+        color: #a8d5f0;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .notification.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fcd34d;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .header h2 {
+        color: white;
+    }
+
+    .header p {
+        color: #d0d0d0;
+    }
+
+    .back-button {
+        background: linear-gradient(135deg, #505060 0%, #3a3a4a 100%);
+        color: white;
+    }
+
+    .back-button:hover {
+        background: linear-gradient(135deg, #606070 0%, #4a4a5a 100%);
+    }
+
+    .section {
+        border-bottom-color: #3a3a4a;
+    }
+
+    .section-title {
+        color: white;
+    }
+
+    .shortcuts-grid {
+        background: #2a2a3a;
+    }
+
+    .shortcut-row {
+        background: #303040;
+        border-bottom-color: #3a3a4a;
+    }
+
+    .shortcut-row:hover {
+        background: #353545;
+    }
+
+    .shortcut-keys {
+        background: #353545;
+        border-color: #404050;
+        color: #f0f0f0;
+    }
+
+    .shortcut-description {
+        color: #c0c0c0;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #1e4d3a 0%, #1a3f30 100%);
+        border-left-color: #22c55e;
+    }
+
+    .info-box h3 {
+        color: #86efac;
+    }
+
+    .info-box p {
+        color: #86efac;
+    }
+
+    .help-section {
+        color: #c0c0c0;
+    }
+
+    .help-section li::before {
+        color: #22c55e;
+    }
+
+    .help-section strong {
+        color: #f0f0f0;
+    }
+
+    .notification.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+    }
+
+    .notification.info {
+        background: rgba(102, 126, 234, 0.15);
+        color: #a8d5f0;
+    }
+
+    .notification.warning {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fcd34d;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #353545 !important;
+        color: #a8d5f0 !important;
+        border: 2px solid #667eea !important;
+    }
+
+    .btn-secondary:hover {
+        background: #404050 !important;
+        border-color: #667eea !important;
+    }
+
+    /* All text elements readable */
+    p, span, label, li, h1, h2, h3, h4, h5, h6 {
+        color: #f0f0f0 !important;
+    }
+}
