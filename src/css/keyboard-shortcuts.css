@@ -419,6 +419,21 @@ body {
         background: #353545;
     }
 
+    .shortcut-card {
+        background: #2a2a3a !important;
+        border-color: #3a3a4a !important;
+        color: #f0f0f0 !important;
+    }
+
+    .shortcut-card:hover {
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        border-color: #667eea;
+    }
+
+    .shortcut-card h3 {
+        color: #f0f0f0 !important;
+    }
+
     .shortcut-keys {
         background: #353545;
         border: 1px solid #404050;
@@ -427,6 +442,19 @@ body {
 
     .shortcut-description {
         color: #c0c0c0;
+    }
+
+    .info-banner {
+        background: linear-gradient(135deg, #1e4d3a 0%, #1a3f30 100%) !important;
+        border-left-color: #22c55e !important;
+    }
+
+    .info-text {
+        color: #86efac !important;
+    }
+
+    .info-text strong {
+        color: #f0f0f0 !important;
     }
 
     .info-box {
@@ -575,6 +603,10 @@ body {
     .btn-secondary:hover {
         background: #404050 !important;
         border-color: #667eea !important;
+    }
+
+    .help-section {
+        border-top-color: #3a3a4a !important;
     }
 
     /* All text elements readable */
