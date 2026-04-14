@@ -12,7 +12,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-attachment: fixed;
     display: flex;
@@ -42,6 +42,7 @@ body {
        and body padding keeps it from touching the edges. */
     margin: auto;
     flex-shrink: 0;
+    position: relative;
 }
 
 @keyframes fadeIn {
@@ -935,68 +936,165 @@ body.stealth-active {
 }
 
 /* ============================================================================
+   LOCKSY SHELL - Navbar at the top of locked page
+   ============================================================================ */
+
+.lock-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.shell-header {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.shell-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+}
+
+.shell-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+}
+
+.shell-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shell-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shell-theme-toggle:active {
+    transform: translateY(0);
+}
+
+.shell-theme-toggle .theme-toggle-icon {
+    font-size: 16px;
+}
+
+/* Adjust main container for header */
+body {
+    padding-top: 84px !important;
+}
+
+/* Dark mode adjustments for shell */
+html:not([data-theme="light"]) .lock-shell {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+
+/* ============================================================================
    DARK MODE SUPPORT - Respects prefers-color-scheme
    ============================================================================ */
 
 @media (prefers-color-scheme: dark) {
-  body {
+  html:not([data-theme="light"]) body {
     background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
     color: #f0f0f0;
   }
 
-  .lock-container {
+  html:not([data-theme="light"]) .lock-container {
     background: #1a1a2a !important;
     color: #f0f0f0 !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9) !important;
     border: 1px solid #2a2a3e !important;
   }
 
-  h1 {
+  html:not([data-theme="light"]) h1 {
     color: #ffffff !important;
   }
 
-  h2, h3, h4, h5, h6 {
+  html:not([data-theme="light"]) h2,
+  html:not([data-theme="light"]) h3,
+  html:not([data-theme="light"]) h4,
+  html:not([data-theme="light"]) h5,
+  html:not([data-theme="light"]) h6 {
     color: #ffffff !important;
   }
 
-  /* Main lock container heading styles */
-  .lock-container h1 {
+/* Main lock container heading styles */
+  html:not([data-theme="light"]) .lock-container h1 {
     color: #ffffff !important;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
   }
 
-  /* Catch-all for any light containers */
-  .card,
-  .box,
-  .panel,
-  .container,
-  .content,
-  .form-box,
-  .dialog,
-  .modal {
+/* Catch-all for any light containers */
+  html:not([data-theme="light"]) .card,
+  html:not([data-theme="light"]) .box,
+  html:not([data-theme="light"]) .panel,
+  html:not([data-theme="light"]) .container,
+  html:not([data-theme="light"]) .content,
+  html:not([data-theme="light"]) .form-box,
+  html:not([data-theme="light"]) .dialog,
+  html:not([data-theme="light"]) .modal {
     background: #1a1a2a !important;
     border-color: #3a3a4a !important;
     color: #f0f0f0 !important;
   }
 
-  /* Ensure all text is light */
-  h1, h2, h3, h4, h5, h6 {
+/* Ensure all text is light */
+  html:not([data-theme="light"]) h1,
+  html:not([data-theme="light"]) h2,
+  html:not([data-theme="light"]) h3,
+  html:not([data-theme="light"]) h4,
+  html:not([data-theme="light"]) h5,
+  html:not([data-theme="light"]) h6 {
     color: #ffffff !important;
   }
 
-  p, span, label, div {
+  html:not([data-theme="light"]) p,
+  html:not([data-theme="light"]) span,
+  html:not([data-theme="light"]) label,
+  html:not([data-theme="light"]) div {
     color: #f0f0f0 !important;
   }
 
-  .subtitle {
+  html:not([data-theme="light"]) .subtitle {
     color: #c0c0c0 !important;
   }
 
-  /* INPUT STYLING - MAXIMUM SPECIFICITY */
-  .password-section .input-group input[type="password"],
-  .input-group input[type="password"],
-  input[type="password"],
-  #passwordInput {
+/* INPUT STYLING - MAXIMUM SPECIFICITY */
+  html:not([data-theme="light"]) .password-section .input-group input[type="password"],
+  html:not([data-theme="light"]) .input-group input[type="password"],
+  html:not([data-theme="light"]) input[type="password"],
+  html:not([data-theme="light"]) #passwordInput {
     background: #2a2a3a !important;
     background-color: #2a2a3a !important;
     border: 2px solid #404050 !important;
@@ -1007,285 +1105,648 @@ body.stealth-active {
     font-size: 16px !important;
   }
 
-  /* WebKit autofill override */
-  .password-section .input-group input[type="password"]:-webkit-autofill,
-  .input-group input[type="password"]:-webkit-autofill,
-  input[type="password"]:-webkit-autofill,
-  #passwordInput:-webkit-autofill {
+/* WebKit autofill override */
+  html:not([data-theme="light"]) .password-section .input-group input[type="password"]:-webkit-autofill,
+  html:not([data-theme="light"]) .input-group input[type="password"]:-webkit-autofill,
+  html:not([data-theme="light"]) input[type="password"]:-webkit-autofill,
+  html:not([data-theme="light"]) #passwordInput:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #2a2a3a inset !important;
     -webkit-text-fill-color: #ffffff !important;
     background-color: #2a2a3a !important;
   }
 
-  .password-section .input-group input[type="password"]:-webkit-autofill::first-line,
-  .input-group input[type="password"]:-webkit-autofill::first-line {
+  html:not([data-theme="light"]) .password-section .input-group input[type="password"]:-webkit-autofill::first-line,
+  html:not([data-theme="light"]) .input-group input[type="password"]:-webkit-autofill::first-line {
     color: #ffffff !important;
   }
 
-  .password-section .input-group input[type="password"]::placeholder,
-  .input-group input[type="password"]::placeholder,
-  input[type="password"]::placeholder,
-  #passwordInput::placeholder {
+  html:not([data-theme="light"]) .password-section .input-group input[type="password"]::placeholder,
+  html:not([data-theme="light"]) .input-group input[type="password"]::placeholder,
+  html:not([data-theme="light"]) input[type="password"]::placeholder,
+  html:not([data-theme="light"]) #passwordInput::placeholder {
     color: #a0a0a0 !important;
   }
 
-  .password-section .input-group input[type="password"]:focus,
-  .input-group input[type="password"]:focus,
-  input[type="password"]:focus,
-  #passwordInput:focus {
+  html:not([data-theme="light"]) .password-section .input-group input[type="password"]:focus,
+  html:not([data-theme="light"]) .input-group input[type="password"]:focus,
+  html:not([data-theme="light"]) input[type="password"]:focus,
+  html:not([data-theme="light"]) #passwordInput:focus {
     border-color: #667eea !important;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
     background: #333343 !important;
     outline: none !important;
   }
 
-  /* All input types dark */
-  input[type="text"],
-  input[type="email"],
-  input[type="number"],
-  textarea,
-  select {
+/* All input types dark */
+  html:not([data-theme="light"]) input[type="text"],
+  html:not([data-theme="light"]) input[type="email"],
+  html:not([data-theme="light"]) input[type="number"],
+  html:not([data-theme="light"]) textarea,
+  html:not([data-theme="light"]) select {
     background: #353545 !important;
     border: 1px solid #404050 !important;
     color: #f0f0f0 !important;
   }
 
-  input[type="text"]:focus,
-  input[type="email"]:focus,
-  input[type="number"]:focus,
-  textarea:focus,
-  select:focus {
+  html:not([data-theme="light"]) input[type="text"]:focus,
+  html:not([data-theme="light"]) input[type="email"]:focus,
+  html:not([data-theme="light"]) input[type="number"]:focus,
+  html:not([data-theme="light"]) textarea:focus,
+  html:not([data-theme="light"]) select:focus {
     border-color: #667eea !important;
     background: #3a3a4a !important;
   }
 
-  input::placeholder,
-  textarea::placeholder {
+  html:not([data-theme="light"]) input::placeholder,
+  html:not([data-theme="light"]) textarea::placeholder {
     color: #909090 !important;
   }
 
-  .biometric-scanning-area {
+  html:not([data-theme="light"]) .biometric-scanning-area {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
     border: 2px solid rgba(102, 126, 234, 0.3);
   }
 
-  .biometric-scanning-area.scanning {
+  html:not([data-theme="light"]) .biometric-scanning-area.scanning {
     border-color: rgba(102, 126, 234, 0.6);
     box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
   }
 
-  .biometric-scanning-area.success {
+  html:not([data-theme="light"]) .biometric-scanning-area.success {
     border-color: rgba(34, 197, 94, 0.6);
     background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
   }
 
-  .biometric-scanning-area.failed {
+  html:not([data-theme="light"]) .biometric-scanning-area.failed {
     border-color: rgba(239, 68, 68, 0.6);
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.15) 100%);
   }
 
-  .biometric-prompt {
+  html:not([data-theme="light"]) .biometric-prompt {
     color: #ffffff;
   }
 
-  .biometric-subtext {
+  html:not([data-theme="light"]) .biometric-subtext {
     color: #c0c0c0;
   }
 
-  .biometric-divider {
+  html:not([data-theme="light"]) .biometric-divider {
     color: #808080;
   }
 
-  .biometric-divider::before,
-  .biometric-divider::after {
+  html:not([data-theme="light"]) .biometric-divider::before,
+  html:not([data-theme="light"]) .biometric-divider::after {
     border-bottom-color: #3a3a4a;
   }
 
-  .divider {
+  html:not([data-theme="light"]) .divider {
     color: #808080;
   }
 
-  .divider::before,
-  .divider::after {
+  html:not([data-theme="light"]) .divider::before,
+  html:not([data-theme="light"]) .divider::after {
     border-bottom-color: #3a3a4a;
   }
 
-  .error-message {
+  html:not([data-theme="light"]) .error-message {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #fca5a5;
   }
 
-  .success-message {
+  html:not([data-theme="light"]) .success-message {
     background: rgba(34, 197, 94, 0.15);
     border: 1px solid rgba(34, 197, 94, 0.4);
     color: #86efac;
   }
 
-  .rate-limit-info {
+  html:not([data-theme="light"]) .rate-limit-info {
     background: rgba(251, 191, 36, 0.15);
     border: 1px solid rgba(251, 191, 36, 0.4);
     color: #fcd34d;
   }
 
-  .rate-limit-info.locked {
+  html:not([data-theme="light"]) .rate-limit-info.locked {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #fca5a5;
   }
 
-  .security-info {
+  html:not([data-theme="light"]) .security-info {
     border-top: 1px solid #3a3a4a;
   }
 
-  .security-badge {
+  html:not([data-theme="light"]) .security-badge {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
     color: #b8d4f0;
     border: 1px solid rgba(102, 126, 234, 0.3);
   }
 
-  .btn-use-password {
+  html:not([data-theme="light"]) .btn-use-password {
     background: transparent;
     color: #a8d5f0;
     border: 2px solid #404050;
   }
 
-  .btn-use-password:hover {
+  html:not([data-theme="light"]) .btn-use-password:hover {
     border-color: #667eea;
     background: rgba(102, 126, 234, 0.15);
   }
 
-  .btn-switch-biometric {
+  html:not([data-theme="light"]) .btn-switch-biometric {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
     color: #b8d4f0;
     border: 2px solid rgba(102, 126, 234, 0.4);
   }
 
-  .btn-switch-biometric:hover {
+  html:not([data-theme="light"]) .btn-switch-biometric:hover {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
     border-color: rgba(102, 126, 234, 0.6);
   }
 
-  .remember-choice {
+  html:not([data-theme="light"]) .remember-choice {
     background: rgba(102, 126, 234, 0.15);
     border: 1px solid rgba(102, 126, 234, 0.3);
   }
 
-  .remember-choice label {
+  html:not([data-theme="light"]) .remember-choice label {
     color: #f0f0f0;
   }
 
-  .remember-choice small {
+  html:not([data-theme="light"]) .remember-choice small {
     color: #c0c0c0;
   }
 
-  .note {
+  html:not([data-theme="light"]) .note {
     color: #c0c0c0;
   }
 
-  .note strong {
+  html:not([data-theme="light"]) .note strong {
     color: #f0f0f0;
   }
 
-  /* Stealth mode fake error page in dark mode */
-  body.stealth-active {
+/* Stealth mode fake error page in dark mode */
+  html:not([data-theme="light"]) body.stealth-active {
     background: #1a1a1a !important;
     color: #f0f0f0 !important;
   }
 
-  .stealth-overlay {
+  html:not([data-theme="light"]) .stealth-overlay {
     background: #1a1a1a;
     color: #f0f0f0;
   }
 
-  .stealth-error-title {
+  html:not([data-theme="light"]) .stealth-error-title {
     color: #ffffff;
   }
 
-  .stealth-error-reason {
+  html:not([data-theme="light"]) .stealth-error-reason {
     color: #c0c0c0;
   }
 
-  .stealth-error-suggestions {
+  html:not([data-theme="light"]) .stealth-error-suggestions {
     color: #c0c0c0;
   }
 
-  .stealth-error-code {
+  html:not([data-theme="light"]) .stealth-error-code {
     color: #808080;
   }
 
-  .stealth-error-code:hover {
+  html:not([data-theme="light"]) .stealth-error-code:hover {
     color: #a0a0a0;
   }
 
-  .stealth-btn {
+  html:not([data-theme="light"]) .stealth-btn {
     background: #353545;
     color: #f0f0f0;
     border: 1px solid #404050;
   }
 
-  .stealth-btn:hover {
+  html:not([data-theme="light"]) .stealth-btn:hover {
     background: #3a3a4a;
     border-color: #505060;
   }
 
-  .stealth-btn-primary {
+  html:not([data-theme="light"]) .stealth-btn-primary {
     background: #1a73e8;
     color: #ffffff;
     border: none;
   }
 
-  .stealth-btn-primary:hover {
+  html:not([data-theme="light"]) .stealth-btn-primary:hover {
     background: #1765cc;
   }
 
-  .stealth-reveal-hint {
+  html:not([data-theme="light"]) .stealth-reveal-hint {
     color: #808080;
   }
 
-  .spinner {
+  html:not([data-theme="light"]) .spinner {
     border: 3px solid rgba(102, 126, 234, 0.2);
     border-top: 3px solid #667eea;
   }
 
-  .btn:focus-visible {
+  html:not([data-theme="light"]) .btn:focus-visible {
     outline-color: #667eea;
   }
 
-  /* Biometric button in dark mode */
-  .btn-unlock,
-  .btn-fingerprint {
+/* Biometric button in dark mode */
+  html:not([data-theme="light"]) .btn-unlock,
+  html:not([data-theme="light"]) .btn-fingerprint {
     background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     color: white;
   }
 
-  .btn-unlock:hover:not(:disabled),
-  .btn-fingerprint:hover:not(:disabled) {
+  html:not([data-theme="light"]) .btn-unlock:hover:not(:disabled),
+  html:not([data-theme="light"]) .btn-fingerprint:hover:not(:disabled) {
     background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
   }
 
-  .btn-biometric-retry {
+  html:not([data-theme="light"]) .btn-biometric-retry {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   }
 
-  .btn-biometric-retry:hover {
+  html:not([data-theme="light"]) .btn-biometric-retry:hover {
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
   }
 
-  /* Additional input placeholder and disabled state styles */
-  input[type="password"]::placeholder {
+/* Additional input placeholder and disabled state styles */
+  html:not([data-theme="light"]) input[type="password"]::placeholder {
     color: #808080;
   }
 
-  input[type="password"]:disabled {
+  html:not([data-theme="light"]) input[type="password"]:disabled {
     background: #2a2a2a;
     opacity: 0.5;
   }
+
 }
+
+/* Theme toggle: forced dark mode */
+  html[data-theme="dark"] body {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+    color: #f0f0f0;
+  }
+
+  html[data-theme="dark"] .lock-container {
+    background: #1a1a2a !important;
+    color: #f0f0f0 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9) !important;
+    border: 1px solid #2a2a3e !important;
+  }
+
+  html[data-theme="dark"] h1 {
+    color: #ffffff !important;
+  }
+
+  html[data-theme="dark"] h2,
+  html[data-theme="dark"] h3,
+  html[data-theme="dark"] h4,
+  html[data-theme="dark"] h5,
+  html[data-theme="dark"] h6 {
+    color: #ffffff !important;
+  }
+
+/* Main lock container heading styles */
+  html[data-theme="dark"] .lock-container h1 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+
+/* Catch-all for any light containers */
+  html[data-theme="dark"] .card,
+  html[data-theme="dark"] .box,
+  html[data-theme="dark"] .panel,
+  html[data-theme="dark"] .container,
+  html[data-theme="dark"] .content,
+  html[data-theme="dark"] .form-box,
+  html[data-theme="dark"] .dialog,
+  html[data-theme="dark"] .modal {
+    background: #1a1a2a !important;
+    border-color: #3a3a4a !important;
+    color: #f0f0f0 !important;
+  }
+
+/* Ensure all text is light */
+  html[data-theme="dark"] h1,
+  html[data-theme="dark"] h2,
+  html[data-theme="dark"] h3,
+  html[data-theme="dark"] h4,
+  html[data-theme="dark"] h5,
+  html[data-theme="dark"] h6 {
+    color: #ffffff !important;
+  }
+
+  html[data-theme="dark"] p,
+  html[data-theme="dark"] span,
+  html[data-theme="dark"] label,
+  html[data-theme="dark"] div {
+    color: #f0f0f0 !important;
+  }
+
+  html[data-theme="dark"] .subtitle {
+    color: #c0c0c0 !important;
+  }
+
+/* INPUT STYLING - MAXIMUM SPECIFICITY */
+  html[data-theme="dark"] .password-section .input-group input[type="password"],
+  html[data-theme="dark"] .input-group input[type="password"],
+  html[data-theme="dark"] input[type="password"],
+  html[data-theme="dark"] #passwordInput {
+    background: #2a2a3a !important;
+    background-color: #2a2a3a !important;
+    border: 2px solid #404050 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+/* WebKit autofill override */
+  html[data-theme="dark"] .password-section .input-group input[type="password"]:-webkit-autofill,
+  html[data-theme="dark"] .input-group input[type="password"]:-webkit-autofill,
+  html[data-theme="dark"] input[type="password"]:-webkit-autofill,
+  html[data-theme="dark"] #passwordInput:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #2a2a3a inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #2a2a3a !important;
+  }
+
+  html[data-theme="dark"] .password-section .input-group input[type="password"]:-webkit-autofill::first-line,
+  html[data-theme="dark"] .input-group input[type="password"]:-webkit-autofill::first-line {
+    color: #ffffff !important;
+  }
+
+  html[data-theme="dark"] .password-section .input-group input[type="password"]::placeholder,
+  html[data-theme="dark"] .input-group input[type="password"]::placeholder,
+  html[data-theme="dark"] input[type="password"]::placeholder,
+  html[data-theme="dark"] #passwordInput::placeholder {
+    color: #a0a0a0 !important;
+  }
+
+  html[data-theme="dark"] .password-section .input-group input[type="password"]:focus,
+  html[data-theme="dark"] .input-group input[type="password"]:focus,
+  html[data-theme="dark"] input[type="password"]:focus,
+  html[data-theme="dark"] #passwordInput:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+    background: #333343 !important;
+    outline: none !important;
+  }
+
+/* All input types dark */
+  html[data-theme="dark"] input[type="text"],
+  html[data-theme="dark"] input[type="email"],
+  html[data-theme="dark"] input[type="number"],
+  html[data-theme="dark"] textarea,
+  html[data-theme="dark"] select {
+    background: #353545 !important;
+    border: 1px solid #404050 !important;
+    color: #f0f0f0 !important;
+  }
+
+  html[data-theme="dark"] input[type="text"]:focus,
+  html[data-theme="dark"] input[type="email"]:focus,
+  html[data-theme="dark"] input[type="number"]:focus,
+  html[data-theme="dark"] textarea:focus,
+  html[data-theme="dark"] select:focus {
+    border-color: #667eea !important;
+    background: #3a3a4a !important;
+  }
+
+  html[data-theme="dark"] input::placeholder,
+  html[data-theme="dark"] textarea::placeholder {
+    color: #909090 !important;
+  }
+
+  html[data-theme="dark"] .biometric-scanning-area {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+    border: 2px solid rgba(102, 126, 234, 0.3);
+  }
+
+  html[data-theme="dark"] .biometric-scanning-area.scanning {
+    border-color: rgba(102, 126, 234, 0.6);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  }
+
+  html[data-theme="dark"] .biometric-scanning-area.success {
+    border-color: rgba(34, 197, 94, 0.6);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+  }
+
+  html[data-theme="dark"] .biometric-scanning-area.failed {
+    border-color: rgba(239, 68, 68, 0.6);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.15) 100%);
+  }
+
+  html[data-theme="dark"] .biometric-prompt {
+    color: #ffffff;
+  }
+
+  html[data-theme="dark"] .biometric-subtext {
+    color: #c0c0c0;
+  }
+
+  html[data-theme="dark"] .biometric-divider {
+    color: #808080;
+  }
+
+  html[data-theme="dark"] .biometric-divider::before,
+  html[data-theme="dark"] .biometric-divider::after {
+    border-bottom-color: #3a3a4a;
+  }
+
+  html[data-theme="dark"] .divider {
+    color: #808080;
+  }
+
+  html[data-theme="dark"] .divider::before,
+  html[data-theme="dark"] .divider::after {
+    border-bottom-color: #3a3a4a;
+  }
+
+  html[data-theme="dark"] .error-message {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  html[data-theme="dark"] .success-message {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+  }
+
+  html[data-theme="dark"] .rate-limit-info {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    color: #fcd34d;
+  }
+
+  html[data-theme="dark"] .rate-limit-info.locked {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+
+  html[data-theme="dark"] .security-info {
+    border-top: 1px solid #3a3a4a;
+  }
+
+  html[data-theme="dark"] .security-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    color: #b8d4f0;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+
+  html[data-theme="dark"] .btn-use-password {
+    background: transparent;
+    color: #a8d5f0;
+    border: 2px solid #404050;
+  }
+
+  html[data-theme="dark"] .btn-use-password:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.15);
+  }
+
+  html[data-theme="dark"] .btn-switch-biometric {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    color: #b8d4f0;
+    border: 2px solid rgba(102, 126, 234, 0.4);
+  }
+
+  html[data-theme="dark"] .btn-switch-biometric:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+    border-color: rgba(102, 126, 234, 0.6);
+  }
+
+  html[data-theme="dark"] .remember-choice {
+    background: rgba(102, 126, 234, 0.15);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+
+  html[data-theme="dark"] .remember-choice label {
+    color: #f0f0f0;
+  }
+
+  html[data-theme="dark"] .remember-choice small {
+    color: #c0c0c0;
+  }
+
+  html[data-theme="dark"] .note {
+    color: #c0c0c0;
+  }
+
+  html[data-theme="dark"] .note strong {
+    color: #f0f0f0;
+  }
+
+/* Stealth mode fake error page in dark mode */
+  html[data-theme="dark"] body.stealth-active {
+    background: #1a1a1a !important;
+    color: #f0f0f0 !important;
+  }
+
+  html[data-theme="dark"] .stealth-overlay {
+    background: #1a1a1a;
+    color: #f0f0f0;
+  }
+
+  html[data-theme="dark"] .stealth-error-title {
+    color: #ffffff;
+  }
+
+  html[data-theme="dark"] .stealth-error-reason {
+    color: #c0c0c0;
+  }
+
+  html[data-theme="dark"] .stealth-error-suggestions {
+    color: #c0c0c0;
+  }
+
+  html[data-theme="dark"] .stealth-error-code {
+    color: #808080;
+  }
+
+  html[data-theme="dark"] .stealth-error-code:hover {
+    color: #a0a0a0;
+  }
+
+  html[data-theme="dark"] .stealth-btn {
+    background: #353545;
+    color: #f0f0f0;
+    border: 1px solid #404050;
+  }
+
+  html[data-theme="dark"] .stealth-btn:hover {
+    background: #3a3a4a;
+    border-color: #505060;
+  }
+
+  html[data-theme="dark"] .stealth-btn-primary {
+    background: #1a73e8;
+    color: #ffffff;
+    border: none;
+  }
+
+  html[data-theme="dark"] .stealth-btn-primary:hover {
+    background: #1765cc;
+  }
+
+  html[data-theme="dark"] .stealth-reveal-hint {
+    color: #808080;
+  }
+
+  html[data-theme="dark"] .spinner {
+    border: 3px solid rgba(102, 126, 234, 0.2);
+    border-top: 3px solid #667eea;
+  }
+
+  html[data-theme="dark"] .btn:focus-visible {
+    outline-color: #667eea;
+  }
+
+/* Biometric button in dark mode */
+  html[data-theme="dark"] .btn-unlock,
+  html[data-theme="dark"] .btn-fingerprint {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+  }
+
+  html[data-theme="dark"] .btn-unlock:hover:not(:disabled),
+  html[data-theme="dark"] .btn-fingerprint:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+  }
+
+  html[data-theme="dark"] .btn-biometric-retry {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  html[data-theme="dark"] .btn-biometric-retry:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  }
+
+/* Additional input placeholder and disabled state styles */
+  html[data-theme="dark"] input[type="password"]::placeholder {
+    color: #808080;
+  }
+
+  html[data-theme="dark"] input[type="password"]:disabled {
+    background: #2a2a2a;
+    opacity: 0.5;
+  }
+
+
 /* ============================================================================
    CLASS-BASED DARK MODE - Fallback for systems where media query doesn't work
    Applied by JavaScript when dark mode is detected

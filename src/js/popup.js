@@ -224,15 +224,15 @@ function showAuthenticationScreen() {
   // Create heading
   const heading = document.createElement('h2');
   heading.id = 'popupAuthHeading';
+  heading.className = 'auth-heading';
   heading.textContent = 'Authentication Required';
-  heading.style.cssText = 'color: #2c3e50; margin-bottom: 12px;';
   wrapper.appendChild(heading);
 
   // Create description
   const description = document.createElement('p');
   description.id = 'popupAuthDescription';
+  description.className = 'auth-description';
   description.textContent = 'Verify your identity to access the extension';
-  description.style.cssText = 'color: #6c757d; margin-bottom: 25px;';
   wrapper.appendChild(description);
 
   // Biometric auth section (shown when biometric is available)
@@ -242,7 +242,7 @@ function showAuthenticationScreen() {
 
   const biometricScanBox = document.createElement('div');
   biometricScanBox.id = 'popupBiometricScanBox';
-  biometricScanBox.style.cssText = 'padding: 20px 16px; border-radius: 14px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%); border: 2px solid rgba(102, 126, 234, 0.15); margin-bottom: 12px; transition: all 0.3s ease;';
+  biometricScanBox.className = 'auth-bio-box';
 
   const biometricScanIcon = document.createElement('div');
   biometricScanIcon.id = 'popupBiometricScanIcon';
@@ -252,37 +252,37 @@ function showAuthenticationScreen() {
 
   const biometricScanText = document.createElement('p');
   biometricScanText.id = 'popupBiometricScanText';
+  biometricScanText.className = 'auth-bio-text';
   biometricScanText.textContent = 'Touch your fingerprint sensor';
-  biometricScanText.style.cssText = 'font-size: 14px; font-weight: 600; color: #2c3e50; margin: 0 0 4px 0;';
   biometricScanBox.appendChild(biometricScanText);
 
   const biometricScanSubtext = document.createElement('p');
   biometricScanSubtext.id = 'popupBiometricSubtext';
+  biometricScanSubtext.className = 'auth-bio-subtext';
   biometricScanSubtext.textContent = 'Verifying your identity...';
-  biometricScanSubtext.style.cssText = 'font-size: 12px; color: #6c757d; margin: 0;';
   biometricScanBox.appendChild(biometricScanSubtext);
 
   biometricAuthDiv.appendChild(biometricScanBox);
 
   const biometricRetryBtn = document.createElement('button');
   biometricRetryBtn.id = 'popupBiometricRetry';
+  biometricRetryBtn.className = 'auth-button';
+  biometricRetryBtn.style.display = 'none';
+  biometricRetryBtn.style.fontSize = '13px';
   biometricRetryBtn.textContent = '🔄 Try Again';
-  biometricRetryBtn.style.cssText = 'display: none; width: 100%; padding: 12px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 13px; font-weight: 600; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
   biometricAuthDiv.appendChild(biometricRetryBtn);
 
   // Divider between biometric and password
   const dividerContainer = document.createElement('div');
   dividerContainer.id = 'popupAuthDivider';
-  dividerContainer.style.cssText = 'display: flex; align-items: center; margin: 16px 0; color: #adb5bd; font-size: 13px;';
+  dividerContainer.className = 'auth-divider';
   const dividerLeft = document.createElement('div');
-  dividerLeft.id = 'popupAuthDividerLeft';
-  dividerLeft.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
+  dividerLeft.className = 'auth-divider-line';
   const dividerText = document.createElement('span');
+  dividerText.className = 'auth-divider-text';
   dividerText.textContent = 'or';
-  dividerText.style.cssText = 'padding: 0 14px; font-weight: 500;';
   const dividerRight = document.createElement('div');
-  dividerRight.id = 'popupAuthDividerRight';
-  dividerRight.style.cssText = 'flex: 1; border-bottom: 1px solid #dee2e6;';
+  dividerRight.className = 'auth-divider-line';
   dividerContainer.appendChild(dividerLeft);
   dividerContainer.appendChild(dividerText);
   dividerContainer.appendChild(dividerRight);
@@ -291,8 +291,8 @@ function showAuthenticationScreen() {
   // "Use password" toggle button
   const usePasswordToggle = document.createElement('button');
   usePasswordToggle.id = 'popupUsePasswordToggle';
+  usePasswordToggle.className = 'auth-secondary-btn';
   usePasswordToggle.textContent = '🔑 Use Password Instead';
-  usePasswordToggle.style.cssText = 'width: 100%; padding: 12px 18px; border: 2px solid #dee2e6; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: transparent; color: #667eea; transition: all 0.3s ease;';
   biometricAuthDiv.appendChild(usePasswordToggle);
 
   wrapper.appendChild(biometricAuthDiv);
@@ -305,21 +305,21 @@ function showAuthenticationScreen() {
   const authInput = document.createElement('input');
   authInput.type = 'password';
   authInput.id = 'authPassword';
+  authInput.className = 'auth-input';
   authInput.placeholder = 'Enter your master password';
-  authInput.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: 2px solid #e9ecef; border-radius: 12px; font-size: 15px; background: white; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);';
   passwordAuthDiv.appendChild(authInput);
 
   const authButton = document.createElement('button');
   authButton.id = 'authButton';
-  authButton.className = 'btn-primary';
+  authButton.className = 'auth-button';
   authButton.textContent = 'Authenticate';
-  authButton.style.cssText = 'width: 100%; padding: 14px 18px; margin: 10px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
   passwordAuthDiv.appendChild(authButton);
 
   // "Back to biometric" link (hidden initially)
   const backToBiometricLink = document.createElement('button');
   backToBiometricLink.id = 'popupBackToBiometric';
-  backToBiometricLink.style.cssText = 'display: none; width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: rgba(102, 126, 234, 0.08); color: #667eea;';
+  backToBiometricLink.className = 'auth-secondary-btn';
+  backToBiometricLink.style.display = 'none';
   backToBiometricLink.textContent = '👆 Use Biometric Instead';
   passwordAuthDiv.appendChild(backToBiometricLink);
 
@@ -328,15 +328,15 @@ function showAuthenticationScreen() {
   // Create error div
   const authError = document.createElement('div');
   authError.id = 'authError';
-  authError.style.cssText = 'color: #dc3545; font-size: 14px; margin-top: 10px; opacity: 0; transition: opacity 0.3s ease;';
+  authError.className = 'auth-error';
   wrapper.appendChild(authError);
 
   // Add warning if there are failed attempts
   if (failedAttempts > 0) {
     const warningBox = document.createElement('div');
-    warningBox.style.cssText = 'margin-top: 16px; padding: 12px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;';
+    warningBox.className = 'auth-warning-box';
     const warningText = document.createElement('p');
-    warningText.style.cssText = 'margin: 0; font-size: 12px; color: #856404; font-weight: 500;';
+    warningText.className = 'auth-warning-text';
     const warningStrong = document.createElement('strong');
     warningStrong.textContent = '⚠️ Warning:';
     warningText.appendChild(warningStrong);
@@ -512,6 +512,9 @@ function initializeMainUI() {
       <h2>
         <img src="../../assets/images/icon.png" alt="Locksy" class="header-icon" style="width: 28px; height: 28px; border-radius: 6px;">
         Locksy
+        <button id="themeToggleBtn" type="button" title="Switch to Dark mode" class="theme-toggle-btn">
+          <span class="theme-toggle-icon">🌙</span>
+        </button>
       </h2>
       <div class="header-status-row">
         <div id="statusIndicator" class="status-indicator status-inactive">
@@ -761,6 +764,10 @@ function initializeMainUI() {
     </div>
   `;
 
+  if (window.LocksyTheme && typeof window.LocksyTheme.createToggleButton === 'function') {
+    window.LocksyTheme.createToggleButton();
+  }
+
   // Get all required elements after restoring HTML
   const toggleSwitch = document.getElementById("toggleSwitch");
   const statusIndicator = document.getElementById("statusIndicator");
@@ -797,7 +804,14 @@ function initializeMainUI() {
 
   if (missingElements.length > 0) {
     return;
-  }  // Load extension state and check for existing password
+  }
+
+  // Re-initialize theme toggle after DOM recreation
+  if (typeof window.reinitThemeToggle === 'function') {
+    window.reinitThemeToggle();
+  }
+
+  // Load extension state and check for existing password
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.local.get(["extensionActive", "lockPassword"], (data) => {
       if (chrome.runtime.lastError) {
