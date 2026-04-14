@@ -180,14 +180,14 @@ function showLockoutScreen(remainingTime) {
   sponsorButton.id = 'sponsorBtn';
   sponsorButton.className = 'btn-sponsor';
   sponsorButton.textContent = '💜 Sponsor';
-  sponsorButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;';
+  sponsorButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9;';
   buttonContainer.appendChild(sponsorButton);
 
   const devButton = document.createElement('button');
   devButton.id = 'toggleDeveloperInfo';
   devButton.className = 'btn-developer-toggle';
   devButton.textContent = '👨‍💻 Developer Info';
-  devButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9; margin-top: 12px;';
+  devButton.style.cssText = 'width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); opacity: 0.9; margin-top: 12px;';
   buttonContainer.appendChild(devButton);
 
   wrapper.appendChild(buttonContainer);
@@ -267,7 +267,7 @@ function showAuthenticationScreen() {
   const biometricRetryBtn = document.createElement('button');
   biometricRetryBtn.id = 'popupBiometricRetry';
   biometricRetryBtn.textContent = '🔄 Try Again';
-  biometricRetryBtn.style.cssText = 'display: none; width: 100%; padding: 12px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
+  biometricRetryBtn.style.cssText = 'display: none; width: 100%; padding: 12px 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 13px; font-weight: 600; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);';
   biometricAuthDiv.appendChild(biometricRetryBtn);
 
   // Divider between biometric and password

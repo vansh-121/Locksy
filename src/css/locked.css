@@ -1,4 +1,5 @@
 /* Locksy - Locked Page Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -11,7 +12,7 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-attachment: fixed;
     display: flex;
@@ -277,7 +278,7 @@ input[type="password"]:disabled {
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -327,7 +328,7 @@ input[type="password"]:disabled {
     color: #667eea;
     border: 2px solid #dee2e6;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -365,7 +366,7 @@ input[type="password"]:disabled {
     color: #667eea;
     border: 2px solid rgba(102, 126, 234, 0.2);
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -831,7 +832,7 @@ body.stealth-active {
     justify-content: center;
     background: #fff;
     color: #202124;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     padding: 48px 10vw;
     overflow: auto;
 }
@@ -1283,257 +1284,6 @@ body.stealth-active {
   input[type="password"]:disabled {
     background: #2a2a2a;
     opacity: 0.5;
-  }
-}
-
-/* Light mode biometric area - these should only show in light mode */
-.biometric-scanning-area {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-  border: 2px solid rgba(102, 126, 234, 0.15);
-}
-
-.biometric-scanning-area.scanning {
-  border-color: rgba(102, 126, 234, 0.4);
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.15);
-}
-
-.biometric-scanning-area.success {
-  border-color: rgba(76, 175, 80, 0.4);
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.08) 0%, rgba(56, 142, 60, 0.08) 100%);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.15);
-}
-
-.biometric-scanning-area.failed {
-  border-color: rgba(220, 53, 69, 0.4);
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(185, 43, 39, 0.08) 100%);
-}
-
-.biometric-prompt {
-  color: #2c3e50;
-}
-
-.biometric-subtext {
-  color: #6c757d;
-}
-
-.biometric-divider {
-  color: #959595;
-}
-
-.biometric-divider::before,
-.biometric-divider::after {
-  border-bottom-color: #d0d0d0;
-}
-
-.divider {
-  color: #959595;
-}
-
-.divider::before,
-.divider::after {
-  border-bottom-color: #d0d0d0;
-}
-
-/* Light mode messages */
-.error-message {
-  background: rgba(220, 53, 69, 0.1);
-  border-color: rgba(220, 53, 69, 0.2);
-  color: #721c24;
-}
-
-.success-message {
-  background: rgba(76, 175, 80, 0.1);
-  border-color: rgba(76, 175, 80, 0.2);
-  color: #155724;
-}
-
-.rate-limit-info {
-  background: rgba(255, 193, 7, 0.1);
-  border-color: rgba(255, 193, 7, 0.2);
-    color: #ffd93d;
-  }
-
-  .rate-limit-info.locked {
-    background: rgba(220, 53, 69, 0.15);
-    border-color: rgba(220, 53, 69, 0.4);
-    color: #ff8a8a;
-  }
-
-  .security-info {
-    border-top-color: #404040;
-  }
-
-  .security-badge {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-    color: #a8d5f0;
-  }
-
-  .btn-use-password {
-    background: transparent;
-    color: #8aa8e8;
-    border-color: #505050;
-  }
-
-  .btn-use-password:hover {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
-  }
-
-  .btn-switch-biometric {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-    color: #a8d5f0;
-    border-color: rgba(102, 126, 234, 0.3);
-  }
-
-  .btn-switch-biometric:hover {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-    border-color: rgba(102, 126, 234, 0.5);
-  }
-
-  .remember-choice {
-    background: rgba(102, 126, 234, 0.1);
-  }
-
-  .remember-choice label {
-    color: #e0e0e0;
-  }
-
-  .remember-choice small {
-    color: #b0b0b0;
-  }
-
-  .note {
-    color: #b0b0b0;
-  }
-
-  .note strong {
-    color: #e0e0e0;
-  }
-
-  /* Stealth mode fake error page in dark mode */
-  body.stealth-active {
-    background: #1a1a1a !important;
-    color: #e0e0e0 !important;
-  }
-
-  .stealth-overlay {
-    background: #1a1a1a;
-    color: #e0e0e0;
-  }
-
-  .stealth-error-title {
-    color: #e0e0e0;
-  }
-
-  .stealth-error-reason {
-    color: #b0b0b0;
-  }
-
-  .stealth-error-suggestions {
-    color: #b0b0b0;
-  }
-
-  .stealth-error-code {
-    color: #707070;
-  }
-
-  .stealth-error-code:hover {
-    color: #909090;
-  }
-
-  .stealth-btn {
-    background: #2a2a2a;
-    color: #e0e0e0;
-    border: 1px solid #404040;
-  }
-
-  .stealth-btn:hover {
-    background: #323232;
-  }
-
-  .stealth-btn-primary {
-    background: #1a73e8;
-    color: #ffffff;
-  }
-
-  .stealth-btn-primary:hover {
-    background: #1765cc;
-  }
-
-  .stealth-reveal-hint {
-    color: #707070;
-  }
-
-  .spinner {
-    border: 3px solid rgba(102, 126, 234, 0.15);
-    border-top: 3px solid #667eea;
-  }
-
-  .btn:focus-visible {
-    outline-color: #667eea;
-  }
-
-  /* Rate limit info */
-  .rate-limit-info {
-    background: rgba(251, 191, 36, 0.15) !important;
-    border: 1px solid rgba(251, 191, 36, 0.3) !important;
-    color: #fcd34d !important;
-  }
-
-  .rate-limit-info.locked {
-    background: rgba(239, 68, 68, 0.15) !important;
-    border: 1px solid rgba(239, 68, 68, 0.3) !important;
-    color: #fca5a5 !important;
-  }
-
-  /* Remember choice checkbox area */
-  .remember-choice {
-    background: rgba(102, 126, 234, 0.15) !important;
-    border: 1px solid rgba(102, 126, 234, 0.3) !important;
-  }
-
-  .remember-choice label {
-    color: #f0f0f0 !important;
-  }
-
-  .remember-choice input[type="checkbox"] {
-    border-color: #505060 !important;
-    background: #353545 !important;
-  }
-
-  /* Scope selection dialog */
-  .success-icon {
-    color: #f0f0f0;
-  }
-
-  /* All headings in dark mode */
-  h1, h2, h3, h4, h5, h6 {
-    color: #ffffff !important;
-  }
-
-  /* Ensure all text is readable */
-  p, li, span, label, div {
-    color: #f0f0f0 !important;
-  }
-
-  /* FORCE ALL INPUTS AND TEXTAREAS TO BE DARK */
-  input,
-  textarea,
-  select,
-  button {
-    background: #2a2a3a !important;
-    color: #ffffff !important;
-    border-color: #404050 !important;
-  }
-
-  /* Except for buttons - they should keep their gradient */
-  .btn,
-  .btn-unlock,
-  .btn-primary,
-  button[class*="btn"] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: white !important;
-    border: none !important;
   }
 }
 /* ============================================================================

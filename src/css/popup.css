@@ -1,4 +1,5 @@
 /* Locksy Extension - Popup Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -7,11 +8,11 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   background-attachment: fixed;
   color: #333;
-  min-width: 320px;
+  min-width: 380px;
   max-width: 100%;
   padding: 0 0 16px 0;
   position: relative;
@@ -360,12 +361,12 @@ input::placeholder {
 
 button {
   width: 100%;
-  padding: 14px 18px;
+  padding: 12px 16px;
   /* Use vertical margin only — horizontal margin causes overflow inside containers */
   margin: 4px 0;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -438,9 +439,9 @@ button:disabled {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 18px;
+  padding: 10px 16px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -489,9 +490,9 @@ button:disabled {
 .btn-sponsor {
   color: white;
   border: none;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -509,18 +510,19 @@ button:disabled {
   gap: 4px;
   text-align: center;
   line-height: 1.2;
-  padding: 12px 8px;
-  min-height: 65px;
+  padding: 10px 6px;
+  min-height: 58px;
 }
 
 .btn-icon {
-  font-size: 24px;
+  font-size: 20px;
   display: block;
+  line-height: 1;
 }
 
 .btn-text {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -535,16 +537,16 @@ button:disabled {
 
   .btn-lock-single,
   .btn-lock-all {
-    padding: 10px 6px;
-    min-height: 62px;
+    padding: 8px 5px;
+    min-height: 56px;
   }
 
   .btn-icon {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .btn-text {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
@@ -555,16 +557,16 @@ button:disabled {
 
   .btn-lock-single,
   .btn-lock-all {
-    padding: 10px 4px;
-    min-height: 60px;
+    padding: 8px 4px;
+    min-height: 54px;
   }
 
   .btn-icon {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .btn-text {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
@@ -592,13 +594,27 @@ button:disabled {
   background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
 }
 
+/* Single-line buttons with emoji icons */
+.btn-unlock-all,
+.btn-domain,
+.btn-shortcuts,
+.btn-newsletter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 42px;
+}
+
 .btn-sponsor {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 12px 18px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -610,39 +626,39 @@ button:disabled {
 }
 
 .btn-lock-single:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(40, 167, 69, 0.3);
   background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
 }
 
 .btn-unlock-all:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(23, 162, 184, 0.3);
   background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
 }
 
 .btn-lock-all:hover:not(:disabled),
 .btn-domain:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.35);
   background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
 }
 
 .btn-shortcuts:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 .btn-newsletter:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(23, 162, 184, 0.3);
   background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
 }
 
 .btn-sponsor:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   opacity: 1;
 }
@@ -667,9 +683,9 @@ button:disabled {
 
 /* Fingerprint Authentication Section */
 .fingerprint-auth-section {
-  margin-top: 20px;
+  margin-top: 32px;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 2px solid #dce0e5;
 }
 
 .fingerprint-status {
@@ -887,7 +903,7 @@ button:disabled {
 .domain-lock-section {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 2px solid #dce0e5;
 }
 
 #domainPattern {
@@ -896,7 +912,7 @@ button:disabled {
   border: 2px solid #e9ecef;
   border-radius: 8px;
   font-size: 13px;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -1170,7 +1186,7 @@ button:disabled {
 .timer-settings {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 2px solid #dce0e5;
 }
 
 .timer-header {
@@ -1594,7 +1610,7 @@ button:disabled {
 .stealth-mode-settings {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 2px solid #e9ecef;
+  border-top: 2px solid #dce0e5;
 }
 
 /* Keyboard shortcut badge styling used in the stealth info panel */
@@ -1606,7 +1622,7 @@ kbd,
   background: #f1f3f4;
   border: 1px solid #dadce0;
   border-radius: 4px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: 'Courier New', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   font-size: 11px;
   color: #2c3e50;
   white-space: nowrap;
