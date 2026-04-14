@@ -824,12 +824,16 @@ body {
   }
 
   .toggle-slider {
-    background: #f0f0f0;
+    background: #505060 !important;
   }
 
   .toggle-slider::before {
     background: #f0f0f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  .toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   }
 
   .toggle-text {
@@ -1029,5 +1033,212 @@ body {
 
   h1, h2, h3, h4, h5, h6 {
     color: #ffffff !important;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE STYLES - Small window support
+   ============================================================================ */
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+
+  .header h2 {
+    font-size: 20px;
+    gap: 6px;
+  }
+
+  .header-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .back-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .add-domain-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .input-group input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .btn-primary {
+    padding: 10px 16px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .domain-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .domain-info {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .domain-pattern {
+    font-size: 14px;
+  }
+
+  .domain-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .btn-settings,
+  .btn-remove {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 11px;
+    min-width: 0;
+  }
+
+  .domain-settings {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    margin-left: 0;
+  }
+
+  .settings-content h4 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .preference-label {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .preference-options {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .preference-option {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .pref-radio {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .pref-text {
+    font-size: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .btn-save-pref {
+    padding: 8px 12px;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .examples {
+    padding: 10px 12px;
+    margin-top: 12px;
+  }
+
+  .examples p {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .examples li {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .info-box {
+    padding: 12px;
+  }
+
+  .info-box h3 {
+    font-size: 14px;
+  }
+
+  .info-box p {
+    font-size: 12px;
+  }
+
+  .domains-list-section h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .domains-container {
+    padding: 12px;
+    min-height: 150px;
+    max-height: 300px;
+  }
+
+  .notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    font-size: 12px;
+    padding: 12px 16px;
+  }
+
+  .subdomain-toggle-label {
+    gap: 10px;
+  }
+
+  .subdomain-toggle-row {
+    margin-bottom: 12px;
+  }
+
+  .toggle-switch {
+    width: 36px;
+    height: 20px;
+  }
+
+  .toggle-slider::before {
+    width: 14px;
+    height: 14px;
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+  }
+
+  .toggle-text {
+    gap: 1px;
+  }
+
+  .toggle-title {
+    font-size: 12px;
+  }
+
+  .toggle-hint {
+    font-size: 10px;
   }
 }
