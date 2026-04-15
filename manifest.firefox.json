@@ -21,7 +21,8 @@
     "activeTab",
     "notifications",
     "webNavigation",
-    "alarms"
+    "alarms",
+    "contextMenus"
   ],
   "host_permissions": [
     "<all_urls>"
