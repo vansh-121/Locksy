@@ -210,6 +210,8 @@
 - **🖱️ Right-Click Context Menus**: Locksy actions now available directly from any tab's right-click menu
   - Lock this tab, Lock this domain, Lock all tabs in window, Toggle Stealth Mode
   - No need to open the popup for quick locking operations
+  <img width="683" height="287" alt="image" src="https://github.com/user-attachments/assets/947048c2-fc4a-4ea3-bf6d-fda19616a891" />
+
 
 - **🕵️ Stealth Mode**: Hide all visual evidence of Locksy from observers
   - Hides badge counter and suppresses all browser notifications
