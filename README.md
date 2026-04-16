@@ -413,6 +413,7 @@ The store listings warn: **"Read and change all your data on all websites"**
 | No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
 | Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
 | Biometric (WebAuthn) | Biometric Unlock | Native OS Speed | Zero Biometric Data |
+| Stealth Mode | Right-Click Menus | Theme Toggle | No Badge Leakage |
 
 </div>
 
@@ -420,19 +421,24 @@ The store listings warn: **"Read and change all your data on all websites"**
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
 - **Biometric Unlock**: Unlock tabs with fingerprint, Face ID, Touch ID, or Windows Hello via WebAuthn
-- **Domain Locking**: Lock entire domains with wildcard support
+- **Domain Locking**: Lock entire domains with wildcard support (exact & wildcard; `www.` normalized)
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
-- **Keyboard Shortcuts**: Optional customizable shortcuts for power users
-- **Badge Counter**: See number of locked tabs at a glance
+- **Right-Click Context Menus**: Lock tab, domain, all tabs, or toggle stealth — without opening the popup
+- **Stealth Mode**: Hide badge counter and suppress all lock-state notifications from observers
+- **Keyboard Shortcuts**: Four pre-configured shortcuts for power users (including Alt+Shift+7 for stealth)
+- **Badge Counter**: See number of locked tabs at a glance (hidden automatically in Stealth Mode)
 - **Incognito Mode**: Works seamlessly in private browsing windows (requires manual activation)
+- **Unlock All Tabs**: Single button to release every locked tab simultaneously
 
 ### 🎨 Enhanced UI
 - **Modern Design**: Clean, gradient-based interface with smooth animations
+- **Manual Light/Dark Theme**: Persistent two-state theme toggle (☀️ Light / 🌙 Dark) synced across all extension pages
 - **Status Indicators**: Clear visual feedback for extension state
 - **Password Strength**: Real-time password strength indicator
 - **Responsive Layout**: Optimized for the extension popup size
 - **Smooth Animations**: Floating icons, glowing effects, and transitions
+- **Collapsible Settings Panels**: Auto-Lock, Scheduled Lock, Biometric, and Stealth sections each collapse independently
 
 ### 🔒 Security Features
 
@@ -545,7 +551,8 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 
 ### 🔒 Locking Tabs
 1. **Password Required**: Ensure you have set a master password first
-2. **Lock Current Tab**: Click "🔒 Lock Current Tab" button
+2. **Lock Current Tab**: Click "🔒 Lock Current Tab" button in the popup  
+   **— or —** Right-click any page → Locksy → 🔒 Lock this tab
 3. **Secure Overlay**: Tab will be covered with password-protected overlay
 4. **Unlock Only**: Enter correct password on the locked tab to unlock
 
@@ -559,6 +566,40 @@ For security and technical reasons, the following types of tabs **cannot be lock
 **Why?** Browsers restrict extensions from modifying these pages for security. When you try to lock these tabs, you'll now see a clear message explaining why it cannot be locked.
 
 ✅ **Lockable Tabs**: All regular websites (http://, https://) including news sites, social media, banking, email, etc.
+
+### 🖱️ Right-Click Context Menus
+Lock without ever opening the popup — just right-click on any webpage:
+
+| Menu Item | Action |
+|-----------|--------|
+| 🔒 Lock this tab | Locks the current tab instantly |
+| 🌐 Lock this domain | Adds the site's domain to your domain lock list |
+| 📂 Lock all tabs in this window | Bulk-locks every compatible tab in the window |
+| 👁️ Toggle Stealth Mode | Flips stealth on/off without opening the popup |
+
+- All actions perform the same password and system-page safety checks as the popup
+- Context menus re-register automatically after the browser restarts
+
+### 🕵️ Stealth Mode
+Hide every visible trace of Locksy from anyone looking over your shoulder:
+
+1. **Enable via Popup**: Open popup → scroll to "🕵️ Stealth Mode" section → toggle on
+2. **Enable via Shortcut**: Press `Alt+Shift+7` at any time
+3. **Enable via Right-Click**: Right-click → Locksy → 👁️ Toggle Stealth Mode
+
+**What stealth hides:**
+- 🔕 Badge counter on the extension icon (no locked-tab count visible)
+- 🔕 All browser notifications from Locksy
+
+**What stealth does NOT affect:**
+- ✅ Lock protection still fully active — tabs remain locked
+- ✅ Locked pages accessible to you: triple-click the error text or press `Alt+U`
+- ✅ Disabling stealth shows a brief confirmation notification
+
+### 🎨 Switching Theme (Light / Dark)
+1. Click the **☀️ / 🌙 button** in the popup header to toggle between Light and Dark mode
+2. Your preference is saved and applied instantly across **all** extension pages
+3. On first use, the theme seeds from your OS preference, then stays as you last set it
 
 ### 🛡️ Security Features
 - **No Bypass Methods**: Only correct password unlocks tabs
@@ -619,17 +660,29 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 ## 🎮 User Interface
 
 ### Main Popup
-- **Header**: Animated lock icon with extension title
+- **Header**: Animated lock icon, extension title, and **Light/Dark theme toggle**
 - **Status Indicator**: Shows active/inactive state with color coding
 - **Toggle Switch**: Large, modern switch for activation
 - **Password Input**: Secure input with strength indicator
-- **Action Buttons**: Lock/Unlock controls with emoji icons
+- **Action Buttons**: Lock Current Tab, Lock All Tabs, Unlock All Tabs, Domain Lock
+- **Biometric Section**: Collapsible panel for enabling/disabling WebAuthn unlock
+- **Auto-Lock Section**: Collapsible timer settings with scope and duration controls
+- **Scheduled Lock Section**: Collapsible schedule with time inputs, day selector, and presets
+- **Stealth Mode Section**: Collapsible toggle with info panel showing keyboard shortcut
+- **Developer Info & Sponsor**: Footer buttons for support and developer links
 
 ### Lock Overlay
 - **Full Screen**: Complete tab coverage with gradient background
+- **Navigation Shell**: Theme toggle and branding bar at the top of the locked page
+- **Biometric Prompt**: One-tap fingerprint/face unlock (when biometric is enabled)
 - **Secure Input**: Password field with focus animations
 - **Error Handling**: Shake animations for incorrect passwords
 - **Success Feedback**: Smooth unlock animation
+
+### Right-Click Menu
+- **Parent Menu**: "Locksy - Tab Locker 🔐" groups all actions
+- **Four Actions**: Lock tab, Lock domain, Lock all, Toggle stealth
+- **Context-Aware**: Works on page, link, image, selection, and editable areas
 
 ## 🔧 Technical Details
 
@@ -639,6 +692,8 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Web Crypto API**: PBKDF2-SHA256 key derivation
 - **Cross-Browser**: Chrome, Edge, Firefox, Brave, Opera, Vivaldi support
 - **Canvas API**: Dynamic favicon lock icon generation
+- **Chrome Context Menus API**: Right-click menu for tab/domain/stealth actions
+- **Theme Manager Module**: Centralized light/dark theme synced via chrome.storage.onChanged
 
 ### Security Implementation
 - **PBKDF2-SHA256**: 600,000 iterations for password hashing
@@ -648,22 +703,25 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Constant-Time Comparison**: Protection against timing attacks
 
 ### Permissions
-- `storage`: For saving encrypted passwords and settings
+- `storage`: For saving encrypted passwords, settings, stealth state, and theme preference
 - `tabs`: For tab management and locking
-- `scripting`: For injecting the lock overlay
 - `activeTab`: For current tab access
-- `notifications`: For user feedback
+- `notifications`: For user feedback (suppressed automatically in Stealth Mode)
 - `webNavigation`: For monitoring navigation events (4 listeners)
+- `alarms`: For scheduled locking via Chrome Alarms API (survives SW restarts)
+- `contextMenus`: For right-click context menu actions
 - `incognito` (spanning): For optional incognito mode support
 
 ### Files Structure
 - `manifest.json`: Extension configuration (Manifest V3)
-- `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
-- `src/js/background.js`: Service worker for lock management
-- `src/js/popup.js`: Main interface and logic (incl. biometric settings)
+- `src/js/background.js`: Service worker — lock management, context menus, stealth mode, keyboard shortcuts
+- `src/js/popup.js`: Main popup interface and logic (biometric, timer, scheduled lock, stealth)
 - `src/js/locked.js`: Lock overlay logic (incl. biometric unlock)
+- `src/js/theme-manager.js`: Centralized light/dark theme system across all extension pages
+- `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
 - `src/js/webauthn-utils.js`: WebAuthn/FIDO2 biometric authentication utilities
-- `src/html/locked.html`: Lock overlay interface
+- `src/js/activity-tracker.js`: Content script for smart activity detection (auto-lock)
+- `src/html/locked.html`: Lock overlay interface with navigation shell and theme toggle
 - `src/css/`: Styling for all components
 - `docs/`: Comprehensive documentation (CHANGELOG, DESIGN_SYSTEM, etc.)
 
@@ -677,6 +735,10 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - ⚠️ Extension pages and new tab pages cannot be locked due to browser restrictions
 - 💡 If you see an error when locking, check if the tab is a system or extension page
 - 🔒 Your password is stored securely in Chrome's local storage
+- 🕶️ Enable Stealth Mode (`Alt+Shift+7`) to hide lock indicators from people around you
+- 🖱️ Right-click any page for quick Locksy actions — no need to open the popup
+- 🌐 Domain lock: entering `youtube.com` automatically matches `www.youtube.com` too
+- 🎨 Use the ☀️/🌙 button in the popup header to switch between Light and Dark mode
 - 🕶️ Enable incognito mode in extension settings to protect private browsing tabs
 - 🔑 Same password works across both normal and incognito windows for convenience
 - ✅ All regular websites (http://, https://) can be locked successfully
