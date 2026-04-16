@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-2.4.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-2.5.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -202,6 +202,28 @@
 ## �🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 2.5.0 - Context Menus, Stealth Mode & Theme Toggle (April 17, 2026) 🕵️
+
+#### 🔥 What's New
+
+- **🖱️ Right-Click Context Menus**: Locksy actions now available directly from any tab's right-click menu
+  - Lock this tab, Lock this domain, Lock all tabs in window, Toggle Stealth Mode
+  - No need to open the popup for quick locking operations
+
+- **🕵️ Stealth Mode**: Hide all visual evidence of Locksy from observers
+  - Hides badge counter and suppresses all browser notifications
+  - Toggle via popup settings, keyboard shortcut (`Alt+Shift+7`), or right-click menu
+  - Locked pages remain accessible to you via triple-click or `Alt+U`
+  - State persists across browser restarts
+
+- **🎨 Manual Light/Dark Theme Toggle**: New `theme-manager.js` syncs your UI preference across all extension pages
+  - Two-state toggle: Light ☀️ / Dark 🌙 — stored and applied instantly across popup, lock screen, and all pages
+  - Flash-prevention: theme applied before page renders
+
+- **🐛 Domain Lock URL Fix**: Domain locking now correctly handles `www.` prefixes and `https://` protocols
+
+---
 
 ### Version 2.4.0 - Unlock All Tabs & Bug Fixes (February 25, 2026) 🛠️
 
@@ -702,6 +724,7 @@ Locksy includes **pre-configured keyboard shortcuts** that work out-of-the-box. 
 | `Alt+Shift+9` | **Lock Current Tab** | Instantly locks the active tab |
 | `Alt+Shift+0` | **Open Domain Manager** | Opens Domain Lock Manager window |
 | `Alt+Shift+8` | **Lock All Tabs** | Locks all tabs in current window |
+| `Alt+Shift+7` | **Toggle Stealth Mode** | Hides/shows lock indicators silently |
 
 #### ✨ Features
 - 🔔 Smart notifications for every action

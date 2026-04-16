@@ -6,8 +6,9 @@
 
 The extension comes with these pre-assigned shortcuts:
 - `Alt+Shift+9` - Lock Current Tab
-- `Alt+Shift+0` - Open Domain Lock Manager  
+- `Alt+Shift+0` - Open Domain Lock Manager
 - `Alt+Shift+8` - Lock All Tabs
+- `Alt+Shift+7` - Toggle Stealth Mode
 
 **Why number keys?** They rarely conflict with other extensions or browser shortcuts!
 
@@ -43,6 +44,12 @@ Want different shortcuts? You can change them:
 - **Default**: `Alt + Shift + 8`
 - **Action**: Locks all tabs in the current window at once
 - **Alternatives**: `Alt + Shift + A`, `Alt + Shift + K`
+
+### 🕵️ Toggle Stealth Mode
+- **Default**: `Alt + Shift + 7`
+- **Action**: Toggles Stealth Mode — hides badge counter and suppresses all lock-state notifications
+- **Note**: Enabling is always silent; disabling shows a brief confirmation notification
+- **Also available**: Right-click context menu and popup Stealth Mode toggle section
 
 ## 🚀 Features
 
@@ -93,10 +100,10 @@ Want different shortcuts? You can change them:
 
 | Shortcut | Success Message | Error Conditions |
 |----------|----------------|------------------|
-| Lock Tab | "Tab locked via keyboard shortcut!" | Extension inactive, No password, System page |
-| Toggle Extension | "Extension activated/deactivated" | None |
-| Domain Manager | Opens manager window | Extension inactive, No password |
-| Lock All Tabs | "X tabs locked successfully!" | Extension inactive, No password |
+| Lock Tab | "Tab locked via keyboard shortcut!" | No password, System page, Already locked |
+| Domain Manager | Opens manager window | No password |
+| Lock All Tabs | "X tabs locked successfully!" | No password |
+| Toggle Stealth | Stealth enabled (silent) / "Stealth Mode Disabled" | None |
 
 ## Troubleshooting
 

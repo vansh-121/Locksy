@@ -1,7 +1,7 @@
 # Locksy Extension - Project Structure
 
 ## Overview
-This is a cross-browser extension that provides military-grade tab protection with PBKDF2 key derivation (600,000 iterations), SHA-256 encryption, cryptographic salt generation, and biometric authentication via the WebAuthn/FIDO2 standard.
+This is a cross-browser extension that provides military-grade tab protection with PBKDF2 key derivation (600,000 iterations), SHA-256 encryption, cryptographic salt generation, biometric authentication via the WebAuthn/FIDO2 standard, stealth mode, right-click context menus, and a persistent manual light/dark theme system.
 
 ## Directory Structure
 
@@ -25,23 +25,28 @@ Locksy Extension/
 │   │   ├── domain-manager.css      # Domain Lock Manager UI styles
 │   │   ├── keyboard-shortcuts.css  # Keyboard shortcuts styles
 │   │   ├── locked.css              # Locked tab overlay styles
-│   │   └── popup.css               # Popup UI styles
+│   │   ├── popup.css               # Popup UI styles
+│   │   └── whats-new.css           # What's New overlay styles
 │   │
 │   ├── html/                 # HTML templates
+│   │   ├── biometric-setup.html    # Biometric credential setup page
 │   │   ├── domain-manager.html     # Domain Lock Manager interface
 │   │   ├── keyboard-shortcuts.html # Keyboard shortcuts guide
 │   │   ├── locked.html             # Locked tab overlay interface
-│   │   └── popup.html              # Extension popup interface
+│   │   ├── popup.html              # Extension popup interface
+│   │   └── whats-new.html          # What's New overlay
 │   │
 │   └── js/                   # JavaScript files
 │       ├── activity-tracker.js     # Content script for activity detection
 │       ├── background.js           # Service worker (background script)
+│       ├── biometric-setup.js      # Biometric credential setup page logic
 │       ├── browser-polyfill.min.js # WebExtension API polyfill for cross-browser support
 │       ├── crypto-utils.js         # PBKDF2 cryptographic utilities
 │       ├── domain-manager.js       # Domain lock management logic
 │       ├── keyboard-shortcuts.js   # Keyboard shortcuts guide logic
 │       ├── locked.js               # Locked tab overlay logic (incl. biometric unlock)
-│       ├── popup.js                # Popup UI logic and event handlers (incl. biometric settings)
+│       ├── popup.js                # Popup UI logic and event handlers
+│       ├── theme-manager.js        # Centralized light/dark theme system (NEW in v2.5.0)
 │       ├── webauthn-utils.js       # WebAuthn/FIDO2 biometric authentication utilities
 │       └── whats-new.js            # What's New overlay logic
 │
@@ -103,29 +108,32 @@ Locksy Extension/
 
 #### JavaScript (`src/js/`)
 - **activity-tracker.js**: Content script injected on all pages for comprehensive activity detection (mouse, keyboard, scroll, video playback) with throttled reporting to background script
-- **background.js**: Service worker that manages locked tabs, domain locks, auto-lock timers, scheduled locking with Chrome Alarms API, activity tracking, keyboard shortcut handlers, badge updates, and monitors tab events
-- **locked.js**: Locked tab overlay logic with password verification, biometric (WebAuthn) unlock, rate limiting, and unlock functionality
-- **crypto-utils.js**: PBKDF2-SHA256 cryptographic utilities (600k iterations), secure salt generation using Web Crypto API, and constant-time comparison
+- **background.js**: Service worker that manages locked tabs, domain locks, auto-lock timers, scheduled locking with Chrome Alarms API, right-click context menus, stealth mode, activity tracking, keyboard shortcut handlers, badge updates, and monitors tab events
+- **biometric-setup.js**: Standalone biometric credential setup page logic
 - **browser-polyfill.min.js**: Mozilla's WebExtension API polyfill for cross-browser compatibility (Chrome, Edge, Firefox)
+- **crypto-utils.js**: PBKDF2-SHA256 cryptographic utilities (600k iterations), secure salt generation using Web Crypto API, and constant-time comparison
 - **domain-manager.js**: Domain lock management UI logic, pattern handling, and unlock preferences
 - **keyboard-shortcuts.js**: Keyboard shortcuts guide page logic and navigation
-- **popup.js**: Extension popup UI logic, password management, tab locking controls, biometric settings (enable/disable, credential registration), auto-lock timer settings, scheduled locking configuration with day selection and scope options, developer information section, and sponsor button
+- **locked.js**: Locked tab overlay logic with password verification, biometric (WebAuthn) unlock, rate limiting, and unlock functionality
+- **popup.js**: Extension popup UI logic, password management, tab locking controls, biometric settings (enable/disable, credential registration), auto-lock timer settings, scheduled locking configuration with day selection and scope options, stealth mode toggle, developer information section, and sponsor button
+- **theme-manager.js**: Centralized manual light/dark theme system — `applyTheme()`, `bindToggleButton()`, `initThemeEarly()`, `initThemeFull()`, `reinitThemeToggle()` — syncs theme across all extension pages via `chrome.storage.onChanged`
 - **webauthn-utils.js**: WebAuthn/FIDO2 biometric authentication utility module — `registerBiometric()`, `authenticateWithBiometric()`, `isBiometricAvailable()`, `clearBiometricCredential()` — handles PassKey credential lifecycle with full error handling and device compatibility checks
 - **whats-new.js**: What's New overlay logic for displaying update notifications
- with timer settings, scheduled locking, and developer information
-- **locked.html**: Locked tab overlay interface with password input
-- **domain-manager.html**: Domain Lock Manager user interface
-- **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
-- **whats-new.html**: What's New overlay for displaying update notifications
-- **domain-manager.html**: Domain Lock Manager user interface
-- **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
 
-#### CSS (`src/css/`) with timer settings, toggle switches, and enhanced button styles
-- **locked.css**: Styles for the locked tab overlay
+#### HTML (`src/html/`)
+- **biometric-setup.html**: Standalone biometric credential setup and management page
+- **domain-manager.html**: Domain Lock Manager user interface
+- **keyboard-shortcuts.html**: Keyboard shortcuts guide and help page
+- **locked.html**: Locked tab overlay interface with password input, biometric unlock, and navigation shell with theme toggle
+- **popup.html**: Extension popup interface
+- **whats-new.html**: What's New overlay for displaying update notifications
+
+#### CSS (`src/css/`)
 - **domain-manager.css**: Styles for the Domain Lock Manager interface
 - **keyboard-shortcuts.css**: Styles for the keyboard shortcuts guide page
-- **whats-new.css**: Styles for the What's New overlayyboard shortcuts guide page
-- **popup.css**: Styles for the popup interface
+- **locked.css**: Styles for the locked tab overlay
+- **popup.css**: Styles for the popup interface with timer settings, toggle switches, stealth mode section, and enhanced button styles
+- **whats-new.css**: Styles for the What's New overlay
 
 ### Assets (`assets/`)
 - **images/icon.png**: Extension icon used in toolbar, notifications, and manifest (16x16, 48x48, 128x128)
@@ -170,7 +178,7 @@ BUILD_GUIDE.md**: Complete guide for building and verifying the extension
 
 ### Functionality
 - Lock any browser tab with password protection
-- Lock entire domains with pattern matching (exact and wildcard)
+- Lock entire domains with pattern matching (exact and wildcard; `www.` normalized)
 - **Biometric Authentication (WebAuthn)**: Unlock tabs with fingerprint, Face ID, Touch ID, or Windows Hello
   - FIDO2-compliant PassKey credential per device
   - Graceful fallback to master password
@@ -186,6 +194,12 @@ BUILD_GUIDE.md**: Complete guide for building and verifying the extension
   - Quick presets: Work Hours, Night Time, All Day, Weekdays, Weekends
   - Configurable scope: all tabs or active tab only
   - Chrome Alarms API for reliable scheduling
+- **Right-Click Context Menus**: Lock tab, lock domain, lock all tabs, toggle stealth — all via right-click
+- **Stealth Mode**: Hides badge counter and suppresses all notifications while active
+  - Toggle via popup, keyboard shortcut (Alt+Shift+7), or context menu
+  - State persists across service worker restarts
+- **Manual Light/Dark Theme**: Persistent theme toggle across all extension pages
+  - Synced via `chrome.storage.onChanged` — no page reload needed
 - Keyboard shortcuts for quick locking and bulk operations
 - Visual indicators: lock icons on tab favicons and badge counter
 - Persistent lock state across browser restarts
@@ -230,8 +244,8 @@ The build script:
 - Root directory contains only essential files (manifest, readme, license)
 
 ## Version
-Current Version: 2.3.0
-Last Updated: February 21, 2026
+Current Version: 2.5.0
+Last Updated: April 17, 2026
 
 ## Architecture
 
@@ -275,6 +289,7 @@ Last Updated: February 21, 2026
 - Chrome Web Navigation API
 - Chrome Commands API (keyboard shortcuts)
 - Chrome Alarms API (scheduled locking)
+- Chrome Context Menus API (right-click actions)
 
 ## Browser Compatibility
 - Chrome (Manifest V3) - Full support
