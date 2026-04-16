@@ -1229,7 +1229,7 @@ function initializeMainUI() {
       chrome.windows.create({
         url: chrome.runtime.getURL('src/html/whats-new.html'),
         type: 'popup',
-        width: 700,
+        width: 440,
         height: 700
       });
     });
