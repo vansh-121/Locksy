@@ -2004,6 +2004,10 @@ kbd,
     color: #b8d4f0;
   }
 
+  html:not([data-theme="light"]) .note-content strong {
+    color: #d4e8ff;
+  }
+
   html:not([data-theme="light"]) .note-icon {
     color: #b8d4f0;
   }
@@ -2725,6 +2729,10 @@ kbd,
 
   html[data-theme="dark"] .note-content {
     color: #b8d4f0;
+  }
+
+  html[data-theme="dark"] .note-content strong {
+    color: #d4e8ff;
   }
 
   html[data-theme="dark"] .note-icon {
