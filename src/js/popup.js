@@ -764,10 +764,6 @@ function initializeMainUI() {
     </div>
   `;
 
-  if (window.LocksyTheme && typeof window.LocksyTheme.createToggleButton === 'function') {
-    window.LocksyTheme.createToggleButton();
-  }
-
   // Get all required elements after restoring HTML
   const toggleSwitch = document.getElementById("toggleSwitch");
   const statusIndicator = document.getElementById("statusIndicator");
