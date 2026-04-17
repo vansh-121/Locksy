@@ -744,7 +744,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     });
   }
 
-  // Mark to show What's New on extension update
+  // Auto-open What's New on extension update
   if (details.reason === 'update') {
     const currentVersion = chrome.runtime.getManifest().version;
     const previousVersion = details.previousVersion;
@@ -759,15 +759,22 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         whatsNewVersion: currentVersion,
         whatsNewPreviousVersion: previousVersion
       }, () => {
-        // Notify the user to click the icon — never call setPopup/openPopup
-        // because setPopup breaks Firefox's click-to-open popup behavior.
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
-          title: "Locksy Updated! 🎉",
-          message: `Click the extension icon to see what's new in v${currentVersion}`,
-          priority: 2,
-          requireInteraction: true
+        // Automatically open What's New page in a popup window
+        chrome.windows.create({
+          url: chrome.runtime.getURL('src/html/whats-new.html'),
+          type: 'popup',
+          width: 440,
+          height: 700
+        }, () => {
+          // Notify the user that What's New opened
+          chrome.notifications.create('whatsNewUpdate', {
+            type: "basic",
+            iconUrl: chrome.runtime.getURL('assets/images/icon.png'),
+            title: "Locksy Updated! 🎉",
+            message: `Check out what's new in v${currentVersion}`,
+            priority: 2,
+            requireInteraction: true
+          });
         });
       });
     } else {
@@ -936,6 +943,24 @@ function resetRateLimit() {
   crypto_failedAttempts = 0;
   crypto_lastAttemptTime = 0;
 }
+
+// ============================================================================
+// NOTIFICATION HANDLERS
+// ============================================================================
+
+/**
+ * Handle notification clicks - opens What's New when update notification is clicked
+ */
+chrome.notifications.onClicked.addListener((notificationId) => {
+  if (notificationId === 'whatsNewUpdate') {
+    chrome.windows.create({
+      url: chrome.runtime.getURL('src/html/whats-new.html'),
+      type: 'popup',
+      width: 440,
+      height: 700
+    });
+  }
+});
 
 // ============================================================================
 // MESSAGE HANDLERS
