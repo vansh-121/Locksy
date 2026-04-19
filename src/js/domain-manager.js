@@ -18,7 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Update hint text when input or toggle changes
   function updateSubdomainHint() {
     // Strip any leading *. the user may have typed so we show the clean domain
-    const raw = domainPatternInput.value.trim().replace(/^\*\./, '');
+    let raw = domainPatternInput.value.trim().replace(/^\*\./, '');
+    // Also strip protocol (https://, http://) and www. for a clean preview
+    if (/^https?:\/\//i.test(raw)) {
+      try { raw = new URL(raw).hostname; } catch (_) { raw = raw.replace(/^https?:\/\//i, '').split('/')[0]; }
+    }
+    raw = raw.replace(/^www\./i, '');
     const display = raw || 'example.com';
 
     // Build via DOM nodes — never innerHTML with user input (XSS / CodeQL)
@@ -62,8 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Normalize: strip protocol (https://, http://) and any path/query after the domain
+    let normalized = raw;
+    if (/^https?:\/\//i.test(normalized)) {
+      try {
+        normalized = new URL(normalized).hostname;
+      } catch (_) {
+        // Fallback: strip protocol manually
+        normalized = normalized.replace(/^https?:\/\//i, '').split('/')[0];
+      }
+    }
+
     // Strip any manually typed *. prefix so we apply it cleanly ourselves
-    const baseDomain = raw.startsWith('*.') ? raw.slice(2) : raw;
+    let baseDomain = normalized.startsWith('*.') ? normalized.slice(2) : normalized;
+
+    // Strip leading www. so we always store the root domain
+    // (matchesPattern handles www. automatically for plain-domain patterns)
+    baseDomain = baseDomain.replace(/^www\./i, '');
 
     // Build the final pattern: prepend *. if the toggle is on
     const pattern = includeSubdomainsCheckbox.checked

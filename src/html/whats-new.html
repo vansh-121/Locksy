@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's New in Locksy</title>
     <link rel="stylesheet" href="../css/popup.css">
+    <link rel="stylesheet" href="../css/theme.css">
 </head>
 
 <body style="padding: 0; margin: 0; min-width: 320px;">
@@ -14,43 +15,54 @@
             <div class="whats-new-header">
                 <div class="update-badge">✨</div>
                 <h2>What's New in Locksy</h2>
-                <div class="version-badge" id="whatsNewVersion">v2.4.0</div>
+                <div class="version-badge" id="whatsNewVersion">v2.5.0</div>
             </div>
 
             <div class="whats-new-content">
                 <div class="feature-highlight">
-                    <div class="feature-icon">🔓</div>
-                    <h3>Unlock All Tabs — Instantly!</h3>
-                    <p>One click to unlock every locked tab at the same time, right from the popup.</p>
+                    <div class="feature-icon">🕵️</div>
+                    <h3>Stealth Mode — Go Invisible!</h3>
+                    <p>Hide every trace of Locksy from people around you. The badge disappears, notifications are
+                        silenced — no one knows your tabs are locked.</p>
                 </div>
 
                 <div class="feature-list">
+                    <div class="feature-item">
+                        <span class="check-icon">🔕</span>
+                        <span><strong>Hides badge counter</strong> — no locked-tab count shown on the extension
+                            icon</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="check-icon">🔇</span>
+                        <span><strong>Silences all notifications</strong> — zero pop-ups while stealth is on</span>
+                    </div>
+                    <!-- <div class="feature-item">
+                        <span class="check-icon">⌨️</span>
+                        <span>Toggle instantly with <strong>Alt+Shift+7</strong>, the popup toggle, or right-click menu</span>
+                    </div> -->
                     <!-- <div class="feature-item">
                         <span class="check-icon">🔓</span>
-                        <span>Unlock All Tabs button in popup — releases all locked tabs simultaneously</span>
+                        <span>Still unlock anytime — triple-click the error text or press <strong>Alt+U</strong> on a
+                            locked tab</span>
                     </div> -->
                     <div class="feature-item">
-                        <span class="check-icon">⚡</span>
-                        <span>Batch unlock — all tabs navigate back at once, not one by one</span>
+                        <span class="check-icon">🖱️</span>
+                        <span>New right-click menu — lock tab, domain, or all windows without opening the popup</span>
                     </div>
                     <div class="feature-item">
-                        <span class="check-icon">🔑</span>
-                        <span>Biometric unlock — fingerprint, Face ID, Windows Hello</span>
+                        <span class="check-icon">🎨</span>
+                        <span>Manual Light / Dark theme — synced instantly across all extension pages</span>
                     </div>
                     <div class="feature-item">
-                        <span class="check-icon">🛡️</span>
-                        <span>Device-native security — no biometric data ever stored or transmitted</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">🐛</span>
-                        <span>Bug fix — temporarily unlocked tabs state now persists correctly across service worker
-                            restarts</span>
+                        <span class="check-icon">🌐</span>
+                        <span>Domain lock now handles <strong>www.</strong> &amp; <strong>https://</strong> prefixes
+                            automatically</span>
                     </div>
                 </div>
 
                 <div class="whats-new-footer">
                     <p class="privacy-note">🔒 100% offline • Zero data collection • Complete privacy</p>
-                    <button id="dismissWhatsNew" class="btn-primary">Got it, Let's Start!</button>
+                    <button id="dismissWhatsNew" class="btn-primary">Got it, Let's Go! 🚀</button>
                     <a href="https://github.com/vansh-121/Locksy/blob/main/docs/CHANGELOG.md" target="_blank"
                         class="changelog-link">View Full Changelog →</a>
                 </div>
@@ -59,6 +71,7 @@
     </div>
 
     <script src="../js/browser-polyfill.min.js"></script>
+    <script src="../js/theme-manager.js"></script>
     <script src="../js/whats-new.js"></script>
 </body>
 

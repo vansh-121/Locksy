@@ -2,6 +2,108 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [2.5.0] - 2026-04-17
+
+### 🎉 Major New Features
+
+#### 🖱️ Right-Click Context Menus
+- **Native Tab Context Menus**: Locksy actions are now accessible via right-click on any webpage
+  - **🔒 Lock this tab**: Instantly lock the current tab without opening the popup
+  - **🌐 Lock this domain**: Add the current site's root domain to domain lock list with a single right-click
+  - **📂 Lock all tabs in this window**: Bulk-lock all compatible tabs via context menu
+  - **👁️ Toggle Stealth Mode**: Flip stealth mode on/off directly from the right-click menu
+  - Parent menu labeled "Locksy - Tab Locker 🔐" groups all actions neatly
+  - Menus available in all page contexts: page, link, image, selection, editable
+  - Menus re-register on every service worker wake to survive SW idle restarts
+  - All actions validated: password check, system-page guard, duplicate-lock prevention
+
+#### 🕵️ Stealth Mode
+- **Invisible Lock Indicators**: Hide all visual evidence of Locksy from casual observers
+  - Badge counter cleared — locked tab count no longer visible on the extension icon
+  - All browser notifications suppressed while stealth is active
+  - Locked pages can still be unlocked via triple-click on the error text or **Alt+U**
+  - **Keyboard Shortcut**: `Alt+Shift+7` toggles stealth mode without opening the popup
+  - **Right-Click Toggle**: Context menu item for instant stealth toggle
+  - **Popup Toggle**: Dedicated collapsible Stealth Mode section in popup settings
+  - State persisted in `chrome.storage.local` and restored after service worker restarts
+  - Disabling stealth shows a confirmation notification; enabling is always silent
+
+#### 🎨 Manual Theme Toggle (Light / Dark Mode)
+- **New `theme-manager.js` Module**: Centralized, persistent theme system for all extension pages
+  - Two-state manual toggle: Light ☀️ / Dark 🌙 — no more auto-detection dependency
+  - Preference stored in `chrome.storage.local` (`locksyThemePreference` key)
+  - Synchronizes instantly across popup, locked page, domain manager, shortcuts page, everywhere
+  - `chrome.storage.onChanged` listener keeps all open pages in sync without a reload
+  - Flash-prevention: theme applied before DOM is fully parsed via early `initThemeEarly()`
+  - Toggle button embedded in popup header; `data-theme` attribute on `<html>` drives CSS
+  - `window.reinitThemeToggle()` exposed globally so popup can re-bind after dynamic DOM rebuilds
+  - Lock screen (locked.html) ships with its own navigation shell with theme toggle for seamless UX
+
+### 🐛 Bug Fixes
+
+- **Domain Lock URL Normalization**: Fixed domain matching ignoring `www.` prefix and `https://` protocols
+  - Entering `youtube.com` now correctly locks both `youtube.com` and `www.youtube.com`
+  - Entering `https://youtube.com` or `https://www.youtube.com` is now accepted and normalized
+  - Pattern matching engine updated: exact hostname OR `www.` variant both match a bare domain pattern
+  - Context menu "Lock this domain" strips `www.` automatically before storing the pattern
+- **Context Menu Persistence**: Menus now call `setupContextMenus()` on every SW wake, not only on install/update
+- **Stealth Notification Bypass**: `notify()` helper added — all notification callsites route through it so stealth mode suppression is enforced globally
+
+### 🔧 Technical Improvements
+
+- **New Module**: `theme-manager.js` — standalone, self-contained theme management
+  - `applyTheme(theme)` — sets `data-theme` attribute + `dark-mode` class
+  - `updateToggleIcon(theme)` — updates button icon and tooltip
+  - `bindToggleButton()` — attaches click handler to `#themeToggleBtn`
+  - `initThemeEarly()` — flash-prevention, runs before DOMContentLoaded
+  - `initThemeFull()` — full init + storage change listener
+  - `window.reinitThemeToggle` — callable by popup.js after DOM rebuild
+- **`background.js`**: ~220 new lines
+  - `setupContextMenus()` — creates/recreates all 4 context menu items
+  - `chrome.contextMenus.onClicked` handler — full routing for all menu actions
+  - `stealthModeEnabled` state variable + `notify()` wrapper replacing all direct `chrome.notifications.create` calls
+  - `toggleStealthMode` keyboard command added to `chrome.commands.onCommand` listener
+  - `getStealthMode` / `setStealthMode` message handlers for popup↔background sync
+  - `stealthModeEnabled` key restored in `restoreLockedTabs()` on service worker wake
+- **`popup.js`**: Stealth Mode section wired up
+  - Loads current stealth state from background via `getStealthMode` message
+  - Sends `setStealthMode` message on toggle
+  - Collapsible section UI with info panel showing keyboard shortcut and unlock hints
+- **`popup.html`** / **`locked.html`**: Theme manager script tag and theme toggle button injected
+- **`manifest.json`** / **`manifest.firefox.json`**: Version bumped to 2.5.0; `contextMenus` permission confirmed present
+
+### 📊 Storage Schema Updates
+
+- New keys in `chrome.storage.local`:
+  - `stealthModeEnabled`: boolean — whether stealth mode is currently active
+  - `locksyThemePreference`: `'light'` | `'dark'` — user's preferred UI theme
+
+### 🚀 User Benefits
+
+- **Faster Locking**: Lock tabs, domains, or windows without ever opening the popup — just right-click
+- **Complete Privacy**: Stealth mode makes Locksy invisible; even the icon badge gives nothing away
+- **Themed UI**: Choose Light or Dark — preference follows you across every Locksy page
+- **No More URL Confusion**: Domain lock correctly handles `www.` and `https://` prefixes automatically
+
+### 🎯 Feature Highlights
+
+- ✅ Right-click context menu with 4 Locksy actions on every web page
+- ✅ Stealth Mode — suppresses badge, notifications, and any visual lock indicator
+- ✅ Alt+Shift+7 keyboard shortcut to toggle Stealth Mode
+- ✅ Persistent light/dark theme across all extension pages
+- ✅ Domain lock URL normalization (www. / https:// prefix handling)
+- ✅ Theme toggle button in popup header and locked-page navigation shell
+- ✅ Zero breaking changes — fully backward compatible with all earlier versions
+
+### 🔄 Implementation Stats
+
+- **Total New Code**: ~600+ lines across 5 files
+- **New Module**: `theme-manager.js` (153 lines)
+- **Core Files Modified**: `background.js`, `popup.js`, `popup.html`, `locked.html`, `manifest.json`, `manifest.firefox.json`
+- **Zero Breaking Changes**: Fully backward compatible with v2.4.x and earlier
+
+---
+
 ## [2.4.0] - 2026-02-25
 
 ### ✨ New Features

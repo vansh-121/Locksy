@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-2.4.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-2.5.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
   [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
@@ -203,6 +203,30 @@
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
 
+### Version 2.5.0 - Context Menus, Stealth Mode & Theme Toggle (April 17, 2026) 🕵️
+
+#### 🔥 What's New
+
+- **🖱️ Right-Click Context Menus**: Locksy actions now available directly from any tab's right-click menu
+  - Lock this tab, Lock this domain, Lock all tabs in window, Toggle Stealth Mode
+  - No need to open the popup for quick locking operations
+  <img width="683" height="287" alt="image" src="https://github.com/user-attachments/assets/947048c2-fc4a-4ea3-bf6d-fda19616a891" />
+
+
+- **🕵️ Stealth Mode**: Hide all visual evidence of Locksy from observers
+  - Hides badge counter and suppresses all browser notifications
+  - Toggle via popup settings, keyboard shortcut (`Alt+Shift+7`), or right-click menu
+  - Locked pages remain accessible to you via triple-click or `Alt+U`
+  - State persists across browser restarts
+
+- **🎨 Manual Light/Dark Theme Toggle**: New `theme-manager.js` syncs your UI preference across all extension pages
+  - Two-state toggle: Light ☀️ / Dark 🌙 — stored and applied instantly across popup, lock screen, and all pages
+  - Flash-prevention: theme applied before page renders
+
+- **🐛 Domain Lock URL Fix**: Domain locking now correctly handles `www.` prefixes and `https://` protocols
+
+---
+
 ### Version 2.4.0 - Unlock All Tabs & Bug Fixes (February 25, 2026) 🛠️
 
 #### 🔥 What's New
@@ -281,154 +305,6 @@
 - **Multiple Modes**: Use auto-lock timer, scheduled locking, or both together
 - **Zero Performance Impact**: Efficient implementation with smart throttling
 
----
-
-### Version 2.0.0 - MAJOR SECURITY OVERHAUL (December 27, 2025) 🔐
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-enterprise%20grade-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-PBKDF2%20600k-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/security-9%2F10-brightgreen?style=flat-square)
-  ![Rating](https://img.shields.io/badge/OWASP-2023%20compliant-blue?style=flat-square)
-  
-</div>
-
-#### 🔐 **Enterprise-Grade Cryptography**
-- 🛡️ **PBKDF2 Key Derivation Function**: Industry-standard password security
-  - 600,000 iterations (OWASP 2023 recommended minimum)
-  - Replaces fast SHA-256 with slow, brute-force resistant KDF
-  - ~120 years to crack 8-char password vs ~7 days previously
-  - 256-bit derived keys with unique 128-bit salts
-  - Fully backward compatible with existing passwords
-
-#### 🚫 **Advanced Brute-Force Protection**
-- 🔒 **Intelligent Rate Limiting**: Multi-layer defense system
-  - 3 free attempts before delays activate
-  - Exponential backoff: 2s → 4s → 8s → 16s → 32s → 64s
-  - 5-minute lockout after 10 failed attempts
-  - Live countdown timers with exact wait times
-  - Progressive warnings before lockouts
-  - Automatic recovery and counter reset on success
-
-#### ⚡ **Timing Attack Protection**
-- 🎯 **Constant-Time Comparison**: Prevents information leakage
-  - Eliminates timing-based attack vectors
-  - Applied to all password verification paths
-  - Protects both PBKDF2 and legacy formats
-
-#### 🎨 **Enhanced User Experience**
-- ⏱️ **Real-Time Feedback**: Crystal-clear authentication status
-  - Live countdown timers ("⏳ Wait 2m 30s")
-  - Visual lock indicators during rate limiting
-  - Auto-disable/enable of inputs during lockouts
-  - Clear messages with remaining attempts
-  - "✅ Ready - you can try again now" notifications
-
-#### 📊 **Security Improvements**
-- **Crack Time**: 7 days → 120 years (for 8-char password)
-- **Security Rating**: 7.5/10 → 9/10
-- **Attack Resistance**: Strong → Very Strong
-- **Industry Compliance**: OWASP 2023 Standards ✅
-- **Documentation**: Comprehensive `SECURITY_ASSESSMENT.md` added
-
-**What's New:** This major version brings enterprise-grade security with PBKDF2 key derivation (600,000 iterations), comprehensive rate limiting with exponential backoff, timing attack protection, and an enhanced UX with live countdown timers. The extension now meets OWASP 2023 security standards while maintaining full backward compatibility!
-
----
-
-### Version 1.0.8 - CROSS-BROWSER SUPPORT & SECURITY ENHANCEMENTS (December 17, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  ![New Feature](https://img.shields.io/badge/feature-cross%20browser-brightgreen?style=flat-square)
-  
-</div>
-
-#### 🦊 **Major Feature: Cross-Browser Support**
-- 🌐 **Full Cross-Browser Compatibility**: Works seamlessly across all major browsers
-  - Chrome, Edge, Firefox, Brave, Opera, Vivaldi, and all Chromium-based browsers
-  - WebExtension Polyfill for unified API support
-  - Identical features and functionality across all platforms
-  - Single unified codebase for all browsers
-
-#### 🔒 **Enhanced Security**
-- 🛡️ **XSS Prevention**: Advanced protection against code injection attacks
-  - Replaced all `innerHTML` with safe DOM methods
-  - Secure element creation and manipulation
-  - Protection against malicious dynamic HTML insertion
-  - Multiple security layers for content sanitization
-
-#### 📦 **Technical Improvements**
-- ⚡ **WebExtension API Compatibility**: Seamless browser operation
-  - Browser-agnostic API calls
-  - Unified manifest support for Firefox
-  - Enhanced polyfill integration
-  - Updated all HTML pages for cross-browser compatibility
-
-#### 🐛 **Bug Fixes**
-- Fixed "Lock All Tabs" functionality in background script
-- Improved popup integration with background actions
-- Enhanced service worker reliability across browsers
-
-**What's New:** This version introduces full cross-browser support with Firefox compatibility, enhanced XSS prevention for improved security, and a unified WebExtension API for seamless operation across all major browsers. The extension now provides identical features and security across Chrome, Edge, Firefox, Brave, Opera, and all Chromium-based browsers!
-
----
-
-### Version 1.0.7 - KEYBOARD SHORTCUTS & VISUAL INDICATORS (December 7, 2025)
-
-<div align="center">
-  
-  ![Status](https://img.shields.io/badge/status-production%20ready-success?style=flat-square)
-  ![Security](https://img.shields.io/badge/encryption-SHA--256%20%2B%20Salt-critical?style=flat-square)
-  ![Privacy](https://img.shields.io/badge/privacy-100%25%20local-informational?style=flat-square)
-  ![No Tracking](https://img.shields.io/badge/tracking-none-success?style=flat-square)
-  ![New Feature](https://img.shields.io/badge/feature-keyboard%20shortcuts-blueviolet?style=flat-square)
-  
-</div>
-
-#### ⌨️ **New Feature: Keyboard Shortcuts**
-- 🎯 **Pre-configured Shortcuts**: Ready-to-use keyboard shortcuts that work immediately
-  - **Alt+Shift+9**: Lock current tab instantly
-  - **Alt+Shift+0**: Open Domain Lock Manager
-  - **Alt+Shift+8**: Lock all tabs in current window
-  - **Fully Customizable**: All the shortcut keys are customizable in keyboard shortcut manager.
-
-- ⚡ **Bulk Operations**: Lock all tabs feature via keyboard
-  - Locks all compatible tabs in current window
-  - Automatically skips system and extension pages
-  - Reports count of locked and skipped tabs
-
-#### 🔒 **Visual Indicators**
-
-- 🎨 **Lock Icon on Tab Favicon**: Locked tabs display a distinctive red lock icon
-  - Dynamically generated using HTML5 Canvas
-  - Original favicon automatically restored on unlock
-  
-- 🔢 **Badge Counter on Extension Icon**: Shows number of locked tabs at a glance
-  - Red background with white text
-  - Auto-updates on lock/unlock operations
-  - Persists across browser restarts
-  - Real-time updates for all scenarios
-
-#### 🎨 **Enhanced User Interface**
-
-- 📋 **Keyboard Shortcuts Info Panel**: Added in popup with visual kbd tags
-- 💡 **Contextual Display**: Shows shortcuts only when password is set
-- 🌈 **Modern Styling**: Gradient backgrounds and smooth animations
-
-#### 🔧 **Technical Improvements**
-- **Command Handlers**: Four dedicated functions for keyboard shortcuts
-- **Badge System**: Real-time counter updates across all operations
-- **Favicon Management**: Dynamic lock icon generation and restoration
-- **Enhanced Documentation**: Comprehensive keyboard shortcuts guide
-
-**What's New:** This version introduces power-user features with pre-configured keyboard shortcuts for instant tab locking, domain management, and bulk operations. Visual indicators including lock icons on tab favicons and a badge counter provide clear feedback about locked tabs. The shortcuts work out-of-the-box and can be customized if needed!
 
 ---
 
@@ -537,6 +413,7 @@ The store listings warn: **"Read and change all your data on all websites"**
 | No Plain Text Storage | Persistent Locks | Instant Response | GDPR Compliant |
 | Session Timeout | Navigation Protection | Optimized Code | No Data Collection |
 | Biometric (WebAuthn) | Biometric Unlock | Native OS Speed | Zero Biometric Data |
+| Stealth Mode | Right-Click Menus | Theme Toggle | No Badge Leakage |
 
 </div>
 
@@ -544,19 +421,24 @@ The store listings warn: **"Read and change all your data on all websites"**
 - **Toggle Activation**: Easy on/off switch to enable/disable the extension
 - **Tab Locking**: Secure any tab with a password-protected overlay
 - **Biometric Unlock**: Unlock tabs with fingerprint, Face ID, Touch ID, or Windows Hello via WebAuthn
-- **Domain Locking**: Lock entire domains with wildcard support
+- **Domain Locking**: Lock entire domains with wildcard support (exact & wildcard; `www.` normalized)
 - **Password Protection**: Set a master password to control access
 - **Instant Unlock**: Quick unlock from the extension popup
-- **Keyboard Shortcuts**: Optional customizable shortcuts for power users
-- **Badge Counter**: See number of locked tabs at a glance
+- **Right-Click Context Menus**: Lock tab, domain, all tabs, or toggle stealth — without opening the popup
+- **Stealth Mode**: Hide badge counter and suppress all lock-state notifications from observers
+- **Keyboard Shortcuts**: Four pre-configured shortcuts for power users (including Alt+Shift+7 for stealth)
+- **Badge Counter**: See number of locked tabs at a glance (hidden automatically in Stealth Mode)
 - **Incognito Mode**: Works seamlessly in private browsing windows (requires manual activation)
+- **Unlock All Tabs**: Single button to release every locked tab simultaneously
 
 ### 🎨 Enhanced UI
 - **Modern Design**: Clean, gradient-based interface with smooth animations
+- **Manual Light/Dark Theme**: Persistent two-state theme toggle (☀️ Light / 🌙 Dark) synced across all extension pages
 - **Status Indicators**: Clear visual feedback for extension state
 - **Password Strength**: Real-time password strength indicator
 - **Responsive Layout**: Optimized for the extension popup size
 - **Smooth Animations**: Floating icons, glowing effects, and transitions
+- **Collapsible Settings Panels**: Auto-Lock, Scheduled Lock, Biometric, and Stealth sections each collapse independently
 
 ### 🔒 Security Features
 
@@ -669,7 +551,8 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 
 ### 🔒 Locking Tabs
 1. **Password Required**: Ensure you have set a master password first
-2. **Lock Current Tab**: Click "🔒 Lock Current Tab" button
+2. **Lock Current Tab**: Click "🔒 Lock Current Tab" button in the popup  
+   **— or —** Right-click any page → Locksy → 🔒 Lock this tab
 3. **Secure Overlay**: Tab will be covered with password-protected overlay
 4. **Unlock Only**: Enter correct password on the locked tab to unlock
 
@@ -683,6 +566,40 @@ For security and technical reasons, the following types of tabs **cannot be lock
 **Why?** Browsers restrict extensions from modifying these pages for security. When you try to lock these tabs, you'll now see a clear message explaining why it cannot be locked.
 
 ✅ **Lockable Tabs**: All regular websites (http://, https://) including news sites, social media, banking, email, etc.
+
+### 🖱️ Right-Click Context Menus
+Lock without ever opening the popup — just right-click on any webpage:
+
+| Menu Item | Action |
+|-----------|--------|
+| 🔒 Lock this tab | Locks the current tab instantly |
+| 🌐 Lock this domain | Adds the site's domain to your domain lock list |
+| 📂 Lock all tabs in this window | Bulk-locks every compatible tab in the window |
+| 👁️ Toggle Stealth Mode | Flips stealth on/off without opening the popup |
+
+- All actions perform the same password and system-page safety checks as the popup
+- Context menus re-register automatically after the browser restarts
+
+### 🕵️ Stealth Mode
+Hide every visible trace of Locksy from anyone looking over your shoulder:
+
+1. **Enable via Popup**: Open popup → scroll to "🕵️ Stealth Mode" section → toggle on
+2. **Enable via Shortcut**: Press `Alt+Shift+7` at any time
+3. **Enable via Right-Click**: Right-click → Locksy → 👁️ Toggle Stealth Mode
+
+**What stealth hides:**
+- 🔕 Badge counter on the extension icon (no locked-tab count visible)
+- 🔕 All browser notifications from Locksy
+
+**What stealth does NOT affect:**
+- ✅ Lock protection still fully active — tabs remain locked
+- ✅ Locked pages accessible to you: triple-click the error text or press `Alt+U`
+- ✅ Disabling stealth shows a brief confirmation notification
+
+### 🎨 Switching Theme (Light / Dark)
+1. Click the **☀️ / 🌙 button** in the popup header to toggle between Light and Dark mode
+2. Your preference is saved and applied instantly across **all** extension pages
+3. On first use, the theme seeds from your OS preference, then stays as you last set it
 
 ### 🛡️ Security Features
 - **No Bypass Methods**: Only correct password unlocks tabs
@@ -702,6 +619,7 @@ Locksy includes **pre-configured keyboard shortcuts** that work out-of-the-box. 
 | `Alt+Shift+9` | **Lock Current Tab** | Instantly locks the active tab |
 | `Alt+Shift+0` | **Open Domain Manager** | Opens Domain Lock Manager window |
 | `Alt+Shift+8` | **Lock All Tabs** | Locks all tabs in current window |
+| `Alt+Shift+7` | **Toggle Stealth Mode** | Hides/shows lock indicators silently |
 
 #### ✨ Features
 - 🔔 Smart notifications for every action
@@ -742,17 +660,29 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 ## 🎮 User Interface
 
 ### Main Popup
-- **Header**: Animated lock icon with extension title
+- **Header**: Animated lock icon, extension title, and **Light/Dark theme toggle**
 - **Status Indicator**: Shows active/inactive state with color coding
 - **Toggle Switch**: Large, modern switch for activation
 - **Password Input**: Secure input with strength indicator
-- **Action Buttons**: Lock/Unlock controls with emoji icons
+- **Action Buttons**: Lock Current Tab, Lock All Tabs, Unlock All Tabs, Domain Lock
+- **Biometric Section**: Collapsible panel for enabling/disabling WebAuthn unlock
+- **Auto-Lock Section**: Collapsible timer settings with scope and duration controls
+- **Scheduled Lock Section**: Collapsible schedule with time inputs, day selector, and presets
+- **Stealth Mode Section**: Collapsible toggle with info panel showing keyboard shortcut
+- **Developer Info & Sponsor**: Footer buttons for support and developer links
 
 ### Lock Overlay
 - **Full Screen**: Complete tab coverage with gradient background
+- **Navigation Shell**: Theme toggle and branding bar at the top of the locked page
+- **Biometric Prompt**: One-tap fingerprint/face unlock (when biometric is enabled)
 - **Secure Input**: Password field with focus animations
 - **Error Handling**: Shake animations for incorrect passwords
 - **Success Feedback**: Smooth unlock animation
+
+### Right-Click Menu
+- **Parent Menu**: "Locksy - Tab Locker 🔐" groups all actions
+- **Four Actions**: Lock tab, Lock domain, Lock all, Toggle stealth
+- **Context-Aware**: Works on page, link, image, selection, and editable areas
 
 ## 🔧 Technical Details
 
@@ -762,6 +692,8 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Web Crypto API**: PBKDF2-SHA256 key derivation
 - **Cross-Browser**: Chrome, Edge, Firefox, Brave, Opera, Vivaldi support
 - **Canvas API**: Dynamic favicon lock icon generation
+- **Chrome Context Menus API**: Right-click menu for tab/domain/stealth actions
+- **Theme Manager Module**: Centralized light/dark theme synced via chrome.storage.onChanged
 
 ### Security Implementation
 - **PBKDF2-SHA256**: 600,000 iterations for password hashing
@@ -771,22 +703,25 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Constant-Time Comparison**: Protection against timing attacks
 
 ### Permissions
-- `storage`: For saving encrypted passwords and settings
+- `storage`: For saving encrypted passwords, settings, stealth state, and theme preference
 - `tabs`: For tab management and locking
-- `scripting`: For injecting the lock overlay
 - `activeTab`: For current tab access
-- `notifications`: For user feedback
+- `notifications`: For user feedback (suppressed automatically in Stealth Mode)
 - `webNavigation`: For monitoring navigation events (4 listeners)
+- `alarms`: For scheduled locking via Chrome Alarms API (survives SW restarts)
+- `contextMenus`: For right-click context menu actions
 - `incognito` (spanning): For optional incognito mode support
 
 ### Files Structure
 - `manifest.json`: Extension configuration (Manifest V3)
-- `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
-- `src/js/background.js`: Service worker for lock management
-- `src/js/popup.js`: Main interface and logic (incl. biometric settings)
+- `src/js/background.js`: Service worker — lock management, context menus, stealth mode, keyboard shortcuts
+- `src/js/popup.js`: Main popup interface and logic (biometric, timer, scheduled lock, stealth)
 - `src/js/locked.js`: Lock overlay logic (incl. biometric unlock)
+- `src/js/theme-manager.js`: Centralized light/dark theme system across all extension pages
+- `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
 - `src/js/webauthn-utils.js`: WebAuthn/FIDO2 biometric authentication utilities
-- `src/html/locked.html`: Lock overlay interface
+- `src/js/activity-tracker.js`: Content script for smart activity detection (auto-lock)
+- `src/html/locked.html`: Lock overlay interface with navigation shell and theme toggle
 - `src/css/`: Styling for all components
 - `docs/`: Comprehensive documentation (CHANGELOG, DESIGN_SYSTEM, etc.)
 
@@ -800,6 +735,10 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - ⚠️ Extension pages and new tab pages cannot be locked due to browser restrictions
 - 💡 If you see an error when locking, check if the tab is a system or extension page
 - 🔒 Your password is stored securely in Chrome's local storage
+- 🕶️ Enable Stealth Mode (`Alt+Shift+7`) to hide lock indicators from people around you
+- 🖱️ Right-click any page for quick Locksy actions — no need to open the popup
+- 🌐 Domain lock: entering `youtube.com` automatically matches `www.youtube.com` too
+- 🎨 Use the ☀️/🌙 button in the popup header to switch between Light and Dark mode
 - 🕶️ Enable incognito mode in extension settings to protect private browsing tabs
 - 🔑 Same password works across both normal and incognito windows for convenience
 - ✅ All regular websites (http://, https://) can be locked successfully
