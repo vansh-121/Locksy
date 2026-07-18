@@ -9,7 +9,7 @@
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
   [![Version](https://img.shields.io/badge/version-3.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
-  [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+  [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
 
 **A modern browser extension that provides military-grade tab protection with advanced security features.**
