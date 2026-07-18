@@ -708,52 +708,16 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Four Actions**: Lock tab, Lock domain, Lock all, Toggle stealth
 - **Context-Aware**: Works on page, link, image, selection, and editable areas
 
-## 🔧 Technical Details
+## 🔧 Permissions
 
-### Architecture
-
-- **Manifest V3**: Modern Chrome extension platform
-- **Service Worker**: Persistent background script with restoration pattern
-- **Web Crypto API**: PBKDF2-SHA256 key derivation
-- **Cross-Browser**: Chrome, Edge, Firefox, Brave, Opera, Vivaldi support
-- **Canvas API**: Dynamic favicon lock icon generation
-- **Chrome Context Menus API**: Right-click menu for tab/domain/stealth actions
-- **Theme Manager Module**: Centralized light/dark theme synced via chrome.storage.onChanged
-
-### Security Implementation
-
-- **PBKDF2-SHA256**: 600,000 iterations for password hashing
-- **WebAuthn / FIDO2**: Biometric PassKey credential via platform authenticator
-- **Restoration Flag Pattern**: Prevents race conditions during startup
-- **Multi-Layer Storage**: Lock state persists across service worker restarts
-- **Constant-Time Comparison**: Protection against timing attacks
-
-### Permissions
-
-- `storage`: For saving encrypted passwords, settings, stealth state, and theme preference
+- `storage`: For saving encrypted passwords, settings, and preferences
 - `tabs`: For tab management and locking
 - `activeTab`: For current tab access
-- `notifications`: For user feedback (suppressed automatically in Stealth Mode)
-- `webNavigation`: For monitoring navigation events (4 listeners)
-- `alarms`: For scheduled locking via Chrome Alarms API (survives SW restarts)
+- `notifications`: For user feedback (suppressed in Stealth Mode)
+- `webNavigation`: For monitoring navigation events
+- `alarms`: For scheduled locking
 - `contextMenus`: For right-click context menu actions
 - `incognito` (spanning): For optional incognito mode support
-
-### Files Structure
-
-- `manifest.json`: Extension configuration (Manifest V3)
-- `src/js/background.js`: Service worker — lock management, context menus, stealth mode, keyboard shortcuts, intruder photo storage
-- `src/js/popup.js`: Main popup interface and logic (biometric, timer, scheduled lock, stealth, quick-unlock panel, intruder detection)
-- `src/js/locked.js`: Lock overlay logic (incl. biometric unlock, intruder photo capture)
-- `src/js/intruder-log.js`: Intruder Log page controller (view/delete captured photos)
-- `src/js/theme-manager.js`: Centralized light/dark theme system across all extension pages
-- `src/js/crypto-utils.js`: PBKDF2 cryptographic functions
-- `src/js/webauthn-utils.js`: WebAuthn/FIDO2 biometric authentication utilities
-- `src/js/activity-tracker.js`: Content script for smart activity detection (auto-lock)
-- `src/html/locked.html`: Lock overlay interface with navigation shell and theme toggle
-- `src/html/intruder-log.html`: Intruder photo log viewer page
-- `src/css/`: Styling for all components
-- `docs/`: Comprehensive documentation (CHANGELOG, DESIGN_SYSTEM, etc.)
 
 ---
 
