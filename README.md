@@ -35,12 +35,6 @@
 
 ---
 
-<p align="center">
-  <img src="assets/images/screenshots/promo_hero.png" alt="Locksy Hero Banner" width="100%">
-</p>
-
----
-
 ## ✨ Features in Action
 
 <div align="center">
@@ -49,60 +43,97 @@
 
 </div>
 
-### 🔐 Core Features
+### 🔐 Getting Started
 
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_dashboard.png" alt="Sleek Dashboard Control" width="100%">
+      <img src="assets/videos/Part1.gif" alt="Setting Master Password" width="100%">
       <br>
-      <b>🖥️ Sleek Dashboard Control</b>
+      <b>1️⃣ Setting Master Password</b>
       <br>
-      Intuitive dashboard with quick actions — lock current tab, all tabs, or unlock everything in one click
+      Create your secure master password with real-time strength indicator
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_tab_lock.png" alt="Lock Any Tab Instantly" width="100%">
+      <img src="assets/videos/Part2.gif" alt="Locking Current Tab" width="100%">
       <br>
-      <b>🔒 Lock Any Tab Instantly</b>
+      <b>2️⃣ Locking Current Tab</b>
       <br>
-      Military-grade encryption overlay — unlock with password or fingerprint/Face ID
+      One-click tab protection with instant lock overlay
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_biometrics.png" alt="Fingerprint & Face ID Unlock" width="100%">
+      <img src="assets/videos/Part3.gif" alt="Tab Locked" width="100%">
       <br>
-      <b>👆 Fingerprint & Face ID Unlock</b>
+      <b>3️⃣ Tab Locked</b>
       <br>
-      One-tap biometric unlock via WebAuthn — supports Windows Hello, Touch ID, Face ID
+      Password-protected overlay secures your sensitive content
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_intruder.png" alt="Webcam Intruder Log" width="100%">
+      <img src="assets/videos/Part4.gif" alt="Smart Authentication Protection" width="100%">
       <br>
-      <b>📸 Webcam Intruder Detection</b>
+      <b>4️⃣ Smart Authentication Protection</b>
       <br>
-      Captures local photos on failed unlock attempts — 100% offline, zero data transmitted
+      Current password required to change settings - no bypass!
     </td>
   </tr>
 </table>
 
-### ⏱️ Automation & Insights
+### 🛡️ Advanced Features
 
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_timers.png" alt="Auto-Lock Timers & Schedules" width="100%">
+      <img src="assets/videos/Part5.gif" alt="Domain Locking" width="100%">
       <br>
-      <b>⏰ Auto-Lock Timers & Schedules</b>
+      <b>5️⃣ Domain & Subdomain Locking</b>
       <br>
-      Inactivity-based auto-lock and weekly scheduled locking for hands-free protection
+      Lock entire domains with wildcard support for automatic protection
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_privacy_report.png" alt="Weekly Privacy Reports" width="100%">
+      <img src="assets/videos/Part6.gif" alt="Keyboard Shortcuts" width="100%">
       <br>
-      <b>📊 Weekly Privacy Reports</b>
+      <b>6️⃣ Keyboard Shortcuts</b>
       <br>
-      Interactive dashboard tracking locks, unlocks, security scores, and intrusion attempts
+      Pre-defined shortcuts for power users - fully customizable
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part7.gif" alt="Incognito Mode" width="100%">
+      <br>
+      <b>7️⃣ Incognito/InPrivate Mode</b>
+      <br>
+      Enable Locksy in private browsing for complete privacy protection
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part8.gif" alt="Auto Lock Feature" width="100%">
+      <br>
+      <b>8️⃣ Auto Lock Timer</b>
+      <br>
+      Automatic tab locking after inactivity with smart detection
+    </td>
+  </tr>
+</table>
+
+### ⏱️ Automation Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/videos/Part9.gif" alt="Scheduled Lock" width="100%">
+      <br>
+      <b>9️⃣ Scheduled Lock Feature</b>
+      <br>
+      Time-based automatic locking with day selection and custom schedules
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/images/screenshots/Intruder_detection.jpeg" alt="Intruder Detection" width="100%">
+      <br>
+      <b>🔟 Intruder Detection</b>
+      <br>
+      Capture local-only photos after repeated wrong password attempts
     </td>
   </tr>
 </table>
@@ -118,34 +149,34 @@
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_dashboard.png" alt="Sleek Dashboard" width="100%">
+      <img src="assets/images/screenshots/1.png" alt="Locksy Main Features" width="100%">
       <br>
-      <b>Sleek Dashboard</b>
+      <b>Securely Lock & Manage Your Browser Tabs</b>
       <br>
-      Modern tabbed interface with quick-lock actions and real-time status
+      Lock individual tabs or windows with one-click privacy protection
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_tab_lock.png" alt="Tab Locked" width="100%">
+      <img src="assets/images/screenshots/2.png" alt="Security Features" width="100%">
       <br>
-      <b>Tab Secured</b>
+      <b>Your Passwords, Your Control</b>
       <br>
-      Military-grade encrypted overlay — password or biometric unlock
+      No data collection, SHA-256 encryption, offline-only operation
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_biometrics.png" alt="Biometric Unlock" width="100%">
+      <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
       <br>
-      <b>Biometric Authentication</b>
+      <b>Military-Grade Tab Protection</b>
       <br>
-      Fingerprint & Face ID unlock via WebAuthn — zero biometric data stored
+      Enterprise-level security for your sensitive browser tabs
     </td>
     <td align="center" width="50%">
-      <img src="assets/images/screenshots/promo_intruder.png" alt="Intruder Log" width="100%">
+      <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
       <br>
-      <b>Intruder Detection Log</b>
+      <b>Tab Secured - Password Protected</b>
       <br>
-      Locally-captured photos of unauthorized unlock attempts
+      Enter password to unlock and access your protected content
     </td>
   </tr>
 </table
@@ -184,52 +215,13 @@
 #### 🔥 What's New
 
 - **🎨 Stunning UI Redesign**: Enjoy a completely redesigned, premium interface with sleek glassmorphism panels, tabbed app shell navigation, and smooth micro-animations.
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="assets/images/screenshots/promo_dashboard.png" alt="Redesigned Dashboard" width="100%">
-      <br>
-      <b>Premium UI Redesign</b>
-      <br>
-      Glassmorphism panels, tabbed navigation, and smooth micro-animations
-    </td>
-  </tr>
-</table>
-
 - **📊 Weekly Privacy Reports (PRO)**: Gain security insights with an interactive local dashboard tracking locks, unlocks, failed intrusion attempts, and overall security score history.
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="assets/images/screenshots/promo_privacy_report.png" alt="Weekly Privacy Reports" width="100%">
-      <br>
-      <b>Weekly Privacy Reports Dashboard</b>
-      <br>
-      Track security scores, unlock activity, and intrusion attempts over time
-    </td>
-  </tr>
-</table>
-
 - **💬 Custom Lock Messages (PRO)**: Customize your lock screen overlay text. Set your own message, instructions, or warnings.
 - **🚨 Intruder Notification Alerts**: Receive instant desktop alerts and browser notifications when suspicious password failures occur on locked tabs.
 - **💎 Polar.sh Integration & Monetization Limits**:
   - Secure Polar license validation and activation via Cloudflare Worker backend.
   - Free Tier limits: up to 3 domain locks, 3 intruder photos, 5 biometric unlocks per day, and 3 uses of "Lock All Tabs".
   - Pro Tier: unlimited locks/biometrics/domains, Custom Lock Messages, Startup Lock, Custom Auto-Lock Timers, Stealth Mode, and Weekly Privacy Reports.
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="assets/images/screenshots/promo_timers.png" alt="Auto-Lock Timers" width="100%">
-      <br>
-      <b>Auto-Lock Timers & Scheduled Locking</b>
-      <br>
-      Set inactivity-based auto-lock and weekly lock schedules for hands-free protection
-    </td>
-  </tr>
-</table>
-
 - **⚡ Automated Build Minification**: Minify JavaScript build assets with Terser to improve extension loading performance and decrease memory footprint.
 
 ---
@@ -261,7 +253,7 @@
 <table>
   <tr>
     <td align="center">
-      <img src="assets/images/screenshots/promo_intruder.png" alt="Intruder Detection Log" width="100%">
+      <img src="assets/images/screenshots/Intruder_detection.jpeg" alt="Intruder Detection Log" width="100%">
       <br>
       <b>Intruder Detection & Local Photo Log</b>
       <br>
@@ -332,18 +324,6 @@
   - Graceful fallback to master password if biometric is unavailable
   - Toggle biometric lock on/off in settings; register/remove credential at any time
   - Zero biometric data stored — only a public-key credential ID saved locally
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="assets/images/screenshots/promo_biometrics.png" alt="Biometric Authentication" width="100%">
-      <br>
-      <b>Fingerprint & Face ID Unlock</b>
-      <br>
-      One-tap biometric unlock via WebAuthn — supports Windows Hello, Touch ID, and Face ID
-    </td>
-  </tr>
-</table>
 
 - **📬 Newsletter Subscription**: Subscribe to Locksy updates from within the popup
 
