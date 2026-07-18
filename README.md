@@ -8,9 +8,9 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Version](https://img.shields.io/badge/version-3.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
-  [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Secure-Tab-Extension)
+  [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
 **A modern browser extension that provides military-grade tab protection with advanced security features.**
 
@@ -758,11 +758,9 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 ## 📚 Documentation
 
-- **[PRIVACY.md](PRIVACY.md)** - Comprehensive privacy policy (GDPR/CCPA compliant)
-- **[CHANGELOG.md](docs/CHANGELOG.md)** - Detailed version history with security updates
-- **[PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)** - Architecture and implementation details
-- **[DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - UI/UX design guidelines
-- **Security Notes** - See above for detailed security information
+- **[PRIVACY.md](docs/PRIVACY.md)** - Comprehensive privacy policy (GDPR/CCPA compliant)
+- **[SECURITY.md](docs/SECURITY.md)** - Security verification details and audits
+- **[KEYBOARD_SHORTCUTS.md](docs/KEYBOARD_SHORTCUTS.md)** - Guide to customizing Locksy keyboard hotkeys
 
 ---
 
@@ -772,10 +770,10 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 If you find Locksy useful, please consider:
 
-[![Star on GitHub](https://img.shields.io/github/stars/vansh-121/Secure-Tab-Extension?style=social)](https://github.com/vansh-121/Secure-Tab-Extension)
+[![Star on GitHub](https://img.shields.io/github/stars/vansh-121/Locksy?style=social)](https://github.com/vansh-121/Locksy)
 [![Follow](https://img.shields.io/github/followers/vansh-121?style=social&label=Follow)](https://github.com/vansh-121)
-[![Issues](https://img.shields.io/github/issues/vansh-121/Secure-Tab-Extension?style=flat-square)](https://github.com/vansh-121/Secure-Tab-Extension/issues)
-[![Pull Requests](https://img.shields.io/github/issues-pr/vansh-121/Secure-Tab-Extension?style=flat-square)](https://github.com/vansh-121/Secure-Tab-Extension/pulls)
+[![Issues](https://img.shields.io/github/issues/vansh-121/Locksy?style=flat-square)](https://github.com/vansh-121/Locksy/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/vansh-121/Locksy?style=flat-square)](https://github.com/vansh-121/Locksy/pulls)
 
 ---
 
@@ -791,7 +789,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 
-[Report Bug](https://github.com/vansh-121/Secure-Tab-Extension/issues) • [Request Feature](https://github.com/vansh-121/Secure-Tab-Extension/issues) • [Privacy Policy](PRIVACY.md)
+[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [Privacy Policy](docs/PRIVACY.md)
 
 ---
 
