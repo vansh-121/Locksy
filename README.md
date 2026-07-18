@@ -21,6 +21,25 @@
 > [!NOTE]
 > This repository hosts the **Open Source Core** (Free Tier) of the Locksy extension. Core security mechanisms, including local password hashing, biometric WebAuthn verification, local right-click context menu locking, and local webcam intruder captures, are 100% open source. Premium automation and convenience features (such as Weekly Privacy Reports, Custom Lock Screen Messages, Startup Lock, Custom Auto-Lock Timers, and Stealth Mode) are available in the upgraded Pro version.
 
+## 💎 Free Tier vs. Locksy Pro
+
+Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **one-time lifetime purchase** with zero subscriptions) removes free tier restrictions and unlocks advanced browser automation and privacy features.
+
+| Feature / Control | 🆓 Locksy Free (Open-Source Core) | 👑 Locksy Pro (Premium Upgrade) |
+| :--- | :--- | :--- |
+| **Domain-Based Auto-Locks** | Max 3 Domains | **✅ Unlimited** |
+| **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day | **✅ Unlimited** |
+| **"Lock All Tabs" Action** | Max 3 lifetime uses | **✅ Unlimited** |
+| **Intruder Photo Webcam Capture** | Max 3 Photos stored | **✅ Up to 50 Photos** |
+| **Unlock All Tabs** | ❌ Not Available | **✅ 1-Click Unlock All** |
+| **Startup Session Lock** | ❌ Not Available | **✅ Lock Restored Tabs on Open** |
+| **Stealth Mode** | ❌ Not Available | **✅ Hide all visual traces** |
+| **Custom Lock Messages** | ❌ Not Available | **✅ Custom Lock Screen Text** |
+| **Weekly Privacy Reports** | ❌ Not Available | **✅ Metric Insights & Scores** |
+| **Auto-Lock Timers** | Preset intervals only | **✅ Custom timer values** |
+| **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
+| **License Type** | Free Core | **Lifetime Access License** |
+
 ---
 
 ## 🛡️ Trust & Privacy Badges
