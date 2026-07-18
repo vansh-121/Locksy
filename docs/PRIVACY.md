@@ -107,7 +107,7 @@ The Extension requests the following Chrome permissions:
      - ❌ Never track browsing history
      - ❌ Never modify page behavior (except showing lock screen)
    - **Technical Reason**: We need permission to display the lock screen on ANY domain you choose to lock. Since we can't predict which sites you'll lock, we need `<all_urls>`.
-   - **Proof**: Outside the secure license activation and validation queries inside `src/js/license-manager.js`, the extension code makes zero network requests. All tab management, locking, biometrics, and local photo analytics are processed strictly offline.
+   - **Proof**: Outside the secure license activation and validation queries inside the licensing manager module, the extension code makes zero network requests. All tab management, locking, biometrics, and local photo analytics are processed strictly offline.
 
 3. **`scripting`**
    - **Purpose**: Inject the lock overlay onto tabs you choose to lock
@@ -297,7 +297,7 @@ For EU users, our legal basis for processing your data is:
 
 ## Data Protection Officer
 
-As a small open-source project, we do not have a dedicated Data Protection Officer. For privacy inquiries, please use the contact information above.
+As a small independent project, we do not have a dedicated Data Protection Officer. For privacy inquiries, please use the contact information above.
 
 ---
 

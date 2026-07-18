@@ -71,8 +71,8 @@ When you lock a tab on `https://bank.com`, Locksy needs to:
 **We Cannot Predict Which Sites You'll Lock**, so we need `<all_urls>`.
 
 ### Proof: Inspect the Code
-Look at [src/js/background.js](../src/js/background.js) - you'll see:
-- Only secure Polar license activation/validation calls via `src/js/license-manager.js` (no telemetry, tracking, or data harvesting)
+You can audit the extension's code locally (see the [Security Audit Checklist](#-security-audit-checklist) below). In the extension package, you'll see:
+- Only secure Polar license activation/validation calls via the local licensing manager module (no telemetry, tracking, or data harvesting)
 - No data collection code
 - No analytics or tracking
 - Only tab management and crypto functions
@@ -84,15 +84,15 @@ Look at [src/js/background.js](../src/js/background.js) - you'll see:
 ### Technical Proof
 
 **1. Minimal, Opt-In Network Requests**
-Search the entire codebase for network activity:
+If you extract the extension package locally, you can search the codebase for network activity:
 ```bash
-# Search for fetch calls
-grep -r "fetch(" src/
-# Result: Only found in src/js/license-manager.js (proxied through Locksy API worker)
+# Search for fetch calls inside the extracted extension folder
+grep -r "fetch(" .
+# Result: Only found in the local license manager (proxied through Locksy API worker)
 ```
 
 **2. Chrome's Content Security Policy**
-Our [manifest.json](../manifest.json) enforces:
+The extension's `manifest.json` enforces:
 - No external script loading
 - No inline scripts
 - All code is local and auditable
@@ -140,14 +140,14 @@ Locksy v2.3.0 introduces WebAuthn-based biometric unlock. Here's exactly what ha
 
 ### Technical Proof
 
-Search the codebase for any server-side or biometric data handling:
+If you extract the extension package locally, you can search the codebase for biometric handling and network requests:
 ```bash
-# No biometric data handling:
-grep -r "fingerprint\|biometricData\|rawBiometric" src/
+# No biometric data handling inside local files:
+grep -r "fingerprint\|biometricData\|rawBiometric" .
 # Result: NONE
 
 # No network requests in webauthn-utils.js:
-grep -r "fetch\|XMLHttpRequest" src/js/webauthn-utils.js
+grep -r "fetch\|XMLHttpRequest" js/webauthn-utils.js
 # Result: NONE
 ```
 
@@ -161,7 +161,7 @@ The `webauthn-utils.js` module is entirely local and only interacts with the bro
 
 **Never Stored in Plain Text:**
 ```javascript
-// From src/js/crypto-utils.js
+// From the extension's cryptographic helper module (crypto-utils.js)
 
 // When you set a password:
 const passwordHash = await sha256(password);
@@ -217,7 +217,7 @@ chrome.storage.local.set({
 ### Project Timeline
 - **First Commit**: [Check repository for accurate date]
 - **Public Release**: v2.0.0 (2025)
-- **Development Status**: Active, open-source
+- **Development Status**: Active
 - **Store Listings**: Chrome, Edge, Firefox
 
 ---
@@ -226,15 +226,15 @@ chrome.storage.local.set({
 
 ### Independent Verification Steps
 
-Anyone can verify Locksy's security:
+Anyone can verify Locksy's security by auditing the extension package:
 
-- [ ] **Source Code Review**: All code is on GitHub, nothing hidden
-- [ ] **Build Verification**: Build from source and compare with store version
+- [ ] **Source Code Review**: Extract the extension locally and inspect the code (which is delivered unminified and fully readable)
+- [ ] **Package Verification**: Unpack the installed extension from your browser's local extensions folder and verify the integrity of the files
 - [ ] **Network Monitoring**: Use browser DevTools to confirm zero network requests
 - [ ] **Offline Test**: Disconnect internet, verify extension works
 - [ ] **Storage Inspection**: Check `chrome.storage.local` - only hashed data
 - [ ] **Permissions Review**: Read [PRIVACY.md](PRIVACY.md) for detailed explanation
-- [ ] **Code Search**: Grep for suspicious patterns (fetch, XMLHttpRequest, analytics)
+- [ ] **Code Search**: Grep for suspicious patterns (fetch, XMLHttpRequest, analytics) inside the extension files
 
 ### Community Security Review
 
@@ -284,9 +284,9 @@ If you're a security researcher:
 **Conservative Approach:**
 1. ⏸️ Wait for community validation and reviews
 2. 🔍 Star/watch the repo to follow security updates
-3. 🧪 Review the code yourself (it's not that complex!)
+3. 🧪 Review the code yourself by inspecting your local installation (it's not that complex!)
 4. 🤝 Check back in 6-12 months for community consensus
-5. 🏗️ Build from source instead of using store version
+5. 🧪 Inspect the local package files directly before enabling the extension
 
 **We Understand:**
 - New projects need to earn trust
@@ -324,8 +324,7 @@ If you're a security researcher:
 
 **Your Responsibility:**
 - Don't just trust our words
-- Review the code
-- Build from source
+- Review the locally installed code
 - Monitor network activity
 - Wait for community validation if needed
 

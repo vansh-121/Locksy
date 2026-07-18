@@ -19,13 +19,13 @@
 [Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
 
 > [!NOTE]
-> This repository hosts the **Open Source Core** (Free Tier) of the Locksy extension. Core security mechanisms, including local password hashing, biometric WebAuthn verification, local right-click context menu locking, and local webcam intruder captures, are 100% open source. Premium automation and convenience features (such as Weekly Privacy Reports, Custom Lock Screen Messages, Startup Lock, Custom Auto-Lock Timers, and Stealth Mode) are available in the upgraded Pro version.
+> This repository hosts the **public documentation, assets, changelogs, and issue tracker** for the Locksy browser extension. The extension itself runs entirely client-side on your local device and can be audited locally by inspecting the installed package files. Premium automation and convenience features are available via the upgraded Pro version.
 
 ## 💎 Free Tier vs. Locksy Pro
 
 Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **one-time lifetime purchase** with zero subscriptions) removes free tier restrictions and unlocks advanced browser automation and privacy features.
 
-| Feature / Control | 🆓 Locksy Free (Open-Source Core) | 👑 Locksy Pro (Premium Upgrade) |
+| Feature / Control | 🆓 Locksy Free (Core Features) | 👑 Locksy Pro (Premium Upgrade) |
 | :--- | :--- | :--- |
 | **Domain-Based Auto-Locks** | Max 3 Domains | **✅ Unlimited** |
 | **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day | **✅ Unlimited** |
@@ -38,7 +38,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 | **Weekly Privacy Reports** | ❌ Not Available | **✅ Metric Insights & Scores** |
 | **Auto-Lock Timers** | Preset intervals only | **✅ Custom timer values** |
 | **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
-| **License Type** | Free Core | **Lifetime Access License** |
+| **License Type** | Free Tier | **Lifetime Access License** |
 
 ---
 
