@@ -761,6 +761,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **[PRIVACY.md](docs/PRIVACY.md)** - Comprehensive privacy policy (GDPR/CCPA compliant)
 - **[SECURITY.md](docs/SECURITY.md)** - Security verification details and audits
 - **[KEYBOARD_SHORTCUTS.md](docs/KEYBOARD_SHORTCUTS.md)** - Guide to customizing Locksy keyboard hotkeys
+- **[CHANGELOG.md](docs/CHANGELOG.md)** - Detailed version history with all recent updates
 
 ---
 
