@@ -2,6 +2,32 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.1.0] - 2026-07-24
+
+### 🎉 Major New Features
+
+#### 🛡️ Privacy Blur Shield
+- **Sensitive Data Masking**: Automatically hides passwords, credit card numbers, OTP codes, emails, and phone numbers on web pages.
+- **Window & Focus Blur**: Automatically blurs your active web page when switching windows, locking your device, or stepping away to prevent shoulder-surfing.
+- **Privacy Blur Manager**: Dedicated dashboard to configure blur intensity (Light, Medium, High, Solid), select blur targets, set auto-blur categories (Banking, Webmail, Password Managers), and whitelist trusted domains.
+- **Context Menu Shortcuts**: Right-click any webpage to instantly add domain blur rules.
+
+#### 🔑 Seamless License Sync & Offline Recovery
+- **Offline & Sleep Protection**: Pro status, license keys, and personal preferences (such as Fingerprint default unlock) remain safely saved during laptop sleep or Wi-Fi disconnections.
+- **Background Auto-Sync**: Automatically checks and restores Pro activation as soon as your device reconnects to the internet.
+
+### 🐛 Bug Fixes & Performance Improvements
+
+#### ⏱️ Auto-Lock Timer Fixes
+- **Accurate Inactivity Lock**: Fixed an issue where Auto-Lock timers could trigger early after short breaks. Your custom lock timer is now strictly honored.
+
+#### 🎨 Interface & Stability Improvements
+- **Active Tab Blur Scope**: Fixed an issue where "Active Tab Only" blur mode did not trigger correctly on active tabs.
+- **Smoother Interactions**: Optimized click listeners for faster response times and smoother screen transitions.
+- **Dark & Light Mode Polish**: Enhanced visual theme support and color contrasts across Privacy Report and Biometric Setup screens.
+
+---
+
 ## [3.0.0] - 2026-07-18
 
 ### 🎉 Major New Features

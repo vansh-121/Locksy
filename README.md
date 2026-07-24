@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.0.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
+  [![Version](https://img.shields.io/badge/version-3.1.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -38,6 +38,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 | **Weekly Privacy Reports** | ❌ Not Available | **✅ Metric Insights & Scores** |
 | **Auto-Lock Timers** | Preset intervals only | **✅ Custom timer values** |
 | **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
+| **Privacy Blur Shield** | Basic Auto-Masking & Focus-Loss Blur | **✅ Full Manager UI (Custom Levels, Categories & Rules)** |
 | **License Type** | Free Tier | **Lifetime Access License** |
 
 ---
@@ -228,6 +229,17 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.1.0 - Privacy Blur Shield & License Auto-Recovery (July 24, 2026) 🛡️
+
+#### 🔥 What's New
+
+- **🛡️ Privacy Blur Shield**: Automatically hide sensitive information like passwords, credit card numbers, OTPs, emails, and phone numbers on web pages, plus automatic page blurring when switching windows or leaving your device.
+- **⚙️ Privacy Blur Manager**: Dedicated settings dashboard to adjust blur levels (Light to Solid), toggle specific targets, auto-blur categories (banking, webmail, password managers), and set domain rules or whitelists.
+- **🔑 Seamless License Sync**: Your Pro status and custom settings stay saved permanently—even when your computer sleeps or loses Wi-Fi—and auto-sync instantly when back online.
+- **⏱️ Smarter Auto-Lock & Speed**: Fixed an issue where Auto-Lock timers could trigger early. Your chosen lock duration is now strictly honored, along with smoother UI performance.
+
+---
 
 ### Version 3.0.0 - Premium UI Redesign, Weekly Privacy Reports & Polar.sh Licensing (July 18, 2026) 💎
 
