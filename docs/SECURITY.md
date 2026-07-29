@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.1.0  
-**Last Updated:** July 24, 2026
+**Version:** 3.1.1  
+**Last Updated:** July 29, 2026
 
 ---
 
@@ -194,6 +194,25 @@ chrome.storage.local.set({
 - ❌ Page content from locked tabs
 - ❌ URLs or browsing history
 - ❌ Any personal information
+
+---
+
+## 🛠️ Disclosed Security Fixes
+
+We publish security-relevant fixes rather than quietly shipping them.
+
+### v3.1.1 — Unauthenticated unlock after browser restart
+
+**What it was:** Locksy identified each locked tab by the browser's internal tab ID. Browsers discard those IDs on shutdown and hand out new ones on restart, while the lock screen page is restored exactly as it was — still referencing the old ID. A restored lock screen asking "is my tab still locked?" was therefore told "no" simply because the tab ID it named no longer existed. In some cases that caused the lock screen to navigate itself back to the protected page **without any password or biometric check**.
+
+**Who was affected:** Users who closed their browser while tabs were locked and had session restore enabled ("Continue where you left off" / "Open previous windows and tabs"). Physical or local access to the device was required — this was never remotely exploitable.
+
+**What changed:**
+- Locks now carry a permanent identifier that is independent of tab IDs, so a restored lock screen can prove which lock it belongs to.
+- On load, a restored lock screen confirms its real tab identity with the background service and re-registers the lock under it. Until that confirmation completes, it ignores all unlock signals.
+- Unlock requests originating from a lock screen are matched against the browser's own report of the sending tab, rather than trusting the tab ID written in the page address — so a recycled ID can never cause the wrong tab to be unlocked.
+
+**Same release also fixed:** the "No lock data found" error that left restored locked tabs permanently stuck on the lock screen, unable to return to their original page.
 
 ---
 

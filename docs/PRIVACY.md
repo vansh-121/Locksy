@@ -1,7 +1,7 @@
 # Privacy Policy for Locksy
 
-**Last Updated:** July 24, 2026  
-**Version:** 3.1.0
+**Last Updated:** July 29, 2026  
+**Version:** 3.1.1
 
 ---
 
@@ -28,9 +28,10 @@ Locksy collects and stores the following data **locally on your device only**:
    - Stored locally on your device
 
 3. **Locked Tab Information**
-   - List of tab IDs that are currently locked
-   - Stored temporarily in local storage
-   - Automatically cleared when tabs are closed or unlocked
+   - List of tabs that are currently locked, and for each one a lock record containing the page address and title of the tab you locked, plus a randomly generated lock identifier
+   - The page address is required so the Extension can return you to your page after you unlock — it is never transmitted anywhere
+   - Stored in local storage only, and automatically deleted the moment a tab is unlocked or closed
+   - Records are deliberately kept when your browser shuts down, so that tabs restored by your browser can still be unlocked. Any record left behind by a window that is never restored is deleted automatically after 30 days
 
 4. **Authentication Session Data**
    - Failed login attempts counter (for brute force protection)
@@ -42,7 +43,7 @@ Locksy collects and stores the following data **locally on your device only**:
 The Extension does **NOT** collect, transmit, or store:
 
 - ❌ Browsing history
-- ❌ Website URLs you visit
+- ❌ Website URLs you visit — with one exception: the address of a tab you explicitly choose to lock is stored locally so the Extension can take you back to it after unlocking (see "Locked Tab Information" above). It is never transmitted, and it is deleted as soon as the tab is unlocked or closed
 - ❌ Personal information (name, email, address, etc.)
 - ❌ Payment information
 - ❌ Cookies or tracking data
@@ -164,7 +165,7 @@ The Extension operates **offline-first** on your local device. The only external
 
 - **Password Hash**: Stored until you manually change or delete it
 - **Extension Settings**: Stored until you uninstall the extension
-- **Locked Tab Information**: Automatically cleared when tabs are closed or unlocked
+- **Locked Tab Information**: Deleted as soon as a tab is unlocked or closed. Records are retained across a browser shutdown so restored tabs remain unlockable, and any record not claimed by a restored tab is swept automatically after 30 days
 - **Authentication Session**: Expires after 10 minutes of inactivity
 
 ### How to Delete Your Data

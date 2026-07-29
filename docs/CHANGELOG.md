@@ -2,6 +2,26 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.1.1] - 2026-07-29
+
+### 🐛 Critical Bug Fixes
+
+#### 🔓 "No Lock Data Found" After Restarting Your Browser
+- **Locked tabs now survive a browser restart**: Some users found that after closing and reopening their browser, entering the correct password on a restored locked tab returned the error *"No lock data found"* — leaving the tab permanently stuck on the lock screen with no way back to the original page. Locked tabs are now restored and unlocked correctly after a restart.
+- **Root cause**: Locksy identified each lock by the browser's internal tab ID. Browsers discard and reassign those IDs on every restart, while the lock screen itself is restored exactly as it was — still referencing the old ID. The information needed to return you to your page was also being cleaned up during browser shutdown, before session restore could bring those tabs back.
+- **Restart-proof lock records**: Every lock now carries its own permanent identifier, independent of tab IDs, so the original page can always be recovered. Restored lock screens automatically re-attach themselves to their new tab as soon as the browser reopens.
+- **Correct tab restored every time**: Fixed a related issue where a reassigned tab ID could cause an unlock to send the *wrong* tab to your page.
+- **Accurate badge count after restart**: Locked tabs restored by the browser are recognised again immediately, so the badge count and Quick-Unlock panel reflect reality.
+- **Never stuck again**: In the rare case no recovery information remains (a lock screen created by an older version), the lock is now released and the page restored from tab history instead of trapping you on the lock screen.
+
+### 🔒 Security Hardening
+- **Closed an unauthenticated unlock path**: After a browser restart, a restored lock screen could in some cases determine that its (now non-existent) tab was no longer locked and navigate itself back to the protected page **without asking for a password or biometric**. The lock screen now verifies its own identity with the background service before acting on any unlock signal, so a protected page can only ever be revealed after successful authentication.
+
+### 🧹 Housekeeping
+- **Automatic cleanup of stale lock records**: Recovery records belonging to windows that were closed and never restored are swept automatically after 30 days, so nothing accumulates in local storage.
+
+---
+
 ## [3.1.0] - 2026-07-24
 
 ### 🎉 Major New Features

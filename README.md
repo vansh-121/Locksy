@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.1.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
+  [![Version](https://img.shields.io/badge/version-3.1.1-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -229,6 +229,18 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.1.1 - Restart-Proof Locked Tabs (July 29, 2026) 🔧
+
+#### 🔥 What's New
+
+- **🔓 Fixed "No lock data found" after a browser restart**: Locked tabs restored when you reopen your browser now unlock correctly with your password. Previously these tabs could get permanently stuck on the lock screen, with no way back to the original page.
+- **🔗 Restart-proof lock records**: Each lock now carries its own permanent identifier instead of relying on the browser's internal tab numbers, which are reassigned on every restart. Restored lock screens re-attach themselves automatically the moment your browser reopens.
+- **🎯 Always the right tab**: Fixed a case where a reused tab number could send the wrong tab back to your page during unlock.
+- **🔒 Security hardening**: Closed a path where a restored lock screen could reveal its protected page after a restart without asking for a password or biometric. Authentication is now always required.
+- **🔢 Accurate badge count**: Tabs restored by your browser are recognised as locked again immediately, so the badge and Quick-Unlock panel stay in sync.
+
+---
 
 ### Version 3.1.0 - Privacy Blur Shield & License Auto-Recovery (July 24, 2026) 🛡️
 
