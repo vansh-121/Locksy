@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.1.1-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
+  [![Version](https://img.shields.io/badge/version-3.2.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -230,6 +230,18 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
 
+### Version 3.2.0 - Startup Lock Reliability & Security Hardening (July 31, 2026) 🔒
+
+#### 🔥 What's New
+
+- **🚀 Startup Lock now fires every time (PRO)**: Startup Lock previously worked only some of the time. It relied on a single browser startup event that Edge's "Startup boost" suppresses entirely, kept its progress in memory that the browser discards after ~30 seconds, and skipped any tab that finished restoring late — so how many tabs got locked depended on how fast they loaded. Session detection, state persistence and tab sweeping have all been reworked, and a tab you unlock yourself during the catch-up window is no longer re-locked.
+- **🧊 Browser no longer freezes on startup with biometric unlock**: With biometric as your default, reopening your browser with several locked tabs could leave it completely unresponsive, recoverable only via Task Manager — each tab raised its own Windows Hello dialog, and one raised behind an inactive window blocked everything while being impossible to reach. Prompts are now limited to the tab you're looking at, one at a time browser-wide, and a stuck prompt is cancelled automatically so the password field is always available.
+- **🚫 Websites can no longer load Locksy's internal pages**: The lock screen and Intruder Log were marked as loadable by any site you visited — a leftover from an older design in which the lock screen was injected into pages as an overlay. Locksy now moves the whole tab to its own lock page and never needed that permission, so it has been removed. This closed a clickjacking surface (a site could invisibly embed the lock screen and stack fake buttons over it) and stopped sites from detecting that Locksy was installed. Your password and intruder photos were never readable by those sites — the browser blocks that regardless.
+- **🖼️ Lock screen and Intruder Log refuse to run inside a frame**: Both pages now verify they own the entire tab before initialising, as a second layer in case that permission were ever reintroduced by mistake.
+- **⬆️ Old password hashes upgrade themselves**: If you first set your master password on a much older Locksy version, it was still stored using single-pass SHA-256 rather than PBKDF2. It now upgrades to PBKDF2 (600,000 iterations) automatically the first time you unlock successfully. Nothing to re-enter, nothing to reset. Anyone who set or changed their password on a recent version was already on PBKDF2.
+
+---
+
 ### Version 3.1.1 - Restart-Proof Locked Tabs (July 29, 2026) 🔧
 
 #### 🔥 What's New
@@ -402,7 +414,8 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 #### 🔐 Why We Need the `<all_urls>` Permission
 The store listings warn: *"Read and change all your data on all websites"*. 
 Here is what that actually means:
-- ✅ We need this permission solely to inject the secure lock overlay screen on pages you choose to lock.
+- ✅ We need this permission to recognise when a tab navigates to a site on **your** domain-lock list, and for the optional Privacy Blur content script. We cannot know in advance which sites you will choose.
+- ✅ Locking does **not** inject anything into the website — Locksy navigates the whole tab to its own internal lock page.
 - ✅ We **never** read webpage content, input text, or personal credentials.
 - ✅ The extension operates **100% offline** (except for the optional Pro licensing key validation check).
 - ✅ Detailed security mechanics are documented in [docs/SECURITY.md](docs/SECURITY.md).
@@ -453,7 +466,7 @@ Here is what that actually means:
 
 | 🔐 Security            | 🎯 Functionality      | ⚡ Performance    | 🛡️ Privacy          |
 | ---------------------- | --------------------- | ----------------- | ------------------- |
-| SHA-256 Encryption     | One-Click Locking     | 70% CPU Reduction | Offline-First       |
+| PBKDF2 (600k)          | One-Click Locking     | 70% CPU Reduction | Offline-First       |
 | Brute Force Protection | Password-Only Unlock  | Lightweight       | No Tracking         |
 | No Plain Text Storage  | Persistent Locks      | Instant Response  | GDPR Compliant      |
 | Session Timeout        | Navigation Protection | Optimized Code    | No Data Collection  |

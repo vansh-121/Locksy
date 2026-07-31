@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.1.1  
-**Last Updated:** July 29, 2026
+**Version:** 3.2.0  
+**Last Updated:** July 31, 2026
 
 ---
 
@@ -47,28 +47,21 @@ This sounds scary! But here's the technical truth:
 ### The Technical Reality
 
 **What Locksy Actually Does:**
-- ✅ Replaces locked tab content with `locked.html` overlay
-- ✅ Only runs code when YOU lock a tab
+- ✅ Navigates a locked tab to its own internal lock page, then returns it to your page on unlock
+- ✅ Only runs code when YOU lock a tab, or on sites matching your Privacy Blur rules
 - ✅ Never reads page content, cookies, or form data
-- ✅ Never modifies page behavior (except the lock screen)
+- ✅ Never modifies page behavior, apart from the Privacy Blur masking you explicitly enable
 
 **Why `<all_urls>` is Required:**
-```json
-// In manifest.json
-"web_accessible_resources": [
-  {
-    "resources": ["src/html/locked.html", "src/css/locked.css"],
-    "matches": ["<all_urls>"]
-  }
-]
-```
 
-When you lock a tab on `https://bank.com`, Locksy needs to:
-1. Inject `locked.html` as an iframe overlay
-2. Block access until password is entered
-3. Work on ANY domain you choose to lock
+Locksy has to act on whichever sites *you* choose, and we cannot know in advance which those are. The permission is used for exactly two things:
 
-**We Cannot Predict Which Sites You'll Lock**, so we need `<all_urls>`.
+1. **Domain locking** — recognising when a tab navigates to a site on your lock list so it can be sent to the lock screen. This requires being able to see the URL of any tab.
+2. **Privacy Blur** — the content script that masks passwords, card numbers and OTP codes on the page. It is off by default and does nothing on pages that do not match your rules.
+
+Locking itself injects **nothing** into the website. Locksy navigates the whole tab to `locked.html`, which lives inside the extension, not inside the site.
+
+> **Correction (v3.2.0):** Earlier revisions of this document described the lock screen as an injected iframe overlay, and cited a `web_accessible_resources` manifest entry as the reason `<all_urls>` was needed. That reflected an older design and was no longer accurate. As of v3.2.0 that manifest entry has been removed entirely — see **Disclosed Security Fixes** below.
 
 ### Proof: Inspect the Code
 You can audit the extension's code locally (see the [Security Audit Checklist](#-security-audit-checklist) below). In the extension package, you'll see:
@@ -163,15 +156,15 @@ The `webauthn-utils.js` module is entirely local and only interacts with the bro
 ```javascript
 // From the extension's cryptographic helper module (crypto-utils.js)
 
-// When you set a password:
-const passwordHash = await sha256(password);
-// Only this hash is stored, never the password itself
+// When you set a password — PBKDF2-SHA256, 600,000 iterations,
+// with a freshly generated 128-bit random salt:
+const stored = await hashPassword(password);
+// → "600000:<salt hex>:<derived key hex>"
+// Only this string is stored. The password itself never is.
 
-// When you unlock:
-const enteredHash = await sha256(enteredPassword);
-if (enteredHash === storedHash) {
-  // Unlock tab
-}
+// When you unlock, the same derivation is repeated using the stored
+// salt and iteration count, then compared in constant time:
+const ok = await verifyPassword(enteredPassword, stored);
 ```
 
 **PBKDF2 Key Derivation (600,000 iterations):**
@@ -181,11 +174,10 @@ if (enteredHash === storedHash) {
 
 **Where is Data Stored?**
 ```javascript
-// Uses Chrome's secure local storage API
+// Uses the browser's local extension storage API
 chrome.storage.local.set({
-  passwordHash: hash,  // SHA-256 hash only
-  lockedTabs: [],      // Just tab IDs, no content
-  sessionAuth: false   // Current auth state
+  lockPassword: "600000:<salt>:<key>",  // PBKDF2 derived key — never the password
+  lockedTabIds: [],                     // Just tab IDs, no page content
 });
 ```
 
@@ -200,6 +192,24 @@ chrome.storage.local.set({
 ## 🛠️ Disclosed Security Fixes
 
 We publish security-relevant fixes rather than quietly shipping them.
+
+### v3.2.0 — Website-reachable extension pages, and unmigrated legacy password hashes
+
+**What it was (1 of 2 — extension pages exposed to websites):** Locksy's manifest listed its lock screen and Intruder Log under `web_accessible_resources` with a match pattern covering every URL. That permits any website you visit to load those pages — most usefully inside a hidden `<iframe>`. It was a leftover from an earlier design in which the lock screen was injected into the page as an overlay; Locksy has since moved the entire tab to its own lock page instead, which requires no such permission.
+
+**Impact:** A malicious page could embed the lock screen and stack its own controls over it (UI redress / clickjacking), embed the Intruder Log, or fingerprint the extension — confirming Locksy was installed and reading its internal extension ID. Cross-origin isolation meant such a page could **not** read your typed password or your stored intruder photos.
+
+**What changed:** The `web_accessible_resources` entry has been removed from both the Chrome/Edge and Firefox manifests. In addition, the lock screen and Intruder Log now refuse to initialise unless they own the entire tab, so neither can be framed even if that entry were ever reintroduced. That guard also closes a secondary issue: a framed lock screen would have reported the *embedding* tab as its own when re-attaching after a browser restart, potentially marking a tab locked that the user never locked.
+
+**What it was (2 of 2 — legacy password hashes never migrated):** Locksy moved to PBKDF2-SHA256 (600,000 iterations) several versions ago and continued to accept the older single-pass SHA-256 format so that long-time users would not be locked out. Nothing ever rewrote those older hashes, so a user who first set their password on a pre-PBKDF2 version kept an unsalted, fast-to-compute digest in local storage indefinitely.
+
+**Who was affected:** Only users whose master password was originally set on a pre-PBKDF2 version and never changed since. Anyone who set or changed their password on a recent version was already on PBKDF2.
+
+**Impact:** Someone with access to the local storage files could attempt offline password guessing against that digest at very high rates. Local access to the device was required — this was never remotely exploitable.
+
+**What changed:** On the first successful unlock, a legacy hash is transparently re-derived with PBKDF2 and replaced in storage. No user action is required.
+
+---
 
 ### v3.1.1 — Unauthenticated unlock after browser restart
 
@@ -351,4 +361,4 @@ If you're a security researcher:
 
 ---
 
-*Last updated: July 18, 2026*
+*Last updated: July 31, 2026*

@@ -1,7 +1,7 @@
 # Privacy Policy for Locksy
 
-**Last Updated:** July 29, 2026  
-**Version:** 3.1.1
+**Last Updated:** July 31, 2026  
+**Version:** 3.2.0
 
 ---
 

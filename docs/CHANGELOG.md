@@ -2,6 +2,42 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.2.0] - 2026-07-31
+
+### 🐛 Bug Fixes
+
+#### 🚀 Startup Lock Now Fires Every Time (PRO)
+- **Reliable session detection**: Startup Lock only worked some of the time. It hung off a single browser startup event that Edge's **"Startup boost"** suppresses entirely — if a background process stayed alive after you closed your last window, reopening the browser counted as the *same* session and nothing was locked. Locksy now treats "no windows were open" as the start of a new session, which is what closing the browser actually means, and does not care whether a process lingered.
+- **Survives the browser suspending Locksy**: The lock-on-startup progress used to be held in memory, which browsers discard after about 30 seconds of inactivity — very likely in the middle of session restore. It is now kept in local storage and driven by alarms, so it completes even if Locksy is put to sleep partway through.
+- **No more "some of my tabs got locked"**: The list of tabs eligible for locking was captured in a single snapshot taken as early as possible, and any tab that finished restoring afterwards was skipped permanently — so how many tabs actually got locked came down to how fast your disk was that morning. Locksy now re-checks repeatedly across a 30-second catch-up window.
+- **Respects a manual unlock**: A tab you unlock yourself during that catch-up window is no longer re-locked by a later sweep.
+
+#### 🧊 Browser No Longer Freezes on Startup with Biometric Unlock
+- **The symptom**: With biometric set as your default unlock, reopening your browser with several tabs locked could leave the browser completely unresponsive — buttons dead, the window's close button doing nothing, and Task Manager the only way out.
+- **Root cause**: Each restored lock screen raised its own Windows Hello prompt. Those are operating-system dialogs that block the window that opened them, and a dialog raised by a window that isn't in front gets drawn *behind* it while still blocking it — so it was unreachable but still holding the browser. The platform authenticator also serves one request at a time, so several tabs prompting at once blocked several windows.
+- **What changed**: A biometric prompt can now only be raised by the tab you are actually looking at, in the window that has focus. Only one tab in the whole browser may hold the prompt at a time, coordinated through a short lease so a tab that is closed mid-prompt cannot block the others. Every request can now be cancelled, and one that never responds is dismissed automatically and hands you the password field instead.
+- **Clearer waiting states**: Locked tabs that cannot prompt yet now explain why — "Switch to this tab to authenticate", or "Waiting for another locked tab to finish…".
+
+### 🔒 Security Hardening
+
+#### 🚫 Locksy's Internal Pages Are No Longer Reachable by Websites
+- **Websites can no longer load Locksy's own pages**: The lock screen and the Intruder Log were both marked in the extension manifest as loadable by any website you visited. Nothing in Locksy needed that — the extension opens its own pages directly — so the entry has been removed from both the Chrome/Edge and Firefox manifests.
+- **What this closed**: A malicious page could embed Locksy's lock screen invisibly and stack its own controls on top of it (a UI-redress or "clickjacking" attack), or embed the Intruder Log. It could also fingerprint the extension — confirming Locksy was installed and reading its internal extension ID. Such a page could **never** read your typed password or your stored intruder photos; browser cross-origin rules prevent that regardless.
+- **Where it came from**: A leftover from an earlier design in which the lock screen was injected into the page as an overlay. Locksy has since moved the entire tab to its own lock page instead, which requires no such permission.
+
+#### 🖼️ Lock Screen and Intruder Log Refuse to Run Inside a Frame
+- **Defense in depth**: Both pages now confirm they own the whole tab and refuse to initialise otherwise, so neither can be embedded even if the manifest entry above were ever reintroduced by mistake.
+- **Also closed**: A framed lock screen would have reported the *embedding* tab as its own when re-attaching itself after a browser restart, which could have marked a tab locked that you never locked.
+
+### 🔑 Password Strength
+
+#### ⬆️ Legacy Password Hashes Upgrade Themselves
+- **Automatic upgrade to PBKDF2**: Locksy moved to PBKDF2-SHA256 (600,000 iterations) several versions ago and kept accepting the older single-pass SHA-256 format so long-time users would not be locked out — but nothing ever rewrote those older hashes. Users who first set their password on a pre-PBKDF2 version are now upgraded automatically on their first successful unlock, which is the only moment the password is known to be correct.
+- **Nothing to do**: No re-entry, no reset, no visible change. It happens once, in the background.
+- **Not affected**: Anyone who set or changed their password on a recent version was already on PBKDF2.
+
+---
+
 ## [3.1.1] - 2026-07-29
 
 ### 🐛 Critical Bug Fixes
