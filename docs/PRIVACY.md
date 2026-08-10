@@ -1,7 +1,7 @@
 # Privacy Policy for Locksy
 
-**Last Updated:** July 31, 2026  
-**Version:** 3.2.0
+**Last Updated:** August 10, 2026  
+**Version:** 3.3.0
 
 ---
 
@@ -17,11 +17,11 @@ Locksy ("the Extension") is committed to protecting your privacy. This privacy p
 
 Locksy collects and stores the following data **locally on your device only**:
 
-1. **Master Password (Hashed)**
-   - Your master password is hashed using SHA-256 cryptographic hashing
-   - Only the hash is stored, never the plain text password
+1. **Master Password & Emergency Recovery Key (Hashed)**
+   - Your master password and emergency recovery key are hashed using PBKDF2-SHA256 (600,000 iterations)
+   - Only cryptographic hashes (`lockPassword`, `recoveryKeyHash`) are stored, never plain text passwords or recovery keys
    - Stored locally using Chrome's `chrome.storage.local` API
-   - Used solely for tab locking and unlocking functionality
+   - Used solely for tab locking, unlocking, and emergency password recovery functionality
 
 2. **Extension State**
    - Whether the extension is currently active or inactive

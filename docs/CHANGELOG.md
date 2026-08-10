@@ -2,6 +2,37 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.3.0] - 2026-08-10
+
+### 🎉 Major New Features
+
+#### 🔑 Master Recovery Key & Emergency Password Reset Flow
+- **Emergency Recovery Key Generation**: Automatically generates a secure 16-character recovery key (`LOCKSY-XXXX-XXXX-XXXX`) during initial master password setup or password changes.
+- **PBKDF2 Hash Protection**: Recovery keys are normalized and hashed using PBKDF2-SHA256 (600,000 iterations), ensuring local storage contains only cryptographic verification hashes (`recoveryKeyHash`).
+- **Offline Export & Download**: Built-in options to copy recovery keys to clipboard or save them as a local text file (`locksy-recovery-key.txt`).
+- **Interactive "Forgot Password?" Flow**: Access a recovery key verification modal directly from the popup authentication screen.
+- **Emergency Account Reset**: Safely reset forgotten passwords and clear corrupted or lost authentication states, with full warnings and automatic tab/session cleanup.
+- **Dynamic Color Palette & Polish**: Enhanced UI layout for recovery screens with dark/light theme awareness and responsive control buttons.
+- **Automatic Migration**: Background check generates a recovery key hash for existing password setups on launch without requiring manual user resets.
+
+---
+
+## [3.2.1] - 2026-08-03
+
+### 🐛 Bug Fixes
+
+#### 🛡️ Domain Lock Persistence After Inactivity
+- **Root Cause**: Chrome Manifest V3 Service Workers idle-terminate after inactivity (e.g. 2 days idle). On resuming, event listeners evaluated domain lock rules before storage hydration completed, causing domains to unlock.
+- **What Changed**: All tab navigation and creation listeners now force storage state re-hydration before checking lock rules.
+
+#### 🌐 Include Subdomains Toggle Preference
+- **Root Cause**: The "Include subdomains" toggle in Domain Manager was stored in short-lived DOM memory and forcibly reset to `false` after adding a domain.
+- **What Changed**: The toggle preference is now persisted in local storage (`domainManagerIncludeSubdomains`) across popup window re-opens and is preserved after adding domains.
+
+#### 🎯 Wildcard & Subdomain Matching Consistency
+- **Root Cause**: `*.domain.com` wildcard patterns previously excluded the apex domain and didn't strip FQDN trailing dots.
+- **What Changed**: Standardized domain pattern matching across `background.js` and `locked.js` so apex domains and subdomains are reliably protected.
+
 ## [3.2.0] - 2026-07-31
 
 ### 🐛 Bug Fixes

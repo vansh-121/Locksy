@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.2.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
+  [![Version](https://img.shields.io/badge/version-3.3.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -229,6 +229,29 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.3.0 - Master Recovery Key & Emergency Password Reset Flow (August 10, 2026) 🔑
+
+#### 🔥 What's New
+
+- **🔑 Emergency Master Recovery Key**: Automatically generates a 16-character secure recovery key (`LOCKSY-XXXX-XXXX-XXXX`) during master password creation or change, allowing account recovery if you forget your password.
+- **📥 Key Export & Download**: Export your recovery key via one-click clipboard copy or download it directly as a formatted text file (`locksy-recovery-key.txt`) for offline vault storage.
+- **❓ Interactive "Forgot Password?" Modal**: Accessible directly from the authentication modal to verify your recovery key or initiate an emergency account reset.
+- **🚨 Emergency Account Reset & Data Safety**: Restore extension functionality by resetting forgotten passwords with explicit warnings and automatic local storage cleanup.
+- **🎨 Dynamic Color Palette & Visual Polish**: Custom recovery screen UI with dynamic blue/violet theme, dark mode compatibility, and high-visibility status indicators.
+- **🔄 Zero-Knowledge Migration**: Existing password hashes automatically migrate to generate recovery key hashes without interrupting daily usage.
+
+---
+
+### Version 3.2.1 - Domain Lock Reliability & Persistence Fixes (August 3, 2026) 🔒
+
+#### 🔥 What's New
+
+- **🛡️ Domain Lock Persistence After Inactivity**: Fixed an issue where domain locks could unlock after extended browser inactivity (Service Worker idle termination) by ensuring background storage state re-hydration before tab navigation evaluation.
+- **🌐 Include Subdomains Toggle Preference**: The "Include subdomains" toggle in Domain Manager now persists across window opens and remains enabled after adding a domain.
+- **🎯 Wildcard & Subdomain Matching Reliability**: Standardized wildcard domain matching (*.example.com) to consistently cover apex domains and subdomains across all navigation flows.
+
+---
 
 ### Version 3.2.0 - Startup Lock Reliability & Security Hardening (July 31, 2026) 🔒
 

@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.2.0  
-**Last Updated:** July 31, 2026
+**Version:** 3.3.0  
+**Last Updated:** August 10, 2026
 
 ---
 
@@ -192,6 +192,18 @@ chrome.storage.local.set({
 ## 🛠️ Disclosed Security Fixes
 
 We publish security-relevant fixes rather than quietly shipping them.
+
+### v3.3.0 — Master Recovery Key & Emergency Password Reset Architecture
+
+**What it is:** Locksy introduced an emergency recovery key mechanism (`LOCKSY-XXXX-XXXX-XXXX`) and "Forgot Password?" flow to resolve password lockouts without sacrificing security or sending data off-device.
+
+**Key Protection & Cryptography:**
+- Recovery keys are generated client-side using the Web Crypto API.
+- The key is normalized (removing hyphens/spaces and converting to uppercase) and hashed using PBKDF2-SHA256 (600,000 iterations).
+- Only `recoveryKeyHash` is stored in `chrome.storage.local`. The plaintext recovery key is shown to the user once (with optional text file download) and is **never** saved on disk or sent over any network connection.
+- In case of forgotten passwords without a recovery key, users can execute an Emergency Account Reset, which safely purges local locks and authentication credentials to restore extension access.
+
+---
 
 ### v3.2.0 — Website-reachable extension pages, and unmigrated legacy password hashes
 
