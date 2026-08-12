@@ -242,6 +242,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 - **🎨 Dynamic Color Palette & Visual Polish**: Custom recovery screen UI with dynamic blue/violet theme, dark mode compatibility, and high-visibility status indicators.
 - **🔄 Zero-Knowledge Migration**: Existing password hashes automatically migrate to generate recovery key hashes without interrupting daily usage.
 - **🛡️ Smart Sessions & Sensitive Action Re-Authentication (PRO)**: Stay authenticated between popup opens for a configurable re-auth duration (Strict/0m, 2m, 5m, 10m default, or custom up to 60m). Critical security operations (unlocking tabs, removing domain locks, toggling stealth mode) require explicit password or biometric re-authentication.
+- **📦 Single Icon Build Optimization**: Optimized extension package structure to bundle only the required `icon.png` in release ZIP archives (`dist/`), excluding redundant store promotional graphics and duplicate icon files.
 
 ---
 
@@ -853,7 +854,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 
-[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [Privacy Policy](docs/PRIVACY.md)
+[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) • [Privacy Policy](docs/PRIVACY.md)
 
 ---
 
