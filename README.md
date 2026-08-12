@@ -39,6 +39,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 | **Auto-Lock Timers** | Preset intervals only | **✅ Custom timer values** |
 | **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
 | **Privacy Blur Shield** | Basic Auto-Masking & Focus-Loss Blur | **✅ Full Manager UI (Custom Levels, Categories & Rules)** |
+| **Smart Sessions & Re-Auth** | 10 Min Default Window | **✅ Custom Re-Auth Window (1–60 Min, Strict Mode)** |
 | **License Type** | Free Tier | **Lifetime Access License** |
 
 ---
@@ -240,6 +241,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 - **🚨 Emergency Account Reset & Data Safety**: Restore extension functionality by resetting forgotten passwords with explicit warnings and automatic local storage cleanup.
 - **🎨 Dynamic Color Palette & Visual Polish**: Custom recovery screen UI with dynamic blue/violet theme, dark mode compatibility, and high-visibility status indicators.
 - **🔄 Zero-Knowledge Migration**: Existing password hashes automatically migrate to generate recovery key hashes without interrupting daily usage.
+- **🛡️ Smart Sessions & Sensitive Action Re-Authentication (PRO)**: Stay authenticated between popup opens for a configurable re-auth duration (Strict/0m, 2m, 5m, 10m default, or custom up to 60m). Critical security operations (unlocking tabs, removing domain locks, toggling stealth mode) require explicit password or biometric re-authentication.
 
 ---
 
@@ -518,6 +520,7 @@ Here is what that actually means:
 - **Locked Tabs Quick-Unlock Panel**: See all locked tabs in the popup and unlock any with one click — no password re-entry
 - **Weekly Privacy Reports (PRO)**: Dashboard showing security scores, weekly metrics charts, and timeline logs
 - **Custom Lock Messages (PRO)**: Display personalized messages or notes on locked tab overlays
+- **Smart Sessions & Re-Auth (PRO)**: Bounded session duration with sensitive action re-authentication (unlocking tabs, removing domain locks, toggling stealth mode require re-auth)
 - **Intruder Log**: Review and delete captured intruder photos from a dedicated local-only log page
 
 ### 🎨 Enhanced UI

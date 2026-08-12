@@ -15,6 +15,15 @@ All notable changes to Locksy will be documented in this file.
 - **Dynamic Color Palette & Polish**: Enhanced UI layout for recovery screens with dark/light theme awareness and responsive control buttons.
 - **Automatic Migration**: Background check generates a recovery key hash for existing password setups on launch without requiring manual user resets.
 
+#### 🛡️ Smart Sessions & Sensitive Action Re-Authentication (PRO)
+- **Bounded Session Duration**: Stay signed in between popup re-opens without re-entering your password for a configurable re-auth duration (Strict/0m, 2m, 5m, 10m default, or custom up to 60m).
+- **Sensitive Action Re-Authentication**: Critical operations (unlocking tabs, removing domain locks, altering security/timer settings, toggling stealth mode) require explicit password or biometric re-authentication even while a session is active.
+- **Biometric Re-Auth Integration**: Device-native WebAuthn (Touch ID, Face ID, Windows Hello) support for sensitive prompt verification.
+- **Re-Auth Timing Selector**: Configurable control panel in the popup Security tab to customize session timeout rules and re-auth thresholds.
+
+#### 📦 Build & Package Asset Optimization
+- **Single Icon Asset Packaging**: Updated build process (`build.js`) and asset structure to package only the required `icon.png` in release ZIP archives (`dist/`), excluding redundant store promotional graphics and duplicate icon files.
+
 ---
 
 ## [3.2.1] - 2026-08-03
