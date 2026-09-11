@@ -2,6 +2,41 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.4.5] - 2026-09-11
+
+### 🎉 New Feature
+
+#### 🖥️ Device Manager (PRO)
+- **See your activated devices**: The License section now shows how many of your 5 device slots are in use ("X of 5 devices"), with a list of each device and when it was activated.
+- **Free up a slot yourself**: Remove any device you no longer use, right from the popup. Removing the device you're on signs it out of Pro locally; removing another device frees its slot for a new activation.
+- **No more dead-end "limit reached"**: When every slot is in use, entering your key now reveals the device manager inline so you can free a slot and retry immediately — instead of a generic error.
+
+### 🐛 Fixes & Reliability
+
+#### 🔄 Removed Devices Correctly Lose Pro
+- A device removed from elsewhere is now signed out of Pro on its next browser start (or within 8 hours), instead of keeping Pro until its credentials were cleared manually. License validation now verifies this specific device's activation, not just that the subscription is still active.
+
+#### 🔒 Steadier License Validation
+- Genuine revocations and device removals are now told apart from temporary network failures — a passing network blip triggers a safe, auto-recovering suspension rather than a sign-out — and license requests are pinned to a stable provider API version so the contract stays consistent.
+
+---
+
+## [3.4.0] - 2026-08-27
+
+### 🎉 Major New Features & Enhancements
+
+#### 📱 Official Firefox for Android & Mobile Support
+- **Cross-Platform Capability Layer**: Built an API normalization layer bridging missing Android WebExtension namespaces, preventing background worker crashes on mobile.
+- **Mobile Responsive Layouts**: Fully responsive layout optimization across all 9 extension views (Popup, Locked Screen, Domain Manager, Intruder Log, Settings, etc.) with support for 360px+ mobile viewports.
+- **Touch Targets & Fluid Navigation**: Expanded interactive tap targets to ≥44px, sticky tab bars for long scrollable pages, and full-page mobile dialogs.
+- **Mobile Button Shape Integrity**: Fixed circular action buttons distortion and scoped button styles on small viewports.
+
+#### 🛠️ Cross-Browser Polish & UI Fixes
+- **Button Text Flex Truncation**: Fixed an issue where the "All Tabs" button label clipped to `"All ..."` in Firefox flex layouts when quota badges are active.
+- **Biometric Fallback Arbitration**: Improved WebAuthn credential error handling to gracefully present the Master Password / PIN fallback prompt upon biometric cancellation or device incompatibility.
+
+---
+
 ## [3.3.0] - 2026-08-10
 
 ### 🎉 Major New Features
