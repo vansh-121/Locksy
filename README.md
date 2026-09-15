@@ -8,18 +8,41 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.5.0-green?style=for-the-badge)](https://github.com/vansh-121/Locksy)
+  [![Version](https://img.shields.io/badge/version-3.5.0-green?style=for-the-badge)](docs/CHANGELOG.md)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
 **A modern browser extension that provides military-grade tab protection with advanced security features.**
 
-**Compatible with:** • Chrome • Edge • Firefox • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
+**Compatible with:** • Chrome • Edge • Firefox (Desktop & Android) • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
 
-[Features](#-features) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](PRIVACY.md)
+[What's New](#-whats-new-in-recent-releases) • [Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md)
 
 > [!NOTE]
 > This repository hosts the **public documentation, assets, changelogs, and issue tracker** for the Locksy browser extension. The extension itself runs entirely client-side on your local device and can be audited locally by inspecting the installed package files. Premium automation and convenience features are available via the upgraded Pro version.
+
+---
+
+## 🚀 What's New in Recent Releases
+
+### 🌟 v3.5.0 — Device Manager (PRO) & Rock-Solid Licensing
+- **🖥️ Pro Device Manager**: See which of your 5 device slots are in use ("X of 5 devices") and view exact activation dates directly from the popup.
+- **⚡ Self-Service Slot Freeing**: Remove any old or unused device with 1 click to immediately free a slot for a new browser installation.
+- **🛡️ Inline Limit Recovery**: When your 5-device limit is reached, entering your license key presents the device manager inline so you can free a slot and activate instantly—without dead-end error screens.
+- **🔄 Auto-Sync Revocations**: De-activated devices cleanly lose Pro status on restart or within 8 hours.
+- **🔒 Network-Resilient Licensing**: Temporary network blips safely suspend rather than sign out, with license validation pinned to stable provider API contracts.
+
+### 📱 v3.4.0 — Official Firefox for Android & Mobile Support
+- **Mobile-Responsive UI**: All extension screens (Popup, Lock Screen, Domain Manager, Intruder Log, Settings, etc.) fully adapt to 360px+ mobile viewports.
+- **Touch-Friendly Controls**: Expanded interactive tap targets (≥44px), sticky bottom tab navigation, and mobile-friendly overlays.
+- **Cross-Platform Compatibility**: Built-in API normalization preventing background worker crashes on mobile Firefox.
+
+### 🔑 v3.3.0 — Master Recovery Key & Smart Sessions
+- **Master Recovery Key**: Emergency 16-character recovery key (`LOCKSY-XXXX-XXXX-XXXX`) protected by PBKDF2-SHA256 (600,000 iterations) with offline text file backup.
+- **Interactive Reset Flow**: Safely recover access directly from the popup's "Forgot Password?" dialog without losing local settings.
+- **Smart Sessions & Sensitive Action Re-Auth (PRO)**: Stay signed in across popup opens with configurable re-auth timeouts (1–60 mins) for sensitive security operations.
+
+---
 
 ## 💎 Free Tier vs. Locksy Pro
 
@@ -27,6 +50,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 
 | Feature / Control | 🆓 Locksy Free (Core Features) | 👑 Locksy Pro (Premium Upgrade) |
 | :--- | :--- | :--- |
+| **Active Device Slots** | 1 Device | **✅ Up to 5 Devices (with Device Manager)** |
 | **Domain-Based Auto-Locks** | Max 3 Domains | **✅ Unlimited** |
 | **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day | **✅ Unlimited** |
 | **"Lock All Tabs" Action** | Max 3 lifetime uses | **✅ Unlimited** |
@@ -40,6 +64,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 | **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
 | **Privacy Blur Shield** | Basic Auto-Masking & Focus-Loss Blur | **✅ Full Manager UI (Custom Levels, Categories & Rules)** |
 | **Smart Sessions & Re-Auth** | 10 Min Default Window | **✅ Custom Re-Auth Window (1–60 Min, Strict Mode)** |
+| **Master Recovery Key** | ✅ Included (PBKDF2-SHA256) | **✅ Included** |
 | **License Type** | Free Tier | **Lifetime Access License** |
 
 ---
@@ -766,13 +791,15 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Header**: Animated lock icon, extension title, and **Light/Dark theme toggle**
 - **Status Indicator**: Shows active/inactive state with color coding
 - **Toggle Switch**: Large, modern switch for activation
-- **Password Input**: Secure input with strength indicator
+- **Password Input**: Secure input with strength indicator and "Forgot Password?" recovery key trigger
 - **Action Buttons**: Lock Current Tab, Lock All Tabs, Unlock All Tabs, Domain Lock
 - **Biometric Section**: Collapsible panel for enabling/disabling WebAuthn unlock
+- **Device Manager (PRO)**: Manage 5 active device slots and free seats directly from the License view
 - **Auto-Lock Section**: Collapsible timer settings with scope and duration controls
 - **Scheduled Lock Section**: Collapsible schedule with time inputs, day selector, and presets
 - **Stealth Mode Section**: Collapsible toggle with info panel showing keyboard shortcut
 - **Intruder Detection Section**: Camera-permission aware toggle with local photo count and Intruder Log access
+- **Smart Sessions (PRO)**: Configurable re-authentication intervals (1–60 mins) for sensitive security operations
 - **Developer Info & Sponsor**: Footer buttons for support and developer links
 
 ### Lock Overlay
@@ -844,7 +871,7 @@ If you find Locksy useful, please consider:
 
 ### 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This software and its documentation are proprietary. All rights reserved - see the [LICENSE](LICENSE) file for details.
 
 ---
 
