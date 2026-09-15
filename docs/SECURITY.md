@@ -171,7 +171,7 @@ Locksy is an established, actively maintained privacy extension available across
 
 We welcome responsible security research and vulnerability reports.
 
-- 🔒 **Private Security Email**: `security@locksy.dev`
+- 🔒 **Private Security Email**: `vanshsethi.me@gmail.com`
 - 🐛 **Public Bug Tracker**: [GitHub Issues](https://github.com/vansh-121/Locksy/issues) *(please report non-sensitive bugs here)*
 - ⏱️ **Response SLA**: We aim to acknowledge and triage security disclosures within 48 hours.
 
