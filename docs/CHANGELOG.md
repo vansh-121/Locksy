@@ -2,11 +2,12 @@
 
 All notable changes to Locksy will be documented in this file.
 
-## [3.4.5] - 2026-09-11
+## [3.5.0] - 2026-09-15
 
 ### 🎉 New Feature
 
 #### 🖥️ Device Manager (PRO)
+
 - **See your activated devices**: The License section now shows how many of your 5 device slots are in use ("X of 5 devices"), with a list of each device and when it was activated.
 - **Free up a slot yourself**: Remove any device you no longer use, right from the popup. Removing the device you're on signs it out of Pro locally; removing another device frees its slot for a new activation.
 - **No more dead-end "limit reached"**: When every slot is in use, entering your key now reveals the device manager inline so you can free a slot and retry immediately — instead of a generic error.
