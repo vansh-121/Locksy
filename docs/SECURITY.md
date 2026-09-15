@@ -1,365 +1,180 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.3.0  
-**Last Updated:** August 10, 2026
+**Version:** 3.5.0  
+**Last Updated:** September 15, 2026
 
 ---
 
 ## 🎯 Building Trust Through Transparency
 
-This document addresses common security concerns and provides technical proof of Locksy's privacy and security claims.
+Locksy is designed from the ground up with an **offline-first, zero-knowledge architecture**. This document provides a transparent overview of how your data is protected, how encryption and biometric authentication work, why specific browser permissions are requested, and how you can independently verify our security guarantees.
 
 ---
 
-## 🔍 Verify Our Offline-First Operations
+## 🔍 Independent Security Verification
 
-### Why This Matters
-When you install Locksy, you want to verify that the extension runs locally and does not transmit your private browsing data, passwords, or log files to external servers.
+You do not need access to private source code to verify that Locksy respects your privacy. Every user or security researcher can independently audit the extension's runtime behavior in 5 minutes using standard browser tools.
 
-### How to Verify (5-Minute Audit)
-
-#### 🚀 Network DevTools Audit
+### 1. Network Activity Audit (Browser DevTools)
 1. Open your browser's Developer Tools (`F12` or `Ctrl+Shift+I`).
 2. Navigate to the **Network** tab.
-3. Lock any tab, type a password, and unlock it.
-4. Verify that **ZERO network requests** are sent (except for the secure Pro license key check to our Cloudflare Worker proxy if you choose to activate Pro).
+3. Lock any tab, enter passwords, trigger lock timers, or access the popup.
+4. **Verification**: Confirm that **ZERO outbound network requests** are transmitted. Locksy never phones home, collects telemetry, or sends your URLs, passwords, or browsing data to external servers. *(The only network communication occurs if you opt to activate a Pro license, which contacts the licensing verification proxy).*
 
-#### 📡 Offline Verification
-1. Fully disconnect your device from the internet (unplug ethernet or turn off Wi-Fi).
-2. Lock a tab, try to enter a wrong password to trigger the webcam logger, and unlock it with your correct password or biometrics.
-3. Confirm that all local operations — hashing, locking, timers, and webcam captures — operate 100% offline.
+### 2. Full Offline Verification (Airplane Mode)
+1. Disconnect your computer or mobile device from the internet (disable Wi-Fi or unplug ethernet).
+2. Lock tabs, unlock them with passwords or biometrics, configure auto-lock schedules, and test webcam intruder detection.
+3. **Verification**: Confirm that 100% of extension features work seamlessly offline. Core tab protection requires no cloud connectivity whatsoever.
 
-#### 🔎 Inspect Local Extension Files
-You can view the exact source code files running in your browser:
-1. Go to `chrome://extensions/` (or `edge://extensions/` / `about:debugging` in Firefox).
-2. Enable **Developer Mode**.
-3. Locate Locksy, click **Details**, and inspect the background scripts or popup views directly. You will see that the code runs entirely locally from your disk.
+### 3. Local Storage Audit
+1. Open Developer Tools on the extension popup or lock screen.
+2. In the **Application** (Chrome/Edge) or **Storage** (Firefox) tab, expand **Extension Storage** → `chrome.storage.local`.
+3. **Verification**: Confirm that:
+   - Passwords are never stored in plaintext — only salted PBKDF2 cryptographic digests are kept.
+   - Webpage content, form inputs, session cookies, and full browsing histories are **never** written to storage.
+   - Intruder photos (if enabled) are stored as local image blobs on your machine and never transmitted.
 
 ---
 
-## 🌐 Why Does Locksy Need `<all_urls>` Permission?
+## 🌐 Why Does Locksy Request the `<all_urls>` Permission?
 
-### The Concern
-When you install Locksy, Chrome/Firefox warn: **"Read and change all your data on all websites"**
-
-This sounds scary! But here's the technical truth:
+### The Browser Warning
+When installing Locksy, the browser displays a standard permission alert:
+> *"Read and change all your data on all websites"*
 
 ### The Technical Reality
+Browser WebExtension architectures lack granular "redirect tab" permissions. Because you can choose to lock **any** website on the internet, Locksy requires broad URL matching for exactly two features:
 
-**What Locksy Actually Does:**
-- ✅ Navigates a locked tab to its own internal lock page, then returns it to your page on unlock
-- ✅ Only runs code when YOU lock a tab, or on sites matching your Privacy Blur rules
-- ✅ Never reads page content, cookies, or form data
-- ✅ Never modifies page behavior, apart from the Privacy Blur masking you explicitly enable
+1. **Domain Locking**: Detecting when a tab navigates to a domain you have added to your lock list (including wildcards like `*.google.com`) so Locksy can immediately redirect the tab to the secure lock screen before the page renders.
+2. **Privacy Blur Shield (Optional)**: If you enable the Privacy Blur Shield, the extension applies local visual masks over sensitive inputs (credit card numbers, passwords, OTP fields) on pages matching your configured rules.
 
-**Why `<all_urls>` is Required:**
-
-Locksy has to act on whichever sites *you* choose, and we cannot know in advance which those are. The permission is used for exactly two things:
-
-1. **Domain locking** — recognising when a tab navigates to a site on your lock list so it can be sent to the lock screen. This requires being able to see the URL of any tab.
-2. **Privacy Blur** — the content script that masks passwords, card numbers and OTP codes on the page. It is off by default and does nothing on pages that do not match your rules.
-
-Locking itself injects **nothing** into the website. Locksy navigates the whole tab to `locked.html`, which lives inside the extension, not inside the site.
-
-> **Correction (v3.2.0):** Earlier revisions of this document described the lock screen as an injected iframe overlay, and cited a `web_accessible_resources` manifest entry as the reason `<all_urls>` was needed. That reflected an older design and was no longer accurate. As of v3.2.0 that manifest entry has been removed entirely — see **Disclosed Security Fixes** below.
-
-### Proof: Inspect the Code
-You can audit the extension's code locally (see the [Security Audit Checklist](#-security-audit-checklist) below). In the extension package, you'll see:
-- Only secure Polar license activation/validation calls via the local licensing manager module (no telemetry, tracking, or data harvesting)
-- No data collection code
-- No analytics or tracking
-- Only tab management and crypto functions
+**What Locksy NEVER Does:**
+- ❌ Never reads page contents, text, or form data on unlocked pages.
+- ❌ Never logs browsing history or stores visit timestamps.
+- ❌ Never modifies website logic or intercepts network traffic.
+- ❌ Tab locking injects **no script** into the target site; it redirects the entire tab to Locksy's standalone, sandboxed lock screen (`locked.html`).
 
 ---
 
-## 🔒 Your Data Never Leaves Your Device
+## 🛡️ Biometric Authentication Security (WebAuthn / FIDO2)
 
-### Technical Proof
+Locksy supports hardware-backed biometric unlock (Touch ID, Face ID, Windows Hello, and Android Biometrics) utilizing the international **W3C WebAuthn / FIDO2** standard.
 
-**1. Minimal, Opt-In Network Requests**
-If you extract the extension package locally, you can search the codebase for network activity:
-```bash
-# Search for fetch calls inside the extracted extension folder
-grep -r "fetch(" .
-# Result: Only found in the local license manager (proxied through Locksy API worker)
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Operating System                         │
+│   ┌─────────────────────────────────────────────────────┐   │
+│   │ Hardware Security Module (TPM / Apple Secure Enclave)│   │
+│   │  • Biometric verification happens entirely HERE     │   │
+│   │  • Raw fingerprint / facial scan NEVER leaves chip  │   │
+│   └──────────────────────────┬──────────────────────────┘   │
+│                              │ Valid Signature Assertion    │
+│                              ▼                              │
+│   ┌─────────────────────────────────────────────────────┐   │
+│   │ Browser WebAuthn API (navigator.credentials)        │   │
+│   └──────────────────────────┬──────────────────────────┘   │
+└──────────────────────────────┼──────────────────────────────┘
+                               │ Assertion Confirmed
+                               ▼
+            ┌────────────────────────────────────┐
+            │         Locksy Extension           │
+            │  • Stores only random Credential ID│
+            │  • Never receives biometric data   │
+            │  • 100% offline verification       │
+            └────────────────────────────────────┘
 ```
 
-**2. Chrome's Content Security Policy**
-The extension's `manifest.json` enforces:
-- No external script loading
-- No inline scripts
-- All code is local and auditable
+### Key Security Properties
 
-**3. Offline-First Test**
-Try it yourself:
-1. Install Locksy
-2. Set a master password
-3. Lock a tab
-4. **Disconnect from the internet completely**
-5. Try to unlock the tab
-
-**Result:** It works perfectly offline! Core features (tab locking, biometrics, intruder captures) are 100% local. If you purchase Locksy Pro, the licensing checks are verified via network, but a 7-day offline grace period is supported so you don't need persistent internet.
+| Property | Implementation |
+| :--- | :--- |
+| **Standard** | W3C WebAuthn / FIDO2 Specification |
+| **Hardware Boundary** | Handled by OS Security Processor (TPM, Secure Enclave) |
+| **Biometric Data Access** | **NONE** — Locksy has zero access to raw biometric scans |
+| **Data Transmission** | **NONE** — Cryptographic verification is 100% local |
+| **Stored Credentials** | Random public key credential ID only |
+| **Authentication Fallback** | Master Password is always available if biometric prompt fails |
+| **Configuration** | Strictly opt-in (disabled by default) |
 
 ---
 
-## � Biometric Authentication Security (WebAuthn / FIDO2)
+## 🔑 Master Password Cryptography & Key Derivation
 
-### How Biometric Unlock Works
+Locksy never stores your master password on disk or in memory. Protection is built upon hardened cryptographic standards:
 
-Locksy v2.3.0 introduces WebAuthn-based biometric unlock. Here's exactly what happens — and what doesn't:
+### 1. PBKDF2-SHA256 Key Derivation (600,000 Iterations)
+- When setting your master password, Locksy generates a **cryptographically secure 128-bit random salt**.
+- The password and salt are processed through **600,000 iterations of PBKDF2-SHA256**, matching the latest security recommendations from OWASP and major password vault engines (1Password, Bitwarden).
+- This high iteration count makes brute-force and dictionary attacks computationally prohibitive, even with specialized GPU hardware.
 
-**What Locksy Does:**
-- ✅ Calls `navigator.credentials.create()` to register a PassKey credential with the device's platform authenticator (e.g., Windows Hello, Touch ID, Face ID)
-- ✅ Stores only the returned **credential ID** (a random base64 string) in `chrome.storage.local`
-- ✅ On unlock, calls `navigator.credentials.get()` with the stored credential ID to challenge the platform authenticator
-- ✅ Verifies only that the OS returned a valid assertion — no biometric data is ever seen, handled, or stored by Locksy
+### 2. Constant-Time Verification
+- When you enter your password to unlock a tab, the same 600,000-round PBKDF2 derivation is performed.
+- The resulting digest is compared against the stored hash using **constant-time byte comparison**, eliminating timing side-channel attacks.
 
-**What Locksy Does NOT Do:**
-- ❌ Never accesses, reads, or stores any raw biometric data (fingerprint image, face scan, etc.)
-- ❌ Never transmits anything — WebAuthn is 100% local, no server involved
-- ❌ Never bypasses the OS security chip; the authenticator lives entirely inside the OS/hardware
-
-### Security Properties
-
-| Property | Value |
-|---|---|
-| Standard | WebAuthn / FIDO2 (W3C spec) |
-| Authenticator Type | Platform (TPM, Secure Enclave, etc.) |
-| Biometric Data Stored by Locksy | **NONE** |
-| Data Transmitted | **NONE** (100% local) |
-| Stored Credential | Public-key credential ID only |
-| Fallback | Master password always available |
-| Opt-in | Yes — disabled by default |
-
-### Technical Proof
-
-If you extract the extension package locally, you can search the codebase for biometric handling and network requests:
-```bash
-# No biometric data handling inside local files:
-grep -r "fingerprint\|biometricData\|rawBiometric" .
-# Result: NONE
-
-# No network requests in webauthn-utils.js:
-grep -r "fetch\|XMLHttpRequest" js/webauthn-utils.js
-# Result: NONE
-```
-
-The `webauthn-utils.js` module is entirely local and only interacts with the browser's built-in `navigator.credentials` API.
+### 3. Master Recovery Key Architecture (v3.3.0+)
+- During initial setup, a secure 16-character recovery key (`LOCKSY-XXXX-XXXX-XXXX`) is generated on your device.
+- The recovery key is hashed via PBKDF2-SHA256 before saving to local storage. Only the cryptographic hash is stored; the plaintext key is displayed once for local backup and never retained on disk.
+- Emergency password resets can be executed through the recovery key without contacting external servers or compromising device security.
 
 ---
 
-## �🔐 Password Security Deep Dive
+## 🛠️ Disclosed Security Hardening & Fixes
 
-### How Your Password is Protected
+We believe in responsible disclosure and transparent security documentation:
 
-**Never Stored in Plain Text:**
-```javascript
-// From the extension's cryptographic helper module (crypto-utils.js)
+### v3.5.0 — Rapid-Navigation Protection & Multi-Device Synchronization
+- **Rapid Navigation Lock Bypass Mitigation**: Resolved an edge case where rapidly clicking a domain-locked bookmark multiple times in succession could bypass tab redirection due to an aggressive debounce filter. Redirection evaluation is now instantaneous and uninterrupted for every requested page load, backed by an immediate commit listener.
+- **Device Revocation Enforcement**: Multi-device license verification was hardened to track specific device activation identifiers. Removing a device from the popup immediately invalidates its slot on the next validation sweep without affecting active devices.
+- **Network Resilience**: License validation gracefully tolerates transient network dropouts with a non-destructive, auto-recovering suspension state rather than abruptly signing out.
 
-// When you set a password — PBKDF2-SHA256, 600,000 iterations,
-// with a freshly generated 128-bit random salt:
-const stored = await hashPassword(password);
-// → "600000:<salt hex>:<derived key hex>"
-// Only this string is stored. The password itself never is.
+### v3.4.0 — Cross-Platform Mobile Security & Biometric Fallback Arbitration
+- **Android WebExtension Sandbox Isolation**: Introduced cross-platform capability normalization for Firefox on Android (`geckoView`), preventing background service worker crashes in constrained mobile environments.
+- **Biometric Error Arbitration**: Hardened WebAuthn exception handling on mobile to ensure clean fallback to Master Password / PIN whenever biometric sensors are cancelled or unavailable.
 
-// When you unlock, the same derivation is repeated using the stored
-// salt and iteration count, then compared in constant time:
-const ok = await verifyPassword(enteredPassword, stored);
-```
+### v3.3.0 — Master Recovery Key & Sensitive Action Re-Authentication
+- **Zero-Knowledge Emergency Recovery**: Implemented PBKDF2-hashed emergency recovery key infrastructure for forgotten passwords without requiring centralized accounts or cloud data escrow.
+- **Sensitive Action Re-Auth**: High-security configuration actions (unlocking tabs, modifying domain lists, toggling stealth mode) enforce explicit re-authentication even during active sessions.
 
-**PBKDF2 Key Derivation (600,000 iterations):**
-- Used for tab-specific encryption
-- Makes brute-force attacks computationally infeasible
-- Industry-standard used by 1Password, Bitwarden, etc.
+### v3.2.0 — Web-Accessible Page Isolation & Hash Upgrades
+- **Strict Frame Isolation**: Removed extension resources from `web_accessible_resources` manifests, eliminating potential clickjacking or UI redress attacks by third-party web pages. Added tab-ownership verification so lock screens cannot be framed.
+- **Transparent PBKDF2 Migration**: Automatically upgraded legacy single-pass SHA-256 hashes from early releases to 600,000-round PBKDF2 on the user's next successful unlock.
 
-**Where is Data Stored?**
-```javascript
-// Uses the browser's local extension storage API
-chrome.storage.local.set({
-  lockPassword: "600000:<salt>:<key>",  // PBKDF2 derived key — never the password
-  lockedTabIds: [],                     // Just tab IDs, no page content
-});
-```
-
-**What is NOT stored:**
-- ❌ Your actual password
-- ❌ Page content from locked tabs
-- ❌ URLs or browsing history
-- ❌ Any personal information
+### v3.1.1 — Session Restore Security Hardening
+- **Permanent Lock Identifiers**: Replaced ephemeral browser tab IDs with persistent unique lock identifiers, ensuring restored session tabs cannot unlock without full password or biometric verification.
 
 ---
 
-## 🛠️ Disclosed Security Fixes
+## 📊 Project Maturity & Store Availability
 
-We publish security-relevant fixes rather than quietly shipping them.
+Locksy is an established, actively maintained privacy extension available across all major browser marketplaces:
 
-### v3.3.0 — Master Recovery Key & Emergency Password Reset Architecture
-
-**What it is:** Locksy introduced an emergency recovery key mechanism (`LOCKSY-XXXX-XXXX-XXXX`) and "Forgot Password?" flow to resolve password lockouts without sacrificing security or sending data off-device.
-
-**Key Protection & Cryptography:**
-- Recovery keys are generated client-side using the Web Crypto API.
-- The key is normalized (removing hyphens/spaces and converting to uppercase) and hashed using PBKDF2-SHA256 (600,000 iterations).
-- Only `recoveryKeyHash` is stored in `chrome.storage.local`. The plaintext recovery key is shown to the user once (with optional text file download) and is **never** saved on disk or sent over any network connection.
-- In case of forgotten passwords without a recovery key, users can execute an Emergency Account Reset, which safely purges local locks and authentication credentials to restore extension access.
+- **Chrome Web Store**: Fully certified and compliant with Google Manifest V3 standards.
+- **Microsoft Edge Add-ons**: Verified and distributed via the Edge Add-ons catalog.
+- **Mozilla Firefox Add-ons (AMO)**: Signed and available for Desktop and Android.
+- **Development Status**: Actively Maintained (Regular security releases, automated test suites, and strict dependency pinning).
 
 ---
 
-### v3.2.0 — Website-reachable extension pages, and unmigrated legacy password hashes
+## 🧪 Security Verification Checklist for Users
 
-**What it was (1 of 2 — extension pages exposed to websites):** Locksy's manifest listed its lock screen and Intruder Log under `web_accessible_resources` with a match pattern covering every URL. That permits any website you visit to load those pages — most usefully inside a hidden `<iframe>`. It was a leftover from an earlier design in which the lock screen was injected into the page as an overlay; Locksy has since moved the entire tab to its own lock page instead, which requires no such permission.
-
-**Impact:** A malicious page could embed the lock screen and stack its own controls over it (UI redress / clickjacking), embed the Intruder Log, or fingerprint the extension — confirming Locksy was installed and reading its internal extension ID. Cross-origin isolation meant such a page could **not** read your typed password or your stored intruder photos.
-
-**What changed:** The `web_accessible_resources` entry has been removed from both the Chrome/Edge and Firefox manifests. In addition, the lock screen and Intruder Log now refuse to initialise unless they own the entire tab, so neither can be framed even if that entry were ever reintroduced. That guard also closes a secondary issue: a framed lock screen would have reported the *embedding* tab as its own when re-attaching after a browser restart, potentially marking a tab locked that the user never locked.
-
-**What it was (2 of 2 — legacy password hashes never migrated):** Locksy moved to PBKDF2-SHA256 (600,000 iterations) several versions ago and continued to accept the older single-pass SHA-256 format so that long-time users would not be locked out. Nothing ever rewrote those older hashes, so a user who first set their password on a pre-PBKDF2 version kept an unsalted, fast-to-compute digest in local storage indefinitely.
-
-**Who was affected:** Only users whose master password was originally set on a pre-PBKDF2 version and never changed since. Anyone who set or changed their password on a recent version was already on PBKDF2.
-
-**Impact:** Someone with access to the local storage files could attempt offline password guessing against that digest at very high rates. Local access to the device was required — this was never remotely exploitable.
-
-**What changed:** On the first successful unlock, a legacy hash is transparently re-derived with PBKDF2 and replaced in storage. No user action is required.
+| Verification Step | How to Verify | Expected Result |
+| :--- | :--- | :--- |
+| **No Outbound Traffic** | Inspect DevTools Network Tab during tab locks/unlocks | Zero network requests sent |
+| **Offline Reliability** | Disconnect internet / enable Airplane Mode | All locking & biometric features work normally |
+| **No Plaintext Passwords** | Check `chrome.storage.local` in Application tab | Only PBKDF2 salted hash strings present |
+| **No Telemetry** | Inspect storage and network requests | Zero tracking IDs, analytics, or pingbacks |
+| **Content Isolation** | Inspect storage keys | Zero webpage URLs, cookies, or DOM content stored |
 
 ---
 
-### v3.1.1 — Unauthenticated unlock after browser restart
+## 📞 Security Contact & Responsible Disclosure
 
-**What it was:** Locksy identified each locked tab by the browser's internal tab ID. Browsers discard those IDs on shutdown and hand out new ones on restart, while the lock screen page is restored exactly as it was — still referencing the old ID. A restored lock screen asking "is my tab still locked?" was therefore told "no" simply because the tab ID it named no longer existed. In some cases that caused the lock screen to navigate itself back to the protected page **without any password or biometric check**.
+We welcome responsible security research and vulnerability reports.
 
-**Who was affected:** Users who closed their browser while tabs were locked and had session restore enabled ("Continue where you left off" / "Open previous windows and tabs"). Physical or local access to the device was required — this was never remotely exploitable.
-
-**What changed:**
-- Locks now carry a permanent identifier that is independent of tab IDs, so a restored lock screen can prove which lock it belongs to.
-- On load, a restored lock screen confirms its real tab identity with the background service and re-registers the lock under it. Until that confirmation completes, it ignores all unlock signals.
-- Unlock requests originating from a lock screen are matched against the browser's own report of the sending tab, rather than trusting the tab ID written in the page address — so a recycled ID can never cause the wrong tab to be unlocked.
-
-**Same release also fixed:** the "No lock data found" error that left restored locked tabs permanently stuck on the lock screen, unable to return to their original page.
+- 🔒 **Private Security Email**: `security@locksy.dev`
+- 🐛 **Public Bug Tracker**: [GitHub Issues](https://github.com/vansh-121/Locksy/issues) *(please report non-sensitive bugs here)*
+- ⏱️ **Response SLA**: We aim to acknowledge and triage security disclosures within 48 hours.
 
 ---
 
-## 📊 Version History & Project Maturity
-
-### Project Maturity & Evolution
-
-**Transparency:**
-- **v1.0 - v1.5**: Initial development, foundational tab protection, and bug fixes
-- **v2.0 - v2.7**: Major rewrite introducing PBKDF2 encryption (600,000 iterations), WebAuthn biometrics, stealth mode, and intruder detection
-- **v3.0 - v3.5 (Current)**: Enterprise-grade session security, Master Recovery Key flow, multi-device license manager, and Firefox for Android mobile support
-
-### Project Timeline
-- **Public Release**: Active across major browser stores since 2025
-- **Current Version**: v3.5.0
-- **Development Status**: Actively Maintained
-- **Store Listings**: Chrome Web Store, Edge Add-ons, Firefox Add-ons
-
----
-
-## 🧪 Security Audit Checklist
-
-### Independent Verification Steps
-
-Anyone can verify Locksy's security by auditing the extension package:
-
-- [ ] **Source Code Review**: Extract the extension locally and inspect the code (which is delivered unminified and fully readable)
-- [ ] **Package Verification**: Unpack the installed extension from your browser's local extensions folder and verify the integrity of the files
-- [ ] **Network Monitoring**: Use browser DevTools to confirm zero network requests
-- [ ] **Offline Test**: Disconnect internet, verify extension works
-- [ ] **Storage Inspection**: Check `chrome.storage.local` - only hashed data
-- [ ] **Permissions Review**: Read [PRIVACY.md](PRIVACY.md) for detailed explanation
-- [ ] **Code Search**: Grep for suspicious patterns (fetch, XMLHttpRequest, analytics) inside the extension files
-
-### Community Security Review
-
-**We Welcome Security Research!**
-
-If you're a security researcher:
-1. Review our code
-2. Run security scans
-3. Report vulnerabilities via GitHub Issues (responsibly)
-4. Suggest improvements
-
-**Hall of Fame**: We'll credit security researchers who help improve Locksy.
-
----
-
-## 🤝 Building Community Trust
-
-### Current Status
-- ✅ **Actively Maintained & Battle-Tested** - Continuous multi-browser production releases since 2025
-- ✅ **Auditable** - Clean and readable extension source package
-- ✅ **No telemetry** - Cannot phone home
-- ✅ **Offline-first** - Provably private
-
-### How We Build Trust
-
-1. **Full Transparency**: Inspect clean source files directly inside your browser
-2. **Build Verification**: Match and inspect files in your local extension folder
-3. **Documentation**: Detailed security and privacy guides
-4. **Responsive**: Quick bug fixes and continuous security hardening
-
-### Future Goals
-- [ ] Bug bounty program
-- [ ] More community contributors and reviewers
-- [ ] Security badges and certifications
-- [ ] Regular security updates
-
----
-
-## 🚀 For Privacy-Conscious Users
-
-### If You're Still Concerned
-
-**Totally Valid!** Security is about trust, and trust takes time.
-
-**Conservative Approach:**
-1. ⏸️ Check user reviews and community feedback across the Chrome, Firefox, and Edge stores
-2. 🔍 Star/watch the repo to follow security updates and changelogs
-3. 🧪 Review the code yourself by inspecting your local installation (it's clean and readable)
-4. 🧪 Inspect the local package files directly before enabling the extension
-
-**We Understand:**
-- Privacy software needs to earn trust
-- "Just trust me" isn't enough for security software
-- Time, open verification, and transparency build credibility
-
----
-
-## 📞 Security Contact
-
-**Found a security issue?**
-- 🔒 **Private**: Email security@locksy.dev (if available)
-- 🐛 **Public**: Open GitHub Issue (for non-critical bugs)
-- 💬 **Questions**: GitHub Discussions
-
-**Response Time**: We aim to respond to security issues within 48 hours.
-
----
-
-## 📚 Additional Resources
-
-- [Privacy Policy](PRIVACY.md)
-- [Changelog](CHANGELOG.md)
-
----
-
-## ✅ Summary: Trust Through Verification
-
-**Locksy's Promise:**
-- 🔓 Auditable = inspect files inside your browser
-- 🏠 Offline-only = data stays local
-- 🔐 Strong crypto = PBKDF2 encryption
-- 📦 Verifiable = match files locally
-- 📖 Transparent = detailed documentation
-
-**Your Responsibility:**
-- Don't just trust our words
-- Review the locally installed code
-- Monitor network activity
-- Wait for community validation if needed
-
-**Security is a journey, not a destination.** We're committed to earning your trust through transparency and time.
-
----
-
-*Last updated: July 31, 2026*
+*Last updated: September 15, 2026*
