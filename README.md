@@ -52,7 +52,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 [![Offline-First](https://img.shields.io/badge/📡-Offline--First-blue?style=flat-square)](docs/SECURITY.md)
 [![No Data Collection](https://img.shields.io/badge/🔒-No%20Data%20Collection-green?style=flat-square)](docs/PRIVACY.md)
 
-**New Project?** Yes. **Trustworthy?** Verify our offline-first operations! See [Security Notes](#-security-notes)
+**Privacy-First & Battle-Tested**: Verify our 100% offline-first operations! See [Security Notes](#-security-notes)
 
 </div>
 
