@@ -256,7 +256,6 @@ If you modify the source code:
 
 - **[Installation Guide](../README.md#-installation)** - Installing pre-built versions
 - **[Security Documentation](SECURITY.md)** - Detailed security analysis
-- **[Project Structure](PROJECT_STRUCTURE.md)** - Code architecture
 - **[Privacy Policy](PRIVACY.md)** - Data handling details
 
 ---
