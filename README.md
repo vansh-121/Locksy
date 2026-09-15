@@ -16,33 +16,10 @@
 
 **Compatible with:** • Chrome • Edge • Firefox (Desktop & Android) • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
 
-[What's New](#-whats-new-in-recent-releases) • [Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md)
+[Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Recent Improvements](#-recent-improvements) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md)
 
 > [!NOTE]
 > This repository hosts the **public documentation, assets, changelogs, and issue tracker** for the Locksy browser extension. The extension itself runs entirely client-side on your local device and can be audited locally by inspecting the installed package files. Premium automation and convenience features are available via the upgraded Pro version.
-
----
-
-## 🚀 What's New in Recent Releases
-
-### 🌟 v3.5.0 — Device Manager (PRO) & Rock-Solid Licensing
-- **🖥️ Pro Device Manager**: See which of your 5 device slots are in use ("X of 5 devices") and view exact activation dates directly from the popup.
-- **⚡ Self-Service Slot Freeing**: Remove any old or unused device with 1 click to immediately free a slot for a new browser installation.
-- **🛡️ Inline Limit Recovery**: When your 5-device limit is reached, entering your license key presents the device manager inline so you can free a slot and activate instantly—without dead-end error screens.
-- **🔄 Auto-Sync Revocations**: De-activated devices cleanly lose Pro status on restart or within 8 hours.
-- **🔒 Network-Resilient Licensing**: Temporary network blips safely suspend rather than sign out, with license validation pinned to stable provider API contracts.
-
-### 📱 v3.4.0 — Official Firefox for Android & Mobile Support
-- **Mobile-Responsive UI**: All extension screens (Popup, Lock Screen, Domain Manager, Intruder Log, Settings, etc.) fully adapt to 360px+ mobile viewports.
-- **Touch-Friendly Controls**: Expanded interactive tap targets (≥44px), sticky bottom tab navigation, and mobile-friendly overlays.
-- **Cross-Platform Compatibility**: Built-in API normalization preventing background worker crashes on mobile Firefox.
-
-### 🔑 v3.3.0 — Master Recovery Key & Smart Sessions
-- **Master Recovery Key**: Emergency 16-character recovery key (`LOCKSY-XXXX-XXXX-XXXX`) protected by PBKDF2-SHA256 (600,000 iterations) with offline text file backup.
-- **Interactive Reset Flow**: Safely recover access directly from the popup's "Forgot Password?" dialog without losing local settings.
-- **Smart Sessions & Sensitive Action Re-Auth (PRO)**: Stay signed in across popup opens with configurable re-auth timeouts (1–60 mins) for sensitive security operations.
-
----
 
 ## 💎 Free Tier vs. Locksy Pro
 
@@ -255,6 +232,31 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.5.0 - Device Manager (PRO) & Rock-Solid License Sync (September 15, 2026) 🖥️
+
+#### 🔥 What's New
+
+- **🖥️ Pro Device Manager**: The License section in the popup now actively displays your slot allocation ("X of 5 devices in use"), providing an itemized list of all currently activated devices with their registration timestamps.
+- **⚡ Self-Service Slot Freeing**: Unlink any unused, retired, or old browser installations with a single click right from the extension popup. Removing your current device signs it out of Pro locally; removing a remote device frees its slot immediately for a new machine.
+- **🛡️ Inline "Limit Reached" Slot Recovery**: No more dead-end error prompts when all 5 device slots are full. Entering your Pro key on a new device automatically opens the device manager inline so you can unbind an old device and activate instantly.
+- **🔄 Automatic Remote Revocation Sync**: Devices unlinked from elsewhere automatically forfeit Pro access on their next browser launch or background validation sweep (within 8 hours). Verification actively validates device-specific activation status, not just subscription state.
+- **🔒 Network-Resilient License Validation**: Distinguishes genuine license revocations or device removals from temporary network dropouts. Transient offline periods trigger a safe, auto-recovering suspension rather than signing you out, and license API communication is pinned to stable provider contracts.
+
+---
+
+### Version 3.4.0 - Official Firefox for Android & Mobile Responsive Layouts (August 27, 2026) 📱
+
+#### 🔥 What's New
+
+- **📱 Official Firefox for Android Support**: Engineered full compatibility with mobile Firefox (`geckoView`), enabling powerful tab locking and privacy shields on smartphones and tablets.
+- **🌐 Cross-Platform Capability Layer**: Integrated an intelligent API normalization shim bridging unsupported mobile WebExtension namespaces, preventing background service worker crashes on Android.
+- **📐 Fully Responsive Mobile Layouts**: Comprehensively overhauled all 9 extension views (Popup, Lock Screen, Domain Manager, Intruder Log, Settings, Privacy Report, etc.) to gracefully scale down to 360px+ small screens.
+- **👆 Touch-Optimized UI & Sticky Navigation**: Interactive buttons and controls enlarged to meet accessibility touch targets ($\ge 44\text{px}$), accompanied by sticky tab bars and full-screen modal overlays for seamless single-hand mobile operation.
+- **🎯 Mobile Button Integrity & Flex Layout Fixes**: Resolved layout distortion where circular buttons collapsed on compact viewports, and fixed text clipping issues where the "All Tabs" button label truncated to `"All ..."` in Firefox flexbox containers.
+- **🛡️ Biometric Fallback Arbitration**: Upgraded WebAuthn failure handling to smoothly fall back to the Master Password or PIN input screen whenever fingerprint/face authentication is cancelled or unsupported on mobile hardware.
+
+---
 
 ### Version 3.3.0 - Master Recovery Key & Emergency Password Reset Flow (August 10, 2026) 🔑
 
