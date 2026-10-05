@@ -30,7 +30,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 | **Domain-Based Auto-Locks**              | Max 3 Domains                        | **✅ Unlimited**                                           |
 | **URL Path & Sub-Page Locking**          | Max 3 Rules Included                 | **✅ Unlimited Rules & Sub-Pages**                         |
 | **Screen Share Shield**                  | Manual Toggle & Shortcut             | **✅ Auto-Arm on Shares/Calls, Title & Favicon Masking**   |
-| **Device Manager**                       | 1 Active Device                      | **✅ Up to 5 Devices (Self-Service Slot Manager)**         |
+| **Device Manager**                       | 1 Active Device                      | **✅ Up to 5 Devices**         |
 | **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day                        | **✅ Unlimited**                                           |
 | **"Lock All Tabs" Action**               | Max 3 lifetime uses                  | **✅ Unlimited**                                           |
 | **Intruder Photo Webcam Capture**        | Max 3 Photos stored                  | **✅ Up to 50 Photos**                                     |
