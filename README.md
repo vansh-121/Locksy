@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -8,7 +8,7 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.5.0-green?style=for-the-badge)](docs/CHANGELOG.md)
+  [![Version](https://img.shields.io/badge/version-3.6.0-green?style=for-the-badge)](docs/CHANGELOG.md)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -25,24 +25,25 @@
 
 Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **one-time lifetime purchase** with zero subscriptions) removes free tier restrictions and unlocks advanced browser automation and privacy features.
 
-| Feature / Control | 🆓 Locksy Free (Core Features) | 👑 Locksy Pro (Premium Upgrade) |
-| :--- | :--- | :--- |
-| **Active Device Slots** | 1 Device | **✅ Up to 5 Devices (with Device Manager)** |
-| **Domain-Based Auto-Locks** | Max 3 Domains | **✅ Unlimited** |
-| **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day | **✅ Unlimited** |
-| **"Lock All Tabs" Action** | Max 3 lifetime uses | **✅ Unlimited** |
-| **Intruder Photo Webcam Capture** | Max 3 Photos stored | **✅ Up to 50 Photos** |
-| **Unlock All Tabs** | ❌ Not Available | **✅ 1-Click Unlock All** |
-| **Startup Session Lock** | ❌ Not Available | **✅ Lock Restored Tabs on Open** |
-| **Stealth Mode** | ❌ Not Available | **✅ Hide all visual traces** |
-| **Custom Lock Messages** | ❌ Not Available | **✅ Custom Lock Screen Text** |
-| **Weekly Privacy Reports** | ❌ Not Available | **✅ Metric Insights & Scores** |
-| **Auto-Lock Timers** | Preset intervals only | **✅ Custom timer values** |
-| **Scheduled Locking** | ❌ Not Available | **✅ Custom times/days lock** |
-| **Privacy Blur Shield** | Basic Auto-Masking & Focus-Loss Blur | **✅ Full Manager UI (Custom Levels, Categories & Rules)** |
-| **Smart Sessions & Re-Auth** | 10 Min Default Window | **✅ Custom Re-Auth Window (1–60 Min, Strict Mode)** |
-| **Master Recovery Key** | ✅ Included (PBKDF2-SHA256) | **✅ Included** |
-| **License Type** | Free Tier | **Lifetime Access License** |
+| Feature / Control                        | 🆓 Locksy Free (Core Features)       | 👑 Locksy Pro (Premium Upgrade)                            |
+| :--------------------------------------- | :----------------------------------- | :--------------------------------------------------------- |
+| **Domain-Based Auto-Locks**              | Max 3 Domains                        | **✅ Unlimited**                                           |
+| **URL Path & Sub-Page Locking**          | Max 3 Rules Included                 | **✅ Unlimited Rules & Sub-Pages**                         |
+| **Screen Share Shield**                  | Manual Toggle & Shortcut             | **✅ Auto-Arm on Shares/Calls, Title & Favicon Masking**   |
+| **Device Manager**                       | 1 Active Device                      | **✅ Up to 5 Devices (Self-Service Slot Manager)**         |
+| **Biometric Unlocks (Fingerprint/Face)** | Max 5 per Day                        | **✅ Unlimited**                                           |
+| **"Lock All Tabs" Action**               | Max 3 lifetime uses                  | **✅ Unlimited**                                           |
+| **Intruder Photo Webcam Capture**        | Max 3 Photos stored                  | **✅ Up to 50 Photos**                                     |
+| **Unlock All Tabs**                      | ❌ Not Available                     | **✅ 1-Click Unlock All**                                  |
+| **Startup Session Lock**                 | ❌ Not Available                     | **✅ Lock Restored Tabs on Open**                          |
+| **Stealth Mode**                         | ❌ Not Available                     | **✅ Hide all visual traces**                              |
+| **Custom Lock Messages**                 | ❌ Not Available                     | **✅ Custom Lock Screen Text**                             |
+| **Weekly Privacy Reports**               | ❌ Not Available                     | **✅ Metric Insights & Scores**                            |
+| **Auto-Lock Timers**                     | Preset intervals only                | **✅ Custom timer values**                                 |
+| **Scheduled Locking**                    | ❌ Not Available                     | **✅ Custom times/days lock**                              |
+| **Privacy Blur Shield**                  | Basic Auto-Masking & Focus-Loss Blur | **✅ Full Manager UI (Custom Levels, Categories & Rules)** |
+| **Smart Sessions & Re-Auth**             | 10 Min Default Window                | **✅ Custom Re-Auth Window (1–60 Min, Strict Mode)**       |
+| **License Type**                         | Free Tier                            | **Lifetime Access License**                                |
 
 ---
 
@@ -233,21 +234,39 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
 
-### Version 3.5.0 - Device Manager (PRO) & Rock-Solid License Sync (September 15, 2026) 🖥️
+### Version 3.6.0 - Screen Share Shield & Licensing Hardening (October 5, 2026) 🎥
 
 #### 🔥 What's New
 
-- **🖥️ Pro Device Manager**: The License section in the popup now actively displays your slot allocation ("X of 5 devices in use"), providing an itemized list of all currently activated devices with their registration timestamps.
-- **⚡ Self-Service Slot Freeing**: Unlink any unused, retired, or old browser installations with a single click right from the extension popup. Removing your current device signs it out of Pro locally; removing a remote device frees its slot immediately for a new machine.
-- **🛡️ Inline "Limit Reached" Slot Recovery**: No more dead-end error prompts when all 5 device slots are full. Entering your Pro key on a new device automatically opens the device manager inline so you can unbind an old device and activate instantly.
-- **🔄 Automatic Remote Revocation Sync**: Devices unlinked from elsewhere automatically forfeit Pro access on their next browser launch or background validation sweep (within 8 hours). Verification actively validates device-specific activation status, not just subscription state.
-- **🔒 Network-Resilient License Validation**: Distinguishes genuine license revocations or device removals from temporary network dropouts. Transient offline periods trigger a safe, auto-recovering suspension rather than signing you out, and license API communication is pinned to stable provider contracts.
+- **🎥 Screen Share Shield**: Automatically covers sensitive tabs (domain-locked pages, banking, webmail, password managers) with an opaque shield the moment you start sharing your screen on Google Meet, Zoom, Teams, Webex, Slack, Discord, or Loom.
+- **🎯 Smart Presentation Detection**: Distinguishes between whole-screen shares and single-tab shares — sharing one tab leaves the rest unblocked.
+- **🏷️ Tab Strip Title & Favicon Masking**: Prevents title leaks in the top browser bar (e.g. masks banking headers) and swaps favicons with neutral placeholders during shares.
+- **👁️ Click to Reveal & Switch to Re-Hide**: Need to access a shielded tab during a meeting? Click once to peek; switching away immediately re-arms the shield.
+- **🛡️ Rock-Solid Pro Licensing & Device Safety**: Time-gated strike corroboration (1-hour window) and concurrency mutex locks prevent paying users from ever losing Pro access due to transient network hiccups or service worker restarts.
+- **🔇 Silent Presentations**: Locksy notification toasts are suppressed while presenting to prevent private alerts from popping up on top of screen shares.
+- **⌨️ Presentation Shortcut**: Dedicated shortcut command to arm/disarm the shield on demand.
 
 ---
 
-### Version 3.4.0 - Official Firefox for Android & Mobile Responsive Layouts (August 27, 2026) 📱
+### Version 3.5.5 - URL Path & Sub-Page Locking & Split Incognito Protection (September 23, 2026) 🔗
 
 #### 🔥 What's New
+
+- **🔗 URL Path & Sub-Page Locking**: Lock specific parts of a website (e.g. `notion.so/work/*` or `github.com/*/settings`) while keeping the rest of the site open.
+- **🕵️ Isolated Incognito Mode**: Private browsing operates with dedicated split-mode session storage, wiping private lock states instantly when the last incognito window closes.
+
+---
+
+### Version 3.5.0 - Multi-Device Manager (September 16, 2026) 🖥️
+
+#### 🔥 What's New
+
+- **🖥️ Multi-Device Slot Manager (PRO)**: View all 5 active device slots directly inside the popup. Easily deactivate unused machines on-demand to free up slots without contacting support.
+- **🔄 Auto-Recovering Licensing**: Upstream validation verifies device slots with automatic offline grace periods.
+
+---
+
+### Version 3.4.0 - Official Firefox for Android & Responsive Layouts (August 27, 2026)
 
 - **📱 Official Firefox for Android Support**: Engineered full compatibility with mobile Firefox (`geckoView`), enabling powerful tab locking and privacy shields on smartphones and tablets.
 - **🌐 Cross-Platform Capability Layer**: Integrated an intelligent API normalization shim bridging unsupported mobile WebExtension namespaces, preventing background service worker crashes on Android.
@@ -279,7 +298,7 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 
 - **🛡️ Domain Lock Persistence After Inactivity**: Fixed an issue where domain locks could unlock after extended browser inactivity (Service Worker idle termination) by ensuring background storage state re-hydration before tab navigation evaluation.
 - **🌐 Include Subdomains Toggle Preference**: The "Include subdomains" toggle in Domain Manager now persists across window opens and remains enabled after adding a domain.
-- **🎯 Wildcard & Subdomain Matching Reliability**: Standardized wildcard domain matching (*.example.com) to consistently cover apex domains and subdomains across all navigation flows.
+- **🎯 Wildcard & Subdomain Matching Reliability**: Standardized wildcard domain matching (\*.example.com) to consistently cover apex domains and subdomains across all navigation flows.
 
 ---
 
@@ -332,8 +351,6 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
   - Pro Tier: unlimited locks/biometrics/domains, Custom Lock Messages, Startup Lock, Custom Auto-Lock Timers, Stealth Mode, and Weekly Privacy Reports.
 - **⚡ Automated Build Minification**: Minify JavaScript build assets with Terser to improve extension loading performance and decrease memory footprint.
 
----
-
 > 📖 **Looking for older releases?** See full changelog and release history for v2.x and earlier in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
 ---
@@ -354,8 +371,10 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
    - Find Locksy, click **Details**, and inspect the loaded background service worker and page scripts.
 
 #### 🔐 Why We Need the `<all_urls>` Permission
-The store listings warn: *"Read and change all your data on all websites"*. 
+
+The store listings warn: _"Read and change all your data on all websites"_.
 Here is what that actually means:
+
 - ✅ We need this permission to recognise when a tab navigates to a site on **your** domain-lock list, and for the optional Privacy Blur content script. We cannot know in advance which sites you will choose.
 - ✅ Locking does **not** inject anything into the website — Locksy navigates the whole tab to its own internal lock page.
 - ✅ We **never** read webpage content, input text, or personal credentials.
@@ -521,6 +540,7 @@ Works on: Chrome • Brave • Opera • Vivaldi • and more
 ### 🕶️ Enable Incognito/Private Mode (Optional)
 
 If you want to protect tabs in private browsing windows:
+
 1. Go to your browser's extensions page (`chrome://extensions/` or `edge://extensions/`).
 2. Locate the **Locksy** extension and click **Details**.
 3. Scroll down and toggle **"Allow in Incognito"** (or **"Allow in InPrivate"**).
@@ -685,6 +705,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 - **Password Input**: Secure input with strength indicator and "Forgot Password?" recovery key trigger
 - **Action Buttons**: Lock Current Tab, Lock All Tabs, Unlock All Tabs, Domain Lock
 - **Biometric Section**: Collapsible panel for enabling/disabling WebAuthn unlock
+- **Screen Share Shield Section**: One-click presentation cover with auto-detect and discreet modes
 - **Device Manager (PRO)**: Manage 5 active device slots and free seats directly from the License view
 - **Auto-Lock Section**: Collapsible timer settings with scope and duration controls
 - **Scheduled Lock Section**: Collapsible schedule with time inputs, day selector, and presets

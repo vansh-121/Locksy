@@ -51,6 +51,11 @@ Want different shortcuts? You can change them:
 - **Note**: Enabling is always silent; disabling shows a brief confirmation notification
 - **Also available**: Right-click context menu and popup Stealth Mode toggle section
 
+### 🎥 Toggle Screen Share Shield (New in v3.6.0)
+- **Default**: Unassigned (customizable in browser shortcut settings)
+- **Action**: Instantly arms or disarms the Screen Share Shield to cover sensitive tabs during presentations and video calls
+- **How to assign**: Navigate to `chrome://extensions/shortcuts` (or `edge://extensions/shortcuts` / Firefox Add-on Shortcuts) and press your preferred keys (e.g. `Alt + Shift + P`)
+
 ## 🚀 Features
 
 ✨ **Smart Notifications**: Get instant feedback for every shortcut action
