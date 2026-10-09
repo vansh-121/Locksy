@@ -277,11 +277,11 @@ Locksy has a private codebase to protect its intellectual property and premium f
 ## Contact Information
 
 If you have questions about this Privacy Policy or the Extension:
-- **Support Email**: vansh.sethi98760@gmail.com
+- **Support Email**: support@locksy.dev
 - **Developer**: [vansh-121](https://github.com/vansh-121)
 
 For security vulnerabilities:
-- Please report privately via email to: vansh.sethi98760@gmail.com
+- Please report privately via email to: support@locksy.dev
 - Do not disclose security issues publicly until patched
 
 ---
