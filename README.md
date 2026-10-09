@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
   <img src="assets/images/icon.png" alt="Locksy Logo" width="128" height="128">
   
   # 🔒 Locksy
@@ -16,7 +16,7 @@
 
 **Compatible with:** • Chrome • Edge • Firefox (Desktop & Android) • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
 
-[Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Recent Improvements](#-recent-improvements) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md)
+[Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Recent Improvements](#-recent-improvements) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md) • [Support](#-help--support)
 
 > [!NOTE]
 > This repository hosts the **public documentation, assets, changelogs, and issue tracker** for the Locksy browser extension. The extension itself runs entirely client-side on your local device and can be audited locally by inspecting the installed package files. Premium automation and convenience features are available via the upgraded Pro version.
@@ -768,6 +768,16 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 ---
 
+## 💬 Help & Support
+
+Have questions, doubts, feature requests, or encountered a bug? We are here to help!
+
+- 📧 **Support Email**: [`support@locksy.dev`](mailto:support@locksy.dev) — Reach out directly for any support questions, feature requests, bug reports, or general inquiries.
+- 🐛 **Public Bug Tracker**: [GitHub Issues](https://github.com/vansh-121/Locksy/issues) — File bug reports or submit feature requests publicly.
+- 📢 **Community & Updates**: [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) — Join our channel for updates and announcements.
+
+---
+
 <div align="center">
 
 ## 🌟 Support Locksy
@@ -793,7 +803,7 @@ This software and its documentation are proprietary. All rights reserved - see t
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 
-[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) • [Privacy Policy](docs/PRIVACY.md)
+[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [Email Support](mailto:support@locksy.dev) • [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) • [Privacy Policy](docs/PRIVACY.md)
 
 ---
 
