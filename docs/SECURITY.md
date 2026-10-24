@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.5.0  
-**Last Updated:** September 15, 2026
+**Version:** 3.6.5  
+**Last Updated:** October 20, 2026
 
 ---
 

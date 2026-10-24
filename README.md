@@ -8,7 +8,8 @@
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
-  [![Version](https://img.shields.io/badge/version-3.6.0-green?style=for-the-badge)](docs/CHANGELOG.md)
+  [![YouTube Demo](https://img.shields.io/badge/YouTube-Video%20Demo-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=mZxIBLo9ezY)
+  [![Version](https://img.shields.io/badge/version-3.6.5-green?style=for-the-badge)](docs/CHANGELOG.md)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -16,7 +17,7 @@
 
 **Compatible with:** • Chrome • Edge • Firefox (Desktop & Android) • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
 
-[Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Recent Improvements](#-recent-improvements) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md) • [Support](#-help--support)
+[Features](#-features) • [Free vs. Pro](#-free-tier-vs-locksy-pro) • [Video Demo](https://www.youtube.com/watch?v=mZxIBLo9ezY) • [Recent Improvements](#-recent-improvements) • [Installation](#-installation) • [Security](#-security-notes) • [Privacy](docs/PRIVACY.md) • [Changelog](docs/CHANGELOG.md) • [Support](#-help--support)
 
 > [!NOTE]
 > This repository hosts the **public documentation, assets, changelogs, and issue tracker** for the Locksy browser extension. The extension itself runs entirely client-side on your local device and can be audited locally by inspecting the installed package files. Premium automation and convenience features are available via the upgraded Pro version.
@@ -63,7 +64,11 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 
 <div align="center">
 
-**See Locksy in action!** Watch how each feature works with these live demonstrations.
+**See Locksy in action!** Watch how each feature works with these live demonstrations or watch our complete video walkthrough:
+
+[![Watch Locksy Demo Video](https://img.youtube.com/vi/mZxIBLo9ezY/maxresdefault.jpg)](https://www.youtube.com/watch?v=mZxIBLo9ezY)
+
+🎥 **[Watch the Complete Locksy Video Demo & Tutorial on YouTube](https://www.youtube.com/watch?v=mZxIBLo9ezY)**
 
 </div>
 
@@ -233,6 +238,18 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.6.5 - Window Scope Control ("This Window" vs "All Windows") (October 20, 2026) 🪟
+
+#### 🔥 What's New
+
+- **🪟 Window Scope Control (User-Requested)**: Take full control over your tab locking scope. Toggle between **This Window** (active workspace only) and **All Windows** (every open browser window) with an intuitive segmented selector.
+- **🖥️ Active Window Isolation**: Lock or unlock all tabs in the active window without interfering with secondary windows, research setups, or background monitors.
+- **🌐 Complete Multi-Window Lockdown**: Safeguard your entire browsing session across all windows with a single click or keyboard shortcut.
+- **💾 Persistent Scope Memory**: Locksy automatically remembers your selected action scope across browser restarts.
+- **⚡ Unified Unlock & Shortcut Support**: Integrates seamlessly with `Lock All Tabs` (`Alt+Shift+8`) and Pro `Unlock All Tabs`.
+
+---
 
 ### Version 3.6.0 - Screen Share Shield & Licensing Hardening (October 5, 2026) 🎥
 
@@ -772,6 +789,7 @@ See [Keyboard Shortcuts Documentation](docs/KEYBOARD_SHORTCUTS.md) for detailed 
 
 Have questions, doubts, feature requests, or encountered a bug? We are here to help!
 
+- 🎥 **Video Demo & Tutorial**: [Watch Locksy Demo on YouTube](https://www.youtube.com/watch?v=mZxIBLo9ezY) — Full overview and walkthrough of tab locking, biometrics, domain rules, and presentation protection.
 - 📧 **Support Email**: [`support@locksy.dev`](mailto:support@locksy.dev) — Reach out directly for any support questions, feature requests, bug reports, or general inquiries.
 - 🐛 **Public Bug Tracker**: [GitHub Issues](https://github.com/vansh-121/Locksy/issues) — File bug reports or submit feature requests publicly.
 - 📢 **Community & Updates**: [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) — Join our channel for updates and announcements.
@@ -803,7 +821,7 @@ This software and its documentation are proprietary. All rights reserved - see t
 
 **Locksy** - Your Tabs, Your Password, Your Privacy.
 
-[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [Email Support](mailto:support@locksy.dev) • [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) • [Privacy Policy](docs/PRIVACY.md)
+[Report Bug](https://github.com/vansh-121/Locksy/issues) • [Request Feature](https://github.com/vansh-121/Locksy/issues) • [Video Demo](https://www.youtube.com/watch?v=mZxIBLo9ezY) • [Email Support](mailto:support@locksy.dev) • [WhatsApp Channel](https://whatsapp.com/channel/0029VbCs1RyD8SE0bWBHjM3f) • [Privacy Policy](docs/PRIVACY.md)
 
 ---
 

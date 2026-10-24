@@ -2,6 +2,19 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.6.5] - 2026-10-20
+
+### 🪟 Major New Feature
+
+#### 🖥️ Window Scope Control: "This Window" vs. "All Windows" (User-Requested)
+- **Granular Action Scoping**: Choose whether **Lock All Tabs** and **Unlock All Tabs** apply strictly to your active browser window or extend across every open window simultaneously.
+- **This Window (Active Window Only)**: One-click locking and unlocking limited exclusively to the current workspace — leaving your background reference tabs, secondary monitors, and research windows completely untouched.
+- **All Windows (Full Lockdown)**: Instant privacy safeguard for your entire browsing session across multi-monitor or multi-window setups.
+- **Smart Preference Memory**: Your preferred window scope is automatically remembered and restored across browser restarts and popups.
+- **Unified Shortcut & Pro Integration**: Keyboard shortcuts (`Alt+Shift+8`) and Pro `Unlock All Tabs` dynamically adapt to your selected window scope.
+
+---
+
 ## [3.6.0] - 2026-10-05
 
 ### 🎉 New Feature
