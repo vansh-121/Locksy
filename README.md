@@ -9,7 +9,7 @@
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
   [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser)](https://addons.mozilla.org/en-US/firefox/addon/locksy/)
   [![YouTube Demo](https://img.shields.io/badge/YouTube-Video%20Demo-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=mZxIBLo9ezY)
-  [![Version](https://img.shields.io/badge/version-3.6.5-green?style=for-the-badge)](docs/CHANGELOG.md)
+  [![Version](https://img.shields.io/badge/version-3.7.0-green?style=for-the-badge)](docs/CHANGELOG.md)
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
@@ -238,6 +238,21 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
 ## 🆕 Recent Improvements
 
 **📌 About Version Numbering**: Locksy follows semantic versioning. Each major version brings significant new capabilities. [See full version history →](docs/CHANGELOG.md)
+
+### Version 3.7.0 - Introducing Locksy Themes & Color Palettes (November 9, 2026) 🎨
+
+#### 🔥 What's New
+
+- **🎨 Introducing Locksy Themes**: Personalize your tab protection with 6 handcrafted, distraction-free color palettes tailored for every lighting condition and workflow aesthetic.
+- **☀️ Classic Light & Dark (Free)**: Choose between our iconic purple-blue gradient in **Classic Light** or the OLED-friendly midnight navy-indigo in **Dark Mode** to reduce eye strain.
+- **👑 Premium Pro Palettes**:
+  - **🌊 Ocean**: Deep aquatic marine blues with electric cyan accents.
+  - **🌲 Forest**: Calming emerald and evergreen nature tones with soothing sage highlights.
+  - **🔥 Ember**: Cozy dark roast charcoal, warm sunset amber, and rich copper accents.
+  - **🌸 Rose**: Modern blush cream, soft dusty rose, and rich berry tones.
+- **⚡ Zero-Flicker Pre-Rendering**: Synchronous background caching and head-script injection ensure themes apply instantly before first paint across the popup, lock screens, Domain Manager, and Privacy Report with zero visual flash.
+
+---
 
 ### Version 3.6.5 - Window Scope Control ("This Window" vs "All Windows") (October 20, 2026) 🪟
 

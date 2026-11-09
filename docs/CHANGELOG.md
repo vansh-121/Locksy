@@ -2,6 +2,25 @@
 
 All notable changes to Locksy will be documented in this file.
 
+## [3.7.0] - 2026-11-09
+
+### 🎨 Major New Feature: Introducing Locksy Themes
+
+#### 🌈 Custom Color Palettes
+- **Personalize Your Protection**: Tailor your Locksy workspace with 6 handcrafted, distraction-free color themes designed for optimal contrast, readability, and mood.
+- **Classic Light (Free)**: The iconic Locksy aesthetic — a vibrant purple-to-indigo gradient with crisp lavender and clean white surfaces.
+- **Dark Mode (Free)**: High-contrast midnight navy-indigo OLED palette engineered for low-light environments and reduced eye strain.
+- **Ocean (Pro)**: Deep marine blue gradient paired with electric cyan highlights for an immersive, focused browsing experience.
+- **Forest (Pro)**: Calming emerald and evergreen nature tones complemented by soft sage accents.
+- **Ember (Pro)**: Warm sunset amber, dark roast charcoal, and rich copper tones for cozy late-night focus.
+- **Rose (Pro)**: Modern blush cream, soft dusty rose, and rich berry accents for an elegant light theme.
+- **⚡ Zero-Flicker Pre-Rendering**: Synchronous background caching and head-script injection guarantee themes render instantly before first paint with no flash of unstyled content (FOUC).
+- **📱 System-Wide Consistency**: Applied seamlessly across all Locksy views — popup, locked screen, Domain Manager, Intruder Log, and Privacy Report.
+- **💎 Refined Dark Pro Badging**: Custom-tinted Pro badge pills tailored specifically for dark palettes to ensure maximum legibility.
+
+
+---
+
 ## [3.6.5] - 2026-10-20
 
 ### 🪟 Major New Feature

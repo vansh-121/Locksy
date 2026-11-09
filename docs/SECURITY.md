@@ -1,7 +1,7 @@
 # 🔐 Security & Trust Documentation
 
-**Version:** 3.6.5  
-**Last Updated:** October 20, 2026
+**Version:** 3.7.0  
+**Last Updated:** November 9, 2026
 
 ---
 
@@ -177,4 +177,4 @@ We welcome responsible security research and vulnerability reports.
 
 ---
 
-*Last updated: September 15, 2026*
+*Last updated: November 9, 2026*
