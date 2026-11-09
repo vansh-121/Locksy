@@ -3,7 +3,7 @@
   
   # 🔒 Locksy
   
-  ### Military-Grade Tab Protection for All Major Browsers
+  ### Privacy-First Tab Protection & Focus Shield for All Major Browsers
   
   [![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue?style=for-the-badge&logo=google-chrome)](https://chromewebstore.google.com/detail/kiediieibclgkcnkkmjlhmdainpoidim)
   [![Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/igobelagfjckjogmmmgcngpdcccnohmn)
@@ -13,7 +13,7 @@
   [![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)](LICENSE)
   [![Security](https://img.shields.io/badge/Security-PBKDF2%20(600k)-critical?style=for-the-badge)](https://github.com/vansh-121/Locksy)
 
-**A modern browser extension that provides military-grade tab protection with advanced security features.**
+**A modern browser extension that provides robust tab privacy, automated lock timers, and screen-share protection.**
 
 **Compatible with:** • Chrome • Edge • Firefox (Desktop & Android) • Brave • Opera • Comet • Vivaldi and all Chromium-based browsers
 
@@ -196,9 +196,9 @@ Locksy is free to use for core locking features. Upgrading to Locksy Pro (a **on
     <td align="center" width="50%">
       <img src="assets/images/screenshots/3.png" alt="Locksy Branding" width="100%">
       <br>
-      <b>Military-Grade Tab Protection</b>
+      <b>Privacy-First Tab Protection</b>
       <br>
-      Enterprise-level security for your sensitive browser tabs
+      Local-first tab protection for your sensitive browser tabs
     </td>
     <td align="center" width="50%">
       <img src="assets/images/screenshots/Final.png" alt="Locked Tab" width="100%">
@@ -417,39 +417,32 @@ Here is what that actually means:
 
 ---
 
-## 🔒 Security Notes
+## 🔒 Security Architecture & Threat Model
 
-### 🛡️ Password Security
+### 🛡️ Local Password & Hash Protection
 
-- **PBKDF2-SHA256**: Enterprise-grade key derivation (600,000 iterations)
-- **No Plain Text Storage**: Your actual password is never stored, only the hash
-- **Current Password Required**: To change password, you must enter your current password first
-- **No Administrative Bypass**: No way to change password without knowing current one
-- **First-Time Setup**: Only when no password exists can you set one without verification
-- **Secure Storage**: Password hashes stored locally using Chrome's secure storage API
-- **No External Transmission**: No data sent to external servers - provably offline
+- **PBKDF2-SHA256**: Cryptographically salted key derivation using 600,000 iterations (OWASP recommendation).
+- **No Plaintext Storage**: Only the salted cryptographic hash is stored on your machine.
+- **Current Password Required**: Password modifications require successful verification of the existing password or recovery key.
+- **Zero Cloud Transmission**: Passwords, hashes, and lock states are processed 100% locally on your machine.
+- **Constant-Time Verification**: Prevents timing side-channel attacks during unlock attempts.
+- **Biometric Integration via WebAuthn**: Raw biometric data never touches the extension; authentication is handled entirely by your operating system's hardware security module (TPM / Apple Secure Enclave).
 
-### 🎯 Tab Locking Security
+### 🎯 Threat Model & Intended Use
 
-- **Password-Only Unlock**: Tabs can ONLY be unlocked by entering correct password
-- **No Bypass Methods**: No administrative unlock or backdoor access
-- **Local Operation**: Extension works entirely offline (test by disconnecting internet!)
-- **System Page Protection**: Chrome system pages cannot be locked for security
+Locksy is designed as a **privacy and distraction shield** to protect your browser workspace against common real-world exposures:
 
-### What's Protected Against
+- ✅ **Shoulder-Surfing & Casual Peeking**: Prevents coworkers, family members, or bystanders from reading sensitive tabs when you step away from your desk.
+- ✅ **Screen Share & Presentation Accidents**: Automatically hides confidential tabs, masks tab titles, and replaces favicons during video meetings (Meet, Zoom, Teams).
+- ✅ **Short-Term Borrowed Devices**: Keeps your sensitive personal or work tabs locked behind a PIN or password when letting someone use your browser.
+- ✅ **Focus & Habit Control**: Domain locks and auto-lock timers curb compulsive browsing.
 
-- ✅ **Unauthorized Password Changes**: Requires current password verification
-- ✅ **Brute Force Attacks**: Exponential backoff with 5-minute lockout
-- ✅ **Timing Attacks**: Constant-time password comparison
-- ✅ **Administrative Bypass**: No backdoor or override methods
-- ✅ **Extension Hijacking**: Secure state management prevents tampering
-- ✅ **Biometric Spoofing**: Handled entirely by the OS security chip — Locksy never touches biometric data
+#### ⚠️ Understanding Platform Boundaries (Non-Goals)
+As a browser extension, Locksy operates within the WebExtension runtime sandbox. It is **not** an operating system security boundary:
+- Users with physical device access who have administrative rights, access to browser DevTools inspection, or the ability to disable browser extensions can modify local extension states.
+- Locksy is engineered to defend against casual snooping and accidental exposure — not hostile physical actors with full administrative access to your local computer.
 
----
-
-**🔐 SECURITY GUARANTEE: This extension is now truly secure against all known bypass methods and unauthorized access attempts.**
-
-**📖 Detailed Security Analysis**: See [docs/SECURITY.md](docs/SECURITY.md) for technical deep-dive
+For our comprehensive threat model and independent audit instructions, see [docs/SECURITY.md](docs/SECURITY.md).
 
 ---
 
@@ -505,11 +498,11 @@ Here is what that actually means:
 
 #### Cryptographic Security
 
-- **PBKDF2-SHA256 Key Derivation**: Enterprise-grade password protection
-  - 600,000 iterations (OWASP 2023 recommended minimum)
-  - 256-bit derived keys with 128-bit cryptographic salts
-  - ~120 years to crack 8-character password (vs ~7 days with basic hashing)
-  - Protection against rainbow table and brute-force attacks
+- **PBKDF2-SHA256 Key Derivation**: Hardened local password hashing
+  - 600,000 iterations (OWASP recommended baseline)
+  - 256-bit derived keys with cryptographically random 128-bit salts
+  - Computationally intensive derivation to resist brute-force and dictionary attacks
+  - Protection against rainbow table lookups
 - **Biometric Authentication (WebAuthn / FIDO2)**: Device-native unlock
   - Supports Windows Hello, Touch ID, Face ID, and all FIDO2-compatible platform authenticators
   - Zero biometric data stored by Locksy — only a public-key credential ID saved locally

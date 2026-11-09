@@ -751,7 +751,7 @@ All notable changes to Locksy will be documented in this file.
 
 ## [2.0.0] - 2025-12-27
 
-### 🔐 MAJOR SECURITY OVERHAUL - ENTERPRISE-GRADE CRYPTOGRAPHY
+### 🔐 MAJOR SECURITY OVERHAUL - HARDENED CRYPTOGRAPHY
 
 #### 🔥 Critical Bug Fixes & Security Patches
 
@@ -1166,7 +1166,7 @@ All notable changes to Locksy will be documented in this file.
 
 #### Core Features
 
-- **SHA-256 Password Hashing**: Military-grade encryption for password security
+- **SHA-256 Password Hashing**: Cryptographic hashing for local password security
 - **Tab Locking**: Secure any tab with password-protected overlay
 - **Master Password**: Set and change master password with verification
 - **Extension Toggle**: Easy activation/deactivation switch
@@ -1215,4 +1215,4 @@ Added full support for incognito mode, allowing users to protect their private b
 
 ### Version 1.0.0 Highlights
 
-Initial release with complete tab locking functionality, military-grade security, and modern user interface.
+Initial release with complete tab locking functionality, robust privacy protection, and modern user interface.

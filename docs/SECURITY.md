@@ -7,7 +7,42 @@
 
 ## 🎯 Building Trust Through Transparency
 
-Locksy is designed from the ground up with an **offline-first, zero-knowledge architecture**. This document provides a transparent overview of how your data is protected, how encryption and biometric authentication work, why specific browser permissions are requested, and how you can independently verify our security guarantees.
+Locksy is designed from the ground up with an **offline-first, zero-knowledge architecture**. This document provides a transparent overview of how your data is protected, our defined threat model, how cryptographic hashing and biometric authentication work, why specific browser permissions are requested, and how you can independently audit our privacy practices.
+
+---
+
+## 🛡️ Threat Model & Scope of Protection
+
+To evaluate any security or privacy tool fairly, its **threat model** must be clearly defined. Locksy is designed as a **privacy and distraction shield** operating within standard browser sandboxes.
+
+### 🎯 Intended Scope: What Locksy Protects Against
+
+Locksy is engineered to defend against day-to-day exposures and casual access:
+
+1. **Shoulder-Surfing & Physical Snooping**:
+   - Colleagues, roommates, classmates, or bystanders glancing at your screen when you step away from your computer.
+   - Prevents immediate visual access to sensitive tabs (banking, personal email, proprietary dashboards).
+2. **Screen Sharing & Video Conference Leaks**:
+   - The **Screen Share Shield** automatically hides domain-locked tabs, masks tab titles in the browser strip, and replaces tab favicons when presenting on Google Meet, Zoom, Teams, Webex, or Discord.
+3. **Casual Device Borrowing**:
+   - Prevents friends or family members who borrow your browser from stumbling into confidential or private sessions.
+4. **Distraction & Impulse Browsing**:
+   - Enforces friction against habitual visits to time-wasting domains with scheduled locks and auto-lock timers.
+5. **Zero Cloud Exposure**:
+   - Operates 100% offline. Locksy does not harvest browsing histories, tabs, or input values, ensuring your data never leaks to third-party cloud servers.
+
+### ⚠️ Platform Boundaries: What Lies Outside Locksy's Threat Model (Non-Goals)
+
+Browser extensions run inside the browser process and must adhere to browser WebExtension APIs. Locksy is **not** an operating system kernel driver or an anti-tamper DRM system:
+
+1. **Hostile Physical/Administrative Device Access**:
+   - If an adversary has physical access to your unlocked machine with local administrator rights, they can terminate browser processes, modify local disk files, inspect the browser profile via command line, or disable browser extensions via browser management policies. No browser extension can prevent an administrator with direct access to local storage and memory from bypassing it.
+2. **Browser Developer Tools Inspection**:
+   - Advanced users with access to Chrome/Firefox DevTools (`F12`) or internal debugging pages (`chrome://extensions`) can inspect runtime states or manipulate running JavaScript contexts. Locksy is designed to protect against unauthorized visual browsing, not reverse-engineering by someone who already owns the machine.
+3. **Malware & Keyloggers**:
+   - If the host machine is compromised by OS-level malware or keyloggers, security must be handled at the operating system and endpoint protection level.
+
+By defining these boundaries honestly, Locksy ensures users have a realistic, dependable understanding of where and how their privacy is protected.
 
 ---
 
