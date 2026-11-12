@@ -1,322 +1,161 @@
 # Privacy Policy for Locksy
 
-**Last Updated:** November 9, 2026  
-**Version:** 3.7.0
+**Last Updated:** November 12, 2026  
+**Version:** 3.7.0  
+**Effective Date:** November 12, 2026
 
 ---
 
-## Overview
+## 1. Overview & Single Purpose Statement
 
-Locksy ("the Extension") is committed to protecting your privacy. This privacy policy explains how the Extension handles your data and what information is collected, stored, and processed.
+Locksy ("the Extension", "we", "our") is designed to protect your browser privacy and secure sensitive tabs. The single purpose of the Extension is to allow users to lock and password-protect individual browser tabs, domains, and sensitive web elements.
 
----
+We adhere strictly to a privacy-by-design, local-first philosophy. All core locking, tab management, biometric verification, and security analysis are processed locally on your device. We do not sell, rent, or monetize your personal data.
 
-## Data Collection and Storage
-
-### What Data We Collect
-
-Locksy collects and stores the following data **locally on your device only**:
-
-1. **Master Password & Emergency Recovery Key (Hashed)**
-   - Your master password and emergency recovery key are hashed using PBKDF2-SHA256 (600,000 iterations)
-   - Only cryptographic hashes (`lockPassword`, `recoveryKeyHash`) are stored, never plain text passwords or recovery keys
-   - Stored locally using Chrome's `chrome.storage.local` API
-   - Used solely for tab locking, unlocking, and emergency password recovery functionality
-
-2. **Extension State**
-   - Whether the extension is currently active or inactive
-   - Stored locally on your device
-
-3. **Locked Tab Information**
-   - List of tabs that are currently locked, and for each one a lock record containing the page address and title of the tab you locked, plus a randomly generated lock identifier
-   - The page address is required so the Extension can return you to your page after you unlock — it is never transmitted anywhere
-   - Stored in local storage only, and automatically deleted the moment a tab is unlocked or closed
-   - Records are deliberately kept when your browser shuts down, so that tabs restored by your browser can still be unlocked. Any record left behind by a window that is never restored is deleted automatically after 30 days
-
-4. **Authentication Session Data**
-   - Failed login attempts counter (for brute force protection)
-   - Temporary lockout timestamps (for security)
-   - Session authentication status
-
-### What Data We DO NOT Collect
-
-The Extension does **NOT** collect, transmit, or store:
-
-- ❌ Browsing history
-- ❌ Website URLs you visit — with one exception: the address of a tab you explicitly choose to lock is stored locally so the Extension can take you back to it after unlocking (see "Locked Tab Information" above). It is never transmitted, and it is deleted as soon as the tab is unlocked or closed
-- ❌ Personal information (name, email, address, etc.)
-- ❌ Payment information
-- ❌ Cookies or tracking data
-- ❌ Any data from locked or unlocked web pages
-- ❌ Analytics or usage statistics
-- ❌ Device information beyond what's necessary for functionality
+This Privacy Policy comprehensively discloses:
+- The exact categories of user data collected and how they are handled
+- Data storage locations and explicit data retention periods
+- All third-party services and parties data may be shared with
+- How you can access, control, and delete your data
 
 ---
 
-## How We Use Your Data
+## 2. User Data Collection and Handling
 
-All data collected by the Extension is used **exclusively** for the following purposes:
+We believe in radical data minimization. We only collect the minimal technical data strictly required to deliver tab-locking functionality.
 
-1. **Password Protection**: To verify your identity when unlocking locked tabs
-2. **Tab Security**: To maintain the list of locked tabs and enforce access restrictions
-3. **Security Features**: To implement brute-force protection and session management
-4. **Extension State**: To remember your preference for keeping the extension active or inactive
+### 2.1 What Data We Collect & How We Handle It
 
----
+| Data Category | Purpose of Collection | Collection Method | Handling & Processing |
+| :--- | :--- | :--- | :--- |
+| **Master Password, PIN & Emergency Recovery Key** | Authenticates you when unlocking protected tabs or recovering access. | Explicit user input during initial setup, password updates, or emergency key setup. | Cryptographically hashed using PBKDF2 with SHA-256 (600,000 iterations) with a unique salt before storage. **Plaintext passwords and recovery keys are never stored, logged, or transmitted.** |
+| **Locked Tab Information (Tab IDs & URLs)** | Identifies locked tabs, enforces the lock screen overlay, and restores you to the original destination upon successful authentication. | Automatically captured by `tabs` and `webNavigation` browser APIs **only when you explicitly lock a tab or domain**. | Stored locally in `chrome.storage.local`. Used solely to reload the locked webpage after you enter the correct password/PIN. |
+| **Domain Lock Rules & Preferences** | Remembers which websites/domains you have chosen to automatically lock, whitelist rules, and auto-lock schedules. | Configured by user in the Locksy options/popup interface. | Stored locally in `chrome.storage.local`. Read by background service worker to trigger locking on matching URLs. |
+| **Authentication Session State & Security Logs** | Implements brute-force defense (lockouts after failed attempts) and generates your local Security Insights. | Generated automatically by the Extension during authentication events. | Tracks failed attempt counts and timestamps locally in memory and `chrome.storage.local`. Does not contain identifiable user data. |
+| **Intruder Photo Capture (Optional)** | Captures a local webcam snapshot of unauthorized individuals attempting to guess your password after repeated failed attempts. | Captured via browser webcam API **only if explicitly enabled by the user** in settings. | Processed entirely on-device and stored as base64 images in `chrome.storage.local`. **Never transmitted over the network or uploaded to any server.** |
+| **Privacy Blur Shield Configuration** | Remembers user-configured masking categories (e.g. banking, passwords, emails) and custom blur levels. | Configured by user in the Privacy Blur Manager. | Stored locally and applied client-side via content scripts on loaded pages. |
+| **Pro License Key & Status (Pro Users Only)** | Verifies Pro tier activation and subscription entitlement. | Entered by user upon purchasing or activating Locksy Pro. | Transmitted securely over HTTPS to our license verification endpoint (`https://locksy-api.vansh-sethi98760.workers.dev`) to check validity with Polar.sh. No browsing data or passwords are ever included. |
 
-## Data Storage and Security
+### 2.2 What Data We DO NOT Collect
 
-### Local Storage Only
-
-- **All data is stored locally** on your device using Chrome's secure storage APIs
-- **No cloud storage**: Nothing is uploaded to external servers
-- **No third-party services**: We don't use any external analytics, tracking, or data processing services
-- **Offline functionality**: The extension works entirely offline
-
-### Security Measures
-
-1. **Password Hashing**: Passwords are hashed using SHA-256 before storage
-2. **No Plain Text Storage**: Your actual password is never stored in plain text
-3. **Chrome's Secure Storage**: We use `chrome.storage.local` which is protected by Chrome's security model
-4. **Brute Force Protection**: Automatic lockout after multiple failed attempts
-5. **Session Timeouts**: Authentication sessions expire after 10 minutes of inactivity
+The Extension does **NOT** collect, monitor, harvest, or store:
+- ❌ Continuous browsing history or search queries
+- ❌ Website contents, form entries, or keystrokes (beyond password verification on Locksy's own lock screens)
+- ❌ Personal identifiers (full name, home address, phone number, government ID)
+- ❌ Financial, credit card, or payment instrument details (all payments are handled externally by Polar.sh)
+- ❌ Third-party advertising identifiers, device fingerprinting, or tracking cookies
+- ❌ Analytical telemetry or user behavior profiling
 
 ---
 
-## Permissions Explanation
+## 3. Data Storage, Security, and Retention Schedule
 
-The Extension requests the following Chrome permissions:
+### 3.1 Storage Location
+All user data and settings are stored **locally on your device** inside Chrome's isolated, sandboxed storage via `chrome.storage.local`. We do not maintain any cloud databases or remote servers that store your passwords, browsing history, locked URLs, or intruder photos.
 
-### Required Permissions
+### 3.2 Data Retention Periods
 
-1. **`storage`**
-   - **Purpose**: Store your hashed password, extension settings, and locked tab information locally
-   - **Data Access**: Local device storage only
-   - **No Network Access**: This data never leaves your device
+In compliance with Chrome Web Store User Data policies, our explicit retention schedule is as follows:
 
-2. **`tabs`**
-   - **Purpose**: Identify and manage tabs that you want to lock
-   - **Data Access**: Tab IDs and basic tab metadata only
-   - **No Content Access**: We don't read the content of web pages
+| Data Type | Retention Period | Deletion Trigger |
+| :--- | :--- | :--- |
+| **Locked Tab URLs & IDs** | Transient (Temporary) | **Deleted immediately** the moment the tab is unlocked, closed, or the browser session ends. |
+| **Authentication Session Tokens** | Session-only (Up to 10 minutes) | **Cleared automatically** after 10 minutes of inactivity, on browser restart, or on manual lock. |
+| **Intruder Photo Captures** | Local persistent | Retained locally until the user clicks "Clear Log" in the Security Dashboard, or upon extension uninstallation. |
+| **Failed Attempt Lockout Timestamps** | Temporary (Up to 30 minutes) | Automatically cleared once the brute-force cooldown timer expires. |
+| **Hashed Password & User Settings** | Persistent until modified | Retained until you update your settings, clear extension data, or uninstall Locksy. |
 
-3. **`<all_urls>` (Host Permissions)**
-   - **Why This Looks Scary**: Browser warns "Read and change all your data on all websites"
-   - **What We Actually Do**: Only inject the lock screen overlay on tabs YOU choose to lock
-   - **What We DON'T Do**: 
-     - ❌ Never read page content
-     - ❌ Never access passwords or form data
-     - ❌ Never track browsing history
-     - ❌ Never modify page behavior (except showing lock screen)
-   - **Technical Reason**: We need permission to display the lock screen on ANY domain you choose to lock. Since we can't predict which sites you'll lock, we need `<all_urls>`.
-   - **Proof**: Outside the secure license activation and validation queries inside the licensing manager module, the extension code makes zero network requests. All tab management, locking, biometrics, and local photo analytics are processed strictly offline.
-
-3. **`scripting`**
-   - **Purpose**: Inject the lock overlay onto tabs you choose to lock
-   - **Data Access**: None - only injects visual lock interface
-   - **User-Initiated**: Only runs when you explicitly lock a tab
-
-4. **`activeTab`**
-   - **Purpose**: Lock the currently active tab when you click the lock button
-   - **Data Access**: Current tab identifier only
-   - **No Browsing Data**: Doesn't access page content or history
-
-5. **`notifications`**
-   - **Purpose**: Show you helpful notifications about lock/unlock actions
-   - **Data Access**: None - only displays messages
-   - **User Benefit**: Provides feedback on security actions
-
-6. **`webNavigation`**
-   - **Purpose**: Detect when locked tabs are navigated or refreshed to maintain the lock
-   - **Data Access**: Navigation events for locked tabs only
-   - **Security Feature**: Prevents bypass attempts through page refresh
-
-### Host Permissions
-
-**`<all_urls>`**
-- **Purpose**: Allow the extension to lock any tab you choose
-- **Limitation**: Only activates on tabs you explicitly lock
-- **No Automatic Access**: The extension doesn't automatically access or monitor all tabs
-- **User Control**: You decide which tabs to lock
+### 3.3 Security Safeguards
+- **Cryptographic Hashing**: Master passwords, PINs, and recovery keys are hashed using PBKDF2 (SHA-256, 600,000 iterations).
+- **Brute-Force Resistance**: Progressive cooldown locks prevent unauthorized automated password guessing.
+- **Local Isolation**: Chrome's extension security sandbox prevents other extensions or websites from reading Locksy's internal storage.
 
 ---
 
-## Data Sharing and Third Parties
+## 4. Data Sharing and Third-Party Disclosures
 
-### No Data Sharing
+### 4.1 Strict No-Sale & No-Broker Policy
+- **We NEVER sell, rent, lease, or trade user data to third parties, data brokers, or advertisers.**
+- **We NEVER use or transfer user data for personalized advertising, retargeting, or creditworthiness evaluation.**
+- **We NEVER use user data for purposes unrelated to the single purpose of tab locking.**
 
-- ✅ **We do NOT sell** your data to anyone
-- ✅ **We do NOT share** your browsing history, password hashes, or local data with third parties
-- ✅ **We do NOT transmit** your data over the internet (except Pro license verification requests)
-- ✅ **We do NOT use** third-party trackers, pixels, or analytics services
-- ✅ **We do NOT have** access to your password, local logs, or locked tabs
+### 4.2 Comprehensive List of Third-Party Parties & Service Providers
 
-### External Services & Licensing
+The Extension limits external communication strictly to Pro license validation. Below is the complete list of parties and services involved:
 
-The Extension operates **offline-first** on your local device. The only external API communication is:
-- **License Validation**: Pro users make secure requests to `https://locksy-api.vansh-sethi98760.workers.dev` to validate their license key against Polar.sh.
-- No browsing metrics, search terms, telemetry, or device profiling data is ever included in these license check calls.
-- Free Tier users make zero external requests.
+| Party / Service Provider | Role & Service Provided | Data Shared / Received | Privacy Link |
+| :--- | :--- | :--- | :--- |
+| **Cloudflare Workers** (`locksy-api.vansh-sethi98760.workers.dev`) | Secure serverless API proxy for license key verification. | License key and validation timestamp only. **No URLs, passwords, or personal information.** | [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/) |
+| **Polar.sh** | Merchant of Record, payment processing, and license issuance. | License key, transaction status, and customer email (provided during checkout on Polar.sh). Extension queries Polar API via Cloudflare proxy to confirm license validity. | [Polar Privacy Policy](https://polar.sh/legal/privacy) |
 
----
-
-## Data Retention and Deletion
-
-### How Long We Keep Your Data
-
-- **Password Hash**: Stored until you manually change or delete it
-- **Extension Settings**: Stored until you uninstall the extension
-- **Locked Tab Information**: Deleted as soon as a tab is unlocked or closed. Records are retained across a browser shutdown so restored tabs remain unlockable, and any record not claimed by a restored tab is swept automatically after 30 days
-- **Authentication Session**: Expires after 10 minutes of inactivity
-
-### How to Delete Your Data
-
-You can delete all data stored by the Extension at any time:
-
-**Option 1: Uninstall the Extension**
-1. Right-click the extension icon in Chrome
-2. Select "Remove from Chrome"
-3. Confirm removal
-4. All data is automatically deleted
-
-**Option 2: Clear Extension Data**
-1. Go to `chrome://extensions/`
-2. Find "Locksy"
-3. Click "Details"
-4. Scroll to "Site settings" or use "Clear storage"
-5. Confirm deletion
-
-**Option 3: Clear Chrome Storage**
-1. Go to `chrome://settings/clearBrowserData`
-2. Select "Advanced"
-3. Check "Site settings" or "Hosted app data"
-4. Select "All time"
-5. Click "Clear data"
+*Note for Free Tier Users:* If you use the free version of Locksy, **zero external network requests are made**. The extension operates 100% offline.
 
 ---
 
-## User Rights
+## 5. Browser Permissions Explanation
 
-You have the following rights regarding your data:
+Locksy declares minimal permissions in `manifest.json`. Below is the complete justification for each permission:
 
-1. **Right to Access**: View all data stored by the extension via Chrome DevTools
-2. **Right to Delete**: Delete all data by uninstalling the extension
-3. **Right to Control**: Choose which tabs to lock and when
-4. **Right to Export**: Data is stored locally and accessible to you
-5. **Right to Opt-Out**: Disable or uninstall the extension at any time
-
----
-
-## Children's Privacy
-
-The Extension does not knowingly collect data from children under 13 years of age. The Extension is designed for general use and does not target children. No personal information is collected from any user, regardless of age.
-
----
-
-## Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time to reflect changes in:
-- Extension functionality
-- Legal requirements
-- Security improvements
-- User feedback
-
-**Notification of Changes:**
-- The "Last Updated" date at the top of this policy will be updated
-- Significant changes will be announced in the extension's update notes
-- Continued use of the Extension after changes constitutes acceptance
+- **`storage`**: Used to store your hashed password, user preferences, domain lock rules, and intruder logs locally on your machine. Data never leaves your device.
+- **`tabs`**: Used to identify tab IDs and URLs of tabs you choose to lock, so Locksy can display the lock overlay and restore the original URL upon successful unlock.
+- **`activeTab`**: Allows one-click locking of the currently active tab when you click the Locksy toolbar action or use the lock shortcut.
+- **`webNavigation`**: Detects when a locked tab or locked domain is refreshed or navigated, ensuring the lock screen cannot be bypassed by reloading the page.
+- **`notifications`**: Displays desktop notifications for security events (e.g., successful lock, lockout warnings, auto-lock triggers).
+- **`alarms`**: Powers auto-lock timers and scheduled lock intervals locally in the background.
+- **`contextMenus`**: Adds right-click options ("Lock this tab", "Lock this domain") to the browser context menu.
+- **`idle`**: Detects when your computer becomes idle or screensaver activates to automatically lock protected tabs if auto-lock on idle is enabled.
+- **`<all_urls>` (Host Permissions)**: Required to display the lock screen overlay on any domain you designate to lock, and to inject Privacy Blur masks on pages where sensitive fields (passwords, banking numbers) are detected. Locksy does not automatically monitor, scrape, or log content across your browsing.
+- **`https://locksy-api.vansh-sethi98760.workers.dev/*`**: Host permission used exclusively by Pro users to validate license keys against Polar.sh.
+- **`https://locksy.dev/*`**: Host permission used for version update notes and documentation links.
 
 ---
 
-## Compliance
+## 6. User Data Rights & How to Delete Your Data
 
-### GDPR Compliance (European Union)
+You maintain complete control over your data at all times:
 
-For users in the EU, this Extension:
-- ✅ Processes data locally only (no cross-border transfer)
-- ✅ Collects minimal data necessary for functionality
-- ✅ Provides transparent information about data use
-- ✅ Allows easy data deletion
-- ✅ Does not use automated decision-making
+1. **Accessing Your Data**: All stored configurations and logs can be reviewed directly in Locksy's popup, Settings, and Security Dashboard.
+2. **Deleting Specific Data**:
+   - Clear Intruder Photos: Open **Security Dashboard** -> Click **Clear Intruder Logs**.
+   - Clear Domain Rules: Open **Domain Manager** -> Delete any configured domain.
+   - Reset Master Password: Open **Settings** -> Change or Reset Password.
+3. **Complete Deletion of All Data**:
+   - **Method A (Uninstall)**: Right-click the Locksy extension icon in your browser toolbar, select **Remove from Chrome...**, and click **Remove**. Chrome immediately and irreversibly deletes all associated local storage, password hashes, and settings.
+   - **Method B (Clear Extension Storage)**: Navigate to `chrome://extensions/` -> Click **Details** on Locksy -> Click **Extension options** or **Clear data**.
 
-### CCPA Compliance (California)
+---
 
+## 7. Compliance
+
+### GDPR Compliance (European Economic Area)
+For users in the EU/EEA:
+- We process minimal data under the legal basis of **contractual necessity** and **legitimate interest** (providing the requested tab locking and security functionality).
+- Data processing is local-first. Cross-border transfers are limited to license validation requests via Cloudflare/Polar under standard contractual clauses.
+- You have the right to access, rectify, or erase your data at any time (exercisable locally as described in Section 6).
+
+### CCPA / CPRA Compliance (California)
 For California residents:
-- ✅ We do not sell personal information
-- ✅ We do not share personal information with third parties
-- ✅ You can request deletion at any time (via uninstall)
-- ✅ We provide transparent disclosure of data practices
+- We do not "sell" or "share" personal information as defined by the CCPA/CPRA.
+- We do not collect sensitive personal information for the purpose of inferring characteristics.
+- You have the right to know what personal data is collected and request its deletion.
+
+### Children's Privacy
+Locksy does not knowingly collect or solicit personal information from children under 13. The Extension is intended for general audience productivity and security.
 
 ---
 
-## Security
+## 8. Changes to This Privacy Policy
 
-We take security seriously:
-
-- **Encryption**: Passwords are hashed with SHA-256
-- **Local Storage**: All data stored securely on your device
-- **No Transmission**: Data never leaves your computer
-- **Brute Force Protection**: Automatic lockout after failed attempts
-- **Regular Updates**: Security improvements in each version
-
-However, please note:
-- No system is 100% secure
-- Protect your master password
-- Use a strong, unique password
-- Keep Chrome updated for best security
+We may update this Privacy Policy periodically to reflect new features, security updates, or regulatory requirements. Any updates will be reflected with a revised **Last Updated** date at the top of this document and documented in our extension release notes.
 
 ---
 
-## Auditable Code
+## 9. Contact & Support
 
-Locksy has a private codebase to protect its intellectual property and premium features from store clones. However, we remain committed to transparency:
-- **Local Auditing**: You can inspect all loaded extension files directly on your local device.
-- **Privacy Claims**: Verify that no telemetry or network requests are sent by monitoring the **Network** tab in your browser's Developer Tools (`F12`).
+If you have questions, feedback, or security inquiries regarding this Privacy Policy:
 
----
-
-## Contact Information
-
-If you have questions about this Privacy Policy or the Extension:
-- **Support Email**: support@locksy.dev
-- **Developer**: [vansh-121](https://github.com/vansh-121)
-
-For security vulnerabilities:
-- Please report privately via email to: support@locksy.dev
-- Do not disclose security issues publicly until patched
-
----
-
-## Legal Basis for Processing (GDPR)
-
-For EU users, our legal basis for processing your data is:
-
-1. **Legitimate Interest**: Providing tab locking functionality you requested
-2. **Consent**: By installing and using the extension, you consent to data processing as described
-3. **Necessity**: Data processing is necessary for the extension to function
-
----
-
-## Data Protection Officer
-
-As a small independent project, we do not have a dedicated Data Protection Officer. For privacy inquiries, please use the contact information above.
-
----
-
-## Conclusion
-
-**Bottom Line:**
-- ✅ Your data stays on your device
-- ✅ Your password is hashed, not stored in plain text
-- ✅ No tracking, analytics, or third-party services
-- ✅ You control your data completely
-- ✅ Delete everything by uninstalling
-
-We built this Extension to **protect your privacy**, not invade it.
-
----
-
-**By installing and using Locksy, you acknowledge that you have read and understood this Privacy Policy.**
-
----
-
-*This privacy policy is effective as of July 18, 2026.*
+- **Developer**: Vansh Sethi
+- **GitHub Repository**: [https://github.com/vansh-121/Locksy](https://github.com/vansh-121/Locksy)
+- **Issue Tracker & Inquiries**: [https://github.com/vansh-121/Locksy/issues](https://github.com/vansh-121/Locksy/issues)
+- **Website**: [https://www.locksy.dev](https://www.locksy.dev)
+- **Security Vulnerability Reporting**: Please submit security advisories privately via GitHub Security Advisories.
